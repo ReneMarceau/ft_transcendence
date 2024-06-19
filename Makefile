@@ -79,22 +79,13 @@ clean: down
 	@echo "${GREEN}Clean complete.${RESET}"
 
 .PHONY: deploy
-deploy: clean build migrate
+deploy: check clean build migrate
 	@echo "${YELLOW}Deploying application...${RESET}"
 	@$(DOCKER_COMPOSE) up
 	@echo "${GREEN}Deployment complete.${RESET}"
 
 .PHONY: check
 check:
-	@if [ ! -d "backend/venv/" ]; then \
-		echo "${YELLOW}Virtual environment not found. Creating...${RESET}"; \
-		$(DOCKER_COMPOSE) exec backend python -m venv venv; \
-		echo "${GREEN}Virtual environment created.${RESET}"; \
-	fi
-	@if [ -z "${VIRTUAL_ENV}" ]; then \
-		echo "${YELLOW}You need to activate the virtual environment. Run: source backend/venv/bin/activate${RESET}"; \
-		exit 1; \
-	fi
 	@if [ ! -f ".env" ]; then \
 		echo "${YELLOW}.env file not found. Executing script to create...${RESET}"; \
 		bash scripts/create_env.sh; \
