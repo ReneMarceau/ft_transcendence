@@ -1,19 +1,16 @@
-version: '3.8'
-
 services:
-  #BACKEND
+  # Backend (Django)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
-    command: python manage.py runserver 0.0.0.0:8000
     environment:
-      - DJANGO_SETTINGS_MODULE=transcendance.settings
+      - DJANGO_SETTINGS_MODULE=app.settings
     env_file:
       - ./backend/.env
     depends_on:
-      - postgres:
+      postgres:
         condition: service_healthy
     volumes:
       - ./backend:/app
@@ -23,7 +20,7 @@ services:
       - transcendance-network
     restart: on-failure:5
 
-  #FRONTEND
+  # Frontend
   frontend:
     build:
       context: ./frontend
@@ -31,12 +28,15 @@ services:
     container_name: frontend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
     networks:
       - transcendance-network
 
-  #WEB SERVER
+  #Web Server (Nginx)
   nginx:
     build:
       context: ./nginx
@@ -44,34 +44,27 @@ services:
     container_name: nginx
     depends_on:
       - backend
+      - frontend
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/certs:/etc/nginx/certs
     ports:
       - "80:80"
       - "443:443"
     networks:
-      - frontend
+      - transcendance-network
     restart: on-failure:5
 
-  #DATABASE
+  # Database (Postgres)
   postgres:
-    build:
-      context: ./database
-      dockerfile: Dockerfile
     image: postgres:15
     container_name: postgres_db
-    env_file:
-      - .env
-    # or
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
@@ -81,9 +74,9 @@ services:
       interval: 10s
       timeout: 20s
       retries: 10
-      start_period: 30s
+      start_period: 2s
 
-  # redis:
+  # Redis Cache & Websocket
 
   # vault:
 

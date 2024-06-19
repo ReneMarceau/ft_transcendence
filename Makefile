@@ -24,25 +24,24 @@ help:
 	@echo "  ${GREEN}make up${RESET}                - Start the Docker containers"
 	@echo "  ${GREEN}make down${RESET}              - Stop the Docker containers"
 	@echo "  ${GREEN}make restart${RESET}           - Restart the Docker containers"
-	@echo "  ${GREEN}make logs${RESET}              - Tail the Docker logs"
 	@echo "  ${GREEN}make migrate${RESET}           - Apply Django migrations"
 	@echo "  ${GREEN}make createsuperuser${RESET}    - Create a Django superuser"
 	@echo "  ${GREEN}make shell${RESET}             - Open Django shell"
 	@echo "  ${GREEN}make test${RESET}              - Run tests"
 	@echo "  ${GREEN}make clean${RESET}             - Remove Docker containers and images"
 	@echo "  ${GREEN}make deploy${RESET}            - Deploy the application"
+	@echo "  ${GREEN}make check${RESET}             - Check if all dependencies are installed"
 
 .PHONY: build
 build: check
 	@echo "${YELLOW}Building Docker containers...${RESET}"
-	@$(DOCKER_COMPOSE) up --build
+	@$(DOCKER_COMPOSE) up --build -d
 	@echo "${GREEN}Build complete.${RESET}"
 
 .PHONY: up
-up:
+up: build migrate
 	@echo "${YELLOW}Starting Docker containers...${RESET}"
 	@$(DOCKER_COMPOSE) up
-	@echo "${GREEN}Containers are up and running.${RESET}"
 
 .PHONY: down
 down:
@@ -54,14 +53,10 @@ down:
 restart: down up
 	@echo "${GREEN}Containers restarted.${RESET}"
 
-.PHONY: logs
-logs:
-	@echo "${YELLOW}Tailing Docker logs...${RESET}"
-	@$(DOCKER_COMPOSE) logs -f
-
 .PHONY: migrate
 migrate:
 	@echo "${YELLOW}Applying Django migrations...${RESET}"
+	@$(DJANGO_MANAGE) makemigrations
 	@$(DJANGO_MANAGE) migrate
 	@echo "${GREEN}Migrations applied.${RESET}"
 
@@ -71,26 +66,6 @@ createsuperuser:
 	@$(DJANGO_MANAGE) createsuperuser
 	@echo "${GREEN}Superuser created.${RESET}"
 
-.PHONY: shell
-shell:
-	@echo "${YELLOW}Opening Django shell...${RESET}"
-	@$(DJANGO_MANAGE) shell
-
-.PHONY: shell-frontend
-shell-front:
-	@echo "${YELLOW}Opening bash shell in frontend container...${RESET}"
-	@$(DOCKER) exec -it frontend bash
-
-.PHONY: shell-back
-shell-back:
-	@echo "${YELLOW}Opening bash shell in backend container...${RESET}"
-	@$(DOCKER) exec -it backend bash
-
-.PHONY: shell-db
-shell-db:
-	@echo "${YELLOW}Opening bash shell in db container...${RESET}"
-	@$(DOCKER) exec -it db bash
-
 .PHONY: test
 test:
 	@echo "${YELLOW}Running tests...${RESET}"
@@ -98,7 +73,7 @@ test:
 	@echo "${GREEN}Tests completed.${RESET}"
 
 .PHONY: clean
-clean:
+clean: down
 	@echo "${YELLOW}Removing Docker containers and images...${RESET}"
 	@$(DOCKER_COMPOSE) down --rmi all -v --remove-orphans
 	@echo "${GREEN}Clean complete.${RESET}"
@@ -123,4 +98,10 @@ check:
 	@if [ ! -f ".env" ]; then \
 		echo "${YELLOW}.env file not found. Executing script to create...${RESET}"; \
 		bash scripts/create_env.sh; \
+	fi
+	@if [ ! -f "nginx/certs/nginx.crt" ] || [ ! -f "nginx/certs/nginx.key" ]; then \
+		echo "${YELLOW}SSL certificates not found. Generating...${RESET}"; \
+		mkdir -p nginx/certs; \
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/nginx.key -out nginx/certs/nginx.crt -subj "/CN=localhost"; \
+		echo "${GREEN}SSL certificates generated.${RESET}"; \
 	fi
