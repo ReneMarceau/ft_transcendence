@@ -1,23 +1,26 @@
 {
-  "name": "frontend",
-  "version": "1.0.0",
-  "main": "js/main.js",
-  "scripts": {
-    "start": "browser-sync start --server --files 'css/*.css, js/*.js, *.html'",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ReneMarceau/ft_transcendence.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ReneMarceau/ft_transcendence/issues"
-  },
-  "homepage": "https://github.com/ReneMarceau/ft_transcendence#readme",
-  "description": "",
-  "devDependencies": {
-    "browser-sync": "^3.0.2"
-  }
+	"name": "frontend",
+	"version": "1.0.0",
+	"main": "js/main.js",
+	"scripts": {
+		"start": "browser-sync start --server --files 'css/*.css, js/*.js, *.html'",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ReneMarceau/ft_transcendence.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/ReneMarceau/ft_transcendence/issues"
+	},
+	"homepage": "https://github.com/ReneMarceau/ft_transcendence#readme",
+	"description": "",
+	"devDependencies": {
+		"browser-sync": "^3.0.2"
+	},
+	"dependencies": {
+		"three": "^0.161.0"
+	}
 }

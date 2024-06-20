@@ -1,24 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo App</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ToDo App</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+	<link rel="stylesheet" href="css/styles.css">
+	<script type="importmap">
+			{
+				"imports": {
+					"three": "/node_modules/three/build/three.module.js",
+					"three/addons/": "/node_modules/three/examples/jsm/"
+				}
+			}
+	</script>
+	<script type="module" src="js/main.js"></script>
+
 </head>
+
 <body>
-<div class="container">
-    <h1 class="mt-5">ToDo App</h1>
-    <div class="input-group mb-3">
-        <input type="text" id="task-input" class="form-control" placeholder="New Task">
-        <div class="input-group-append">
-            <button class="btn btn-primary" id="add-task-btn" type="button">Add Task</button>
-        </div>
-    </div>
-    <ul class="list-group" id="task-list"></ul>
-</div>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="js/main.js"></script>
+	<div class="container">
+		<h1 class="mt-5 text-white">ToDo App</h1>
+		<div class="input-group mb-3">
+			<input type="text" id="task-input" class="form-control" placeholder="New Task">
+			<div class="input-group-append">
+				<button class="btn btn-primary" id="add-task-btn" type="button">Add Task</button>
+			</div>
+		</div>
+		<ul class="list-group" id="task-list"></ul>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+	<a id="localgamebtn" href="/localgame" class="btn btn-primary" data-link>local game</a>
+	<a id="menubtn" href="/" class="btn btn-primary d-none">Menu</a>
+	<div class="container text-center">
+		<div id="pongDiv" class="container"></div>
+	</div>
 </body>
+
 </html>
