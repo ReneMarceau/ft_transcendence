@@ -14,8 +14,8 @@ export class Renderer {
 		this.boardStartY = (this.boardHeight / 2)
 		this.paddleMarging_x = this.boardWidth / 12
 
-		this.windowWidth = window.innerWidth
-		this.windowHeight = window.innerHeight
+		this.windowWidth = 1200
+		this.windowHeight = 800
 
 	}
 
@@ -83,10 +83,10 @@ export class Renderer {
 		this.renderer = new THREE.WebGLRenderer({ canvas: this.canva, antialias: true })
 
 		this.renderer.setSize(this.windowWidth, this.windowHeight);
-		this.renderer.setClearColor(0x161b22, 1);
+		this.renderer.setClearColor(0x0d1117, 1);
 		document.body.appendChild(this.renderer.domElement);
 		this.renderer.toneMapping = THREE.CineonToneMapping;
-		
+
 	}
 
 	initGameBoard() {
@@ -115,18 +115,18 @@ export class Renderer {
 
 		this.middleLine.position.set(0, 0, 0.025);
 
-		this.showBoard()
+		//this.showBoard()
 	}
 
 	showBoard() {
-		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine)
+		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine, this.paddle1, this.paddle2, this.ball)
 	}
 	hideBoard() {
-		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine)
+		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine, this.paddle1, this.paddle2, this.ball)
 	}
 
 	initMaterials() {
-		this.whiteMat = new THREE.MeshToonMaterial({
+		this.whiteMat = new THREE.MeshStandardMaterial({
 			color: 0xc6cdd5,
 		});
 
@@ -173,19 +173,19 @@ export class Renderer {
 
 		this.paddle2 = new THREE.Mesh(paddleGeometry, this.whiteMat);
 		this.paddle2.position.set(this.boardStartX + this.boardWidth - this.paddleMarging_x, 0, 0.05)
-		
-		this.scene.add(this.paddle1, this.paddle2)
+
+		//this.scene.add(this.paddle1, this.paddle2)
 	}
 
 	initBall() {
-		let ballGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.025, 32)
+		//let ballGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.1, 32)
 		//let ballGeometry = new THREE.BoxGeometry(0.1, 0.05, 0.1)
-
+		let ballGeometry = new THREE.SphereGeometry(0.05, 32, 16);
 		this.ball = new THREE.Mesh(ballGeometry, this.greyMat);
-		this.ball.rotateX(Math.PI / 2)
-		this.ball.position.set(0, 0, 0.05)
+		//this.ball.rotateX(Math.PI / 2)
+		this.ball.position.set(0, 0, 0.1)
 
-		this.scene.add(this.ball)
+		//this.scene.add(this.ball)
 	}
 
 	initCameraPos() {
@@ -214,16 +214,13 @@ export class graphicEngine {
 		this.height = this.board.height
 		this.mid = this.board.width / 2
 		this.scoreScale = this.height / 4
-		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
-		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginRight = this.mid + (this.width / 4) - (this.scoreScale * 0.2);
+		this.scoreMarginLeft = this.mid - (this.width / 4) - (this.scoreScale * 0.2);
 		this.scoreMarginTop = this.board.height / 3
-		this.messageCenter = this.mid - this.width / 7
-		this.messageMargin = this.height / 2 + this.height / 4
-		this.messageScale = this.width / 15
 		this.startTimerMargin = this.height / 2 + this.height / 4
 		this.startTimerScale = this.height / 3
 		this.startTimerCenter = this.mid - (this.startTimerScale * 0.2)
-		this.textColor = "rgb(43, 194, 14)"
+		this.textColor = "#c6cdd5"
 
 		this.Renderer = renderer
 		this.Renderer.showBoard()
@@ -234,11 +231,10 @@ export class graphicEngine {
 		if (model != "none" && model != undefined) {
 			this.clearFrame()
 			this.displayStartTimer(model.startTimer)
-			this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
+			this.displayBall(model.ball.x, model.ball.y)
 			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
 			this.displayScore(model.player1Score, model.player2Score)
-			this.displayMessage(model.message)
 		}
 		// render()
 		this.ctx.stroke()
@@ -248,9 +244,8 @@ export class graphicEngine {
 		this.ctx.clearRect(0, 0, this.board.width, this.board.height)
 	}
 
-	displayBall(ball_x, ball_y, ball_radius) {
+	displayBall(ball_x, ball_y) {
 		this.Renderer.ball.position.set(this.Renderer.boardStartX + ball_x * this.Renderer.boardWidth, this.Renderer.boardStartY - (ball_y * this.Renderer.boardHeight), 0.1)
-		this.Renderer.pointLight.position.set(this.Renderer.boardStartX + ball_x * this.Renderer.boardWidth, this.Renderer.boardStartY - (ball_y * this.Renderer.boardHeight), 0.2)
 	}
 
 	displayPaddle1(paddle_x, paddle_y) {
@@ -263,30 +258,19 @@ export class graphicEngine {
 	displayScore(player1Score, player2Score) {
 		if (player1Score == undefined || player2Score == undefined)
 			return
-		const dis1 = `${player1Score}`
-		const dis2 = `${player2Score}`
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px 'Press Start 2P', cursive")
 		this.ctx.fillStyle = this.textColor;
 
-		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+		this.ctx.fillText(`${player1Score}`, this.scoreMarginLeft, this.scoreMarginTop)
 
-		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
-	}
-
-	displayMessage(message) {
-		if (message == "" || message == undefined)
-			return
-		const len = message.length
-		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
-		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
+		this.ctx.fillText(`${player2Score}`, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
 	displayStartTimer(timeToWait) {
 		if (timeToWait <= 0)
 			return
 		let display = `${timeToWait}`
-		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Impact, fantasy")
+		this.ctx.font = "".concat(`${this.startTimerScale}`, "px 'Press Start 2P', cursive")
 		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
