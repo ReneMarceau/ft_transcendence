@@ -1,18 +1,18 @@
 import { renderer } from "./graphic-engine.js";
+import { Controller } from "./controller.js"
+import { Game } from "./Game.js"
 
 export function render_game() {
 	let main_frame = document.getElementById("pongDiv")
 	main_frame.innerHTML = `
 		<div class="container">
-			<div class="row">
-				<div class="col">
+					<canvas id="board"></canvas>
 					<canvas id="background"></canvas>
-				</div>
-			</div>
 		</div>
 	`
 	renderer.init()
 }
+
 
 export function initLocalPong() {
 	const navigateTo = url => {
@@ -44,10 +44,7 @@ export function initLocalPong() {
 		await match.route.view()
 	}
 
-	window.addEventListener("popstate", router)
-
 	document.addEventListener("DOMContentLoaded", () => {
-		//history.pushState(null, null, "/")
 		document.body.addEventListener("click", e => {
 			if (e.target.matches("[data-link]")) {
 				e.preventDefault()
@@ -61,23 +58,24 @@ export function initLocalPong() {
 
 export async function pongMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
 
 	console.log("menu")
-	hideMenu()
 	localGameBtn.classList.remove('d-none')
 }
 
 function initLocalGame() {
-	console.log("local")
+	console.log("local")	
 	hideMenu()
-	let menu = document.querySelector("#menubtn")
-
-	menu.classList.remove('d-none')
+	let controller = new Controller()
+	controller.init()
+	let game = new Game(controller,)
+	game.run()
 }
 
 function hideMenu() {
+	let localGameBtn = document.querySelector("#localgamebtn")
 	let menu = document.querySelector("#menubtn")
 
 	menu.classList.add('d-none')
+	localGameBtn.classList.add('d-none')
 }

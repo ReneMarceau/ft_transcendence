@@ -2,22 +2,21 @@
 {
     margin: 0;
     padding: 0;
+	/*border: 4px solid red;*/
 }
 
 body {
     padding-top: 20px;
 	margin: 0;
+	color: black;
+	font-family: 'Press Start 2P', cursive;
+	background-color: #3B4959;
 }
 
 
 .completed-task {
 	text-decoration: line-through;
     color: gray;
-}
-
-canvas { 
-	display: block;
-	border: 2px black solid;
 }
 
 #background{
@@ -35,4 +34,5 @@ canvas {
 	transform: translate(-50%, -50%);
 	z-index: -1;
 	width: 30em;
+	
 }
