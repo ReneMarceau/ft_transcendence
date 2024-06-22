@@ -28,7 +28,7 @@ export class Renderer {
 		this.initCameraPos()
 		this.initLighting()
 		this.initPostProcessing()
-		//this.initShadows();
+		this.initShadows();
 
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}

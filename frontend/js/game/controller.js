@@ -1,4 +1,4 @@
-export class Controller {
+export class LocalController {
 	constructor(player1 = "player1", player2 = "player2") {
 		this.paddle1 = new Paddle(player1, "right")
 		this.paddle2 = new Paddle(player2, "left")
@@ -26,10 +26,10 @@ export class Controller {
 	}
 
 	handleKeyDown(e) {
-		if (e.key === 'ArrowDown') this.paddle2.move_down = true;
-		if (e.key === 'ArrowUp') this.paddle2.move_up = true;
 		if (e.code === 'KeyS') this.paddle1.move_down = true;
 		if (e.code === 'KeyW') this.paddle1.move_up = true;
+		if (e.key === 'ArrowDown') this.paddle2.move_down = true;
+		if (e.key === 'ArrowUp') this.paddle2.move_up = true;
 	}
 
 	handleKeyUp(e) {
@@ -95,12 +95,139 @@ export class Controller {
 	}
 }
 
+export class AIController {
+	constructor(player1 = "player1", player2 = "AI") {
+		this.paddle1 = new Paddle(player1, "right")
+		this.paddle2 = new Paddle(player2, "left")
+		this.player1 = player1
+		this.player2 = player2
+		this.ball = new Ball()
+		this.player1Score = 0
+		this.player2Score = 0
+		this.startTimer = 3
+		this.reset()
+		this.running = true
+		this.stop = false
+		this.ball.in_play = false
+
+		this.restartTimestamp = 0
+
+		this.startTime = Date.now();
+	}
+
+	cleanup() { }
+
+	init() {
+		document.addEventListener("keydown", this.handleKeyDown.bind(this));
+		document.addEventListener("keyup", this.handleKeyUp.bind(this));
+	}
+
+	handleKeyDown(e) {
+		if (e.code === 'KeyS') this.paddle1.move_down = true;
+		if (e.code === 'KeyW') this.paddle1.move_up = true;
+	}
+
+	handleKeyUp(e) {
+		if (e.code === 'KeyS') this.paddle1.move_down = false;
+		if (e.code === 'KeyW') this.paddle1.move_up = false;
+	}
+
+	countdown() {
+		if (this.startTimer > 0) {
+			setTimeout(() => {
+				this.startTimer--
+				this.countdown()
+			}, 1000)
+		}
+		else
+			this.ball.in_play = true
+	}
+
+	reset() {
+		this.startTimer = 3
+		this.ball.in_play = false
+		this.ball.reset()
+		this.countdown()
+	}
+
+	AImove(paddle) {
+		// paddle.paddle_speed = Math.random() / 250
+
+		if (this.ball.x - paddle.x < 0.5)
+		{
+			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2))
+			{
+				paddle.move_up = true
+				paddle.move_down = false
+			}
+			else
+			{
+				paddle.move_up = false
+				paddle.move_down = true
+			}
+			if (this.ball.y < paddle.y + (paddle.paddleHeight / 2))
+			{
+				paddle.move_up = true
+				paddle.move_down = false
+			}
+			else
+			{
+				paddle.move_up = false
+				paddle.move_down = true
+			}
+		}
+		else
+		{
+			paddle.move_up = false
+			paddle.move_down = false
+		}
+	}
+
+	update() {
+		
+		let retval = "none"
+		if (this.ball.in_play) {
+			this.AImove(this.paddle2)
+			this.paddle1.move()
+			this.paddle2.move()
+			if (Date.now() > this.restartTimestamp && this.running) {
+				retval = this.ball.move(this.paddle1, this.paddle2)
+				if (retval != "none") {
+					if (retval == "right")
+						this.player1Score++
+					else
+						this.player2Score++
+					if (this.player1Score == 3) {
+						// player 1 wins
+						this.running = false
+					}
+					else if (this.player2Score == 3) {
+						// player 2 wins
+						this.running = false
+					}
+					this.ball.in_play = false
+					this.restartTimestamp = Date.now() + 1000
+					this.ball.reset()
+				}
+			}
+		}
+		return {
+			ball: this.ball,
+			paddle1: this.paddle1,
+			paddle2: this.paddle2,
+			player1Score: this.player1Score,
+			player2Score: this.player2Score,
+			startTimer: this.startTimer,
+		}
+	}
+}
+
 class Ball {
 	constructor() {
 		this.radius = 1 / 50
 		this.x = 0
 		this.y = 0
-		this.speed = 0.005
+		this.speed = 0.01
 		this.reset()
 	}
 
@@ -183,7 +310,7 @@ class Paddle {
 		this.height = 0.1
 		this.paddle_margin_x = 1 / 32
 		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 0.005
+		this.paddle_speed = 0.01
 		this.name = playerName
 		this.paddleHeight = 1 / 8
 		this.y = (1 / 2) - (this.paddleHeight / 2)
