@@ -63,6 +63,7 @@ export class LocalController {
 		if (this.ball.in_play) {
 			this.paddle1.move()
 			this.paddle2.move()
+			console.log(this.ball.speed)
 			if (Date.now() > this.restartTimestamp && this.running) {
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
@@ -153,8 +154,8 @@ export class AIController {
 	AImove(paddle) {
 		// paddle.paddle_speed = Math.random() / 250
 
-		if (this.ball.x > 0.65)
-		{
+		// if (this.ball.x > 0.65)
+		// {
 			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2))
 			{
 				paddle.move_up = true
@@ -175,12 +176,12 @@ export class AIController {
 				paddle.move_up = false
 				paddle.move_down = true
 			}
-		}
-		else
-		{
-			paddle.move_up = false
-			paddle.move_down = false
-		}
+		// }
+		// else
+		// {
+		// 	paddle.move_up = false
+		// 	paddle.move_down = false
+		// }
 	}
 
 	update() {
@@ -188,9 +189,11 @@ export class AIController {
 		let retval = "none"
 		if (this.ball.in_play) {
 			this.AImove(this.paddle2)
+			this.AImove(this.paddle1)
 			this.paddle1.move()
 			this.paddle2.move()
 			if (Date.now() > this.restartTimestamp && this.running) {
+				this.ball.updateSpeed(); // Update speed after some delay
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
 					if (retval == "right")
@@ -228,7 +231,23 @@ class Ball {
 		this.x = 0
 		this.y = 0
 		this.speed = 0.01
+		this.speed_timer = 5
 		this.reset()
+	}
+
+	updateSpeed() {
+		if (this.speed_timer > 0) {
+			setTimeout(() => {
+				this.speed_timer--
+				this.updateSpeed()
+			}, 1000)
+		}
+		else
+		{
+			this.speed += this.speed / 5000;
+			this.speed_timer = 5;
+		}
+		console.log(this.speed);
 	}
 
 	reset() {
@@ -242,6 +261,8 @@ class Ball {
 			this.dir.x = Math.max(0.5)
 		this.dir.norm()
 		this.in_play = true
+		this.speed = 0.01
+		this.speed_timer = 5
 	}
 
 	move(paddle1, paddle2) {
