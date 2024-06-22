@@ -153,7 +153,7 @@ export class AIController {
 	AImove(paddle) {
 		// paddle.paddle_speed = Math.random() / 250
 
-		if (this.ball.x - paddle.x < 0.5)
+		if (this.ball.x > 0.5)
 		{
 			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2))
 			{
