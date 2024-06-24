@@ -155,38 +155,32 @@ export class AIController {
 	AImove(paddle) {
 		// paddle.paddle_speed = Math.random() / 250
 
-		if (this.ball.x > 0.5)
-		{
-			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2))
-			{
+		if (this.ball.x > 0.5) {
+			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2)) {
 				paddle.move_up = true
 				paddle.move_down = false
 			}
-			else
-			{
+			else {
 				paddle.move_up = false
 				paddle.move_down = true
 			}
-			if (this.ball.y < paddle.y + (paddle.paddleHeight / 2))
-			{
+			if (this.ball.y < paddle.y + (paddle.paddleHeight / 2)) {
 				paddle.move_up = true
 				paddle.move_down = false
 			}
-			else
-			{
+			else {
 				paddle.move_up = false
 				paddle.move_down = true
 			}
 		}
-		else
-		{
+		else {
 			paddle.move_up = false
 			paddle.move_down = false
 		}
 	}
 
 	update() {
-		
+
 		let retval = "none"
 		if (this.ball.in_play) {
 			this.AImove(this.paddle2)
@@ -225,6 +219,72 @@ export class AIController {
 	}
 }
 
+class RemoteController {
+	constructor() {
+		this.paddle1 = new Paddle("player1", "right")
+		this.paddle2 = new Paddle("player2", "left")
+		this.ball = new Ball()
+		this.player1Score = 0
+		this.player2Score = 0
+		this.startTimer = 3
+		this.reset()
+		this.running = true
+		this.ball.in_play = false
+		
+		this.restartTimestamp = 0
+		
+		this.startTime = Date.now();
+		
+		this.stop = false
+		this.address = window.location.hostname
+		this.eventRemover = new AbortController()
+		this.localMsg = ""
+	}
+
+	cleanup () {
+		try 
+		{
+			this.websocket.close()
+		}
+		catch (e) {}
+		this.eventRemover.abort()
+		this.stop = true
+	}
+
+	update() {
+		if (this.stop)
+			return
+	}
+
+
+	async init(){
+		await this.initSocket()
+		this.initEventListener();
+	}
+
+	async initSocket() {
+		this.websocket = new WebSocket(`ws://${this.address}/game/`)
+		await new Promise((resolve, reject) => {
+			this.websocket.onopen = resolve
+		})
+	
+	}
+
+	initEventListener() {
+		if (this.websocket == undefined) //assert
+			return
+		
+		this.websocket.onclose = (e) => {
+			if (this.timeout == false) {
+				this.localMsg = "A player has left the game"
+			}
+			else
+				this.localMsg = "You waited too long to press space"
+		}
+	}
+}
+
+
 class Ball {
 	constructor() {
 		this.radius = 1 / 50
@@ -242,8 +302,7 @@ class Ball {
 				this.updateSpeed()
 			}, 1000)
 		}
-		else
-		{
+		else {
 			this.speed += this.speed / 5000;
 			this.speed_timer = 5;
 		}
