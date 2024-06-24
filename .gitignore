@@ -37,8 +37,8 @@ db.sqlite3
 db.sqlite3-journal
 migrations/*
 !migrations/
-migrations/*.py
 !migrations/__init__.py
+*initial.py
 backend/static/
 
 # Environments

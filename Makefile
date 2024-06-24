@@ -17,6 +17,7 @@ all:
 	@echo "${RED}Please specify a command.${RESET}"
 	@make help
 
+# Show available commands
 .PHONY: help
 help:
 	@echo "Available commands:"
@@ -26,33 +27,37 @@ help:
 	@echo "  ${GREEN}make restart${RESET}           - Restart the Docker containers"
 	@echo "  ${GREEN}make migrate${RESET}           - Apply Django migrations"
 	@echo "  ${GREEN}make createsuperuser${RESET}    - Create a Django superuser"
-	@echo "  ${GREEN}make shell${RESET}             - Open Django shell"
 	@echo "  ${GREEN}make test${RESET}              - Run tests"
 	@echo "  ${GREEN}make clean${RESET}             - Remove Docker containers and images"
 	@echo "  ${GREEN}make deploy${RESET}            - Deploy the application"
 	@echo "  ${GREEN}make check${RESET}             - Check if all dependencies are installed"
 
+# Build the Docker containers
 .PHONY: build
 build: check
 	@echo "${YELLOW}Building Docker containers...${RESET}"
 	@$(DOCKER_COMPOSE) up --build -d
 	@echo "${GREEN}Build complete.${RESET}"
 
+# Start the Docker containers
 .PHONY: up
-up: build migrate
+up: migrate
 	@echo "${YELLOW}Starting Docker containers...${RESET}"
 	@$(DOCKER_COMPOSE) up
 
+# Stop the Docker containers
 .PHONY: down
 down:
 	@echo "${YELLOW}Stopping Docker containers...${RESET}"
 	@$(DOCKER_COMPOSE) down
 	@echo "${GREEN}Containers stopped.${RESET}"
 
+# Stop and restart the Docker containers
 .PHONY: restart
 restart: down up
 	@echo "${GREEN}Containers restarted.${RESET}"
 
+# Apply Django migrations to the database
 .PHONY: migrate
 migrate:
 	@echo "${YELLOW}Applying Django migrations...${RESET}"
@@ -60,32 +65,43 @@ migrate:
 	@$(DJANGO_MANAGE) migrate
 	@echo "${GREEN}Migrations applied.${RESET}"
 
+# Create a Django superuser for the admin panel
 .PHONY: createsuperuser
 createsuperuser:
 	@echo "${YELLOW}Creating Django superuser...${RESET}"
 	@$(DJANGO_MANAGE) createsuperuser
 	@echo "${GREEN}Superuser created.${RESET}"
 
+# Run tests
 .PHONY: test
 test:
 	@echo "${YELLOW}Running tests...${RESET}"
 	@$(DJANGO_MANAGE) test
 	@echo "${GREEN}Tests completed.${RESET}"
 
+# Remove Docker containers and images
 .PHONY: clean
 clean: down
 	@echo "${YELLOW}Removing Docker containers and images...${RESET}"
 	@$(DOCKER_COMPOSE) down --rmi all -v --remove-orphans
+	@find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+	@find . -path "*/migrations/*.pyc"  -delete
 	@echo "${GREEN}Clean complete.${RESET}"
 
+# Deploy the application
 .PHONY: deploy
-deploy: check clean build migrate
+deploy: clean check build migrate
 	@echo "${YELLOW}Deploying application...${RESET}"
 	@$(DOCKER_COMPOSE) up
 	@echo "${GREEN}Deployment complete.${RESET}"
 
+# Check if all required dependencies are functional
 .PHONY: check
-check:
+check: venv install
+	@if ! $(DOCKER) info > /dev/null 2>&1; then \
+		echo "${RED}Docker is not running.${RESET}"; \
+		exit 1; \
+	fi
 	@if [ ! -f ".env" ]; then \
 		echo "${YELLOW}.env file not found. Executing script to create...${RESET}"; \
 		bash scripts/create_env.sh; \
@@ -96,3 +112,24 @@ check:
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/nginx.key -out nginx/certs/nginx.crt -subj "/CN=localhost"; \
 		echo "${GREEN}SSL certificates generated.${RESET}"; \
 	fi
+
+# Check if venv is present then create it
+.PHONY: venv
+venv:
+	@if [ ! -d "backend/venv/" ]; then \
+		echo "${YELLOW}Virtual environment not found. Creating...${RESET}"; \
+		python3 -m venv backend/venv; \
+		echo "${GREEN}Virtual environment created.${RESET}"; \
+	fi
+	@if [ -z "${VIRTUAL_ENV}" ]; then \
+		echo "${YELLOW}You need to activate the virtual environment. Run: ${CYAN}source backend/venv/bin/activate${RESET}"; \
+		exit 1; \
+	fi
+
+# Install Python dependencies
+.PHONY: install
+install: venv
+	@echo "${YELLOW}Installing Python dependencies...${RESET}"
+	@pip install --upgrade pip
+	@pip install -r backend/requirements.txt
+	@echo "${GREEN}Dependencies installed.${RESET}"
