@@ -45,7 +45,7 @@ export function initLocalPong() {
 				isMatch: true
 			}
 		}
-		 match.route.view()
+		match.route.view()
 	}
 
 	document.addEventListener("DOMContentLoaded", () => {
