@@ -1,17 +1,21 @@
 from django.contrib.auth import authenticate, login
-from rest_framework import status, viewsets
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 from user_management.models import User, Profile
 from .serializers import UserSerializer, ProfileSerializer, LoginSerializer
 
 
 # Create your views here.
+@method_decorator(csrf_exempt, name='dispatch')
 class SignupView(viewsets.ViewSet):
     """
     View for creating a new user.
     """
     # queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
     
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -22,12 +26,14 @@ class SignupView(viewsets.ViewSet):
             return Response({'detail': 'User created successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(viewsets.ViewSet):
     """
     View for logging in a user.
     """
     # queryset = User.objects.all()
     serializer_class = LoginSerializer
+    permission_classes = [permissions.AllowAny]
 
     def create(self, request):
         data = request.data
@@ -38,6 +44,6 @@ class LoginView(viewsets.ViewSet):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return Response({'detail': 'Login successful.'}, status=status.HTTP_200_OK)
+                return Response({'detail': 'Login successful.'}, status=status.HTTP_200_OK)            
             return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

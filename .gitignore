@@ -78,7 +78,7 @@ package-lock.json
 .DS_Store
 
 # SSL certificates
-nginx/certs/
+certs/
 
 # VS Code
 .vscode/

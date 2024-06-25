@@ -26,13 +26,21 @@ SECRET_KEY = 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://localhost:8000', 'https://localhost:3000', 'https://localhost:8000']
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# SSl settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
 INSTALLED_APPS = [
     'corsheaders',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
