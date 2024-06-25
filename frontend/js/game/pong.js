@@ -16,50 +16,6 @@ export function render_game() {
 }
 
 
-export function initLocalPong() {
-	const navigateTo = url => {
-		history.pushState(null, null, url)
-		router()
-	}
-
-	const router = async () => {
-		const routes = [
-			{ path: "/", view: () => pongMenu() },
-			{ path: "/localgame", view: () => initLocalGame() },
-			{ path: "/aigame", view: () => initAIGame()},
-			{ path: "/remotegame", view: () => initRemoteGame()}
-		]
-
-		const potentialMatches = routes.map(route => {
-			return {
-				route: route,
-				isMatch: location.pathname === route.path
-			}
-		})
-
-		let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch)
-
-		if (!match) {
-			match = {
-				route: routes[0],
-				isMatch: true
-			}
-		}
-		match.route.view()
-	}
-
-	document.addEventListener("DOMContentLoaded", () => {
-		document.body.addEventListener("click", e => {
-			if (e.target.matches("[data-link]")) {
-				e.preventDefault()
-				navigateTo(e.target.href)
-			}
-		})
-	})
-	router()
-}
-
-
 export async function pongMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
@@ -71,7 +27,7 @@ export async function pongMenu() {
 	aiGameBtn.classList.remove('d-none')
 }
 
-function initLocalGame() {
+export async function initLocalGame() {
 	console.log("local")	
 	hideMenu()
 	let controller = new LocalController()
@@ -80,7 +36,7 @@ function initLocalGame() {
 	game.run()
 }
 
-function initAIGame() {
+export async function initAIGame() {
 	console.log("AI")	
 	hideMenu()
 	let controller = new AIController()
@@ -89,7 +45,7 @@ function initAIGame() {
 	game.run()
 }
 
-function initRemoteGame() {
+export async function initRemoteGame() {
 	//TODO make sure you are auth
 	console.log("remote")
 	hideMenu()

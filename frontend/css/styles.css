@@ -8,15 +8,9 @@
 body {
     padding-top: 20px;
 	margin: 0;
-	color: black;
+	color: white;
 	font-family: 'Press Start 2P', cursive;
 	background-color: #3B4959;
-}
-
-
-.completed-task {
-	text-decoration: line-through;
-    color: gray;
 }
 
 #background{

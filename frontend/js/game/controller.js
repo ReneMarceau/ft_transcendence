@@ -63,7 +63,6 @@ export class LocalController {
 		if (this.ball.in_play) {
 			this.paddle1.move()
 			this.paddle2.move()
-			console.log(this.ball.speed)
 			if (Date.now() > this.restartTimestamp && this.running) {
 				this.ball.updateSpeed(); // Update speed after some delay
 				retval = this.ball.move(this.paddle1, this.paddle2)
@@ -386,7 +385,6 @@ class Ball {
 			this.speed += this.speed / 5000;
 			this.speed_timer = 5;
 		}
-		console.log(this.speed);
 	}
 
 	reset() {
