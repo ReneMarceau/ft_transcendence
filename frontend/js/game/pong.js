@@ -1,6 +1,7 @@
 import { renderer } from "./graphic-engine.js";
 import { LocalController } from "./controller.js"
 import { AIController } from "./controller.js"
+import { RemoteController } from "./controller.js"
 import { Game } from "./Game.js"
 
 export function render_game() {
@@ -25,7 +26,8 @@ export function initLocalPong() {
 		const routes = [
 			{ path: "/", view: () => pongMenu() },
 			{ path: "/localgame", view: () => initLocalGame() },
-			{ path: "/aigame", view: () => initAIGame()}
+			{ path: "/aigame", view: () => initAIGame()},
+			{ path: "/remotegame", view: () => initRemoteGame()}
 		]
 
 		const potentialMatches = routes.map(route => {
@@ -60,10 +62,12 @@ export function initLocalPong() {
 
 export async function pongMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
+	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let aiGameBtn = document.querySelector("#aigamebtn")
 
 	console.log("menu")
 	localGameBtn.classList.remove('d-none')
+	remoteGameBtn.classList.remove('d-none')
 	aiGameBtn.classList.remove('d-none')
 }
 
@@ -85,13 +89,24 @@ function initAIGame() {
 	game.run()
 }
 
+function initRemoteGame() {
+	//TODO make sure you are auth
+	console.log("remote")
+	hideMenu()
+	let controller = new RemoteController()
+	controller.init()
+	let game = new Game(controller,)
+	game.run()
+}
+
 function hideMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
 	let aiGameBtn = document.querySelector("#aigamebtn")
+	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let menu = document.querySelector("#menubtn")
-
 	menu.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
+	remoteGameBtn.classList.add('d-none')
 	aiGameBtn.classList.add('d-none')
 
 }

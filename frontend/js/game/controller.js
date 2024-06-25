@@ -219,7 +219,7 @@ export class AIController {
 	}
 }
 
-class RemoteController {
+export class RemoteController {
 	constructor() {
 		this.paddle1 = new Paddle("player1", "right")
 		this.paddle2 = new Paddle("player2", "left")
@@ -230,23 +230,24 @@ class RemoteController {
 		this.reset()
 		this.running = true
 		this.ball.in_play = false
-		
+
 		this.restartTimestamp = 0
-		
+
 		this.startTime = Date.now();
-		
+
+		this.serverMsg = {}
+		this.localMsg = ""
 		this.stop = false
 		this.address = window.location.hostname
 		this.eventRemover = new AbortController()
 		this.localMsg = ""
 	}
 
-	cleanup () {
-		try 
-		{
+	cleanup() {
+		try {
 			this.websocket.close()
 		}
-		catch (e) {}
+		catch (e) { }
 		this.eventRemover.abort()
 		this.stop = true
 	}
@@ -254,33 +255,111 @@ class RemoteController {
 	update() {
 		if (this.stop)
 			return
+		if (this.serverMsg.command == "data")
+			return this.serverMsg
+		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3) { // Game over
+			this.running = false
+			return this.serverMsg
+		}
+		return {
+			ball: this.ball,
+			paddle1: this.paddle1,
+			paddle2: this.paddle2,
+			player1Score: this.player1Score,
+			player2Score: this.player2Score,
+			message: this.localMsg,
+			startTimer: this.startTimer
+		}
 	}
 
 
-	async init(){
+	async init() {
 		await this.initSocket()
 		this.initEventListener();
 	}
 
 	async initSocket() {
 		this.websocket = new WebSocket(`ws://${this.address}/game/`)
-		await new Promise((resolve, reject) => {
-			this.websocket.onopen = resolve
-		})
-	
 	}
 
 	initEventListener() {
-		if (this.websocket == undefined) //assert
+		if (this.websocket == undefined) {
+			console.log("Websocket is undefined")
 			return
-		
-		this.websocket.onclose = (e) => {
-			if (this.timeout == false) {
-				this.localMsg = "A player has left the game"
-			}
-			else
-				this.localMsg = "You waited too long to press space"
 		}
+
+		this.websocket.onopen = (e) => {
+			console.log("opening websocket")
+		}
+		this.websocket.error = (e) => {
+			console.log("Error: ", e)
+		}
+
+		this.websocket.onclose = (e) => {
+			console.log(e)
+			console.log("disconnection")
+		}
+
+		this.websocket.onmessage = (e) => {
+			const msg = JSON.parse(e.data)
+			console.log(msg)
+			switch (msg.command) {
+				case "serverfull":
+					this.message = "Server full, retry later"
+					break
+				case "wait":
+					this.websocket.send("wait")
+					this.message = "Wait for another player"
+					this.msg = msg
+					this.running = false
+					break;
+				case "getready":
+					if (this.state != "running") {
+						this.websocket.send("getready")
+						this.state = "getready"
+					}
+					this.message = "Press space to start the game"
+					this.msg = msg
+					break;
+				case "data":
+					this.msg = msg
+					break;
+				case "ending":
+					this.running = false
+					this.msg = msg
+					break
+			}
+		}
+
+		document.addEventListener("keydown", (e) => {
+			if (!this.isSocketConnected())
+				return
+			if (this.state == "running") {
+				if (e.key == 'ArrowDown')
+					this.websocket.send("down")
+				else if (e.key == 'ArrowUp')
+					this.websocket.send("up")
+			}
+		})
+
+		document.addEventListener("keyup", (e) => {
+			if (!this.isSocketConnected())
+				return
+			console.log(this.state)
+			if (this.state == "running" && this.state == "running")
+				this.websocket.send("stop")
+			if (e.code == 'Space' && this.state == "getready") {
+				this.websocket.send("ready")
+				console.log("sending ready")
+				this.state = "running"
+			}
+		})
+	}
+
+	isSocketConnected() {
+		if (this.websocket.readyState != 3) //3	CLOSED
+			return true
+		return false
 	}
 }
 
@@ -292,6 +371,7 @@ class Ball {
 		this.y = 0
 		this.speed = 0.01
 		this.speed_timer = 5
+		this.in_play = false
 		this.reset()
 	}
 
