@@ -3,15 +3,22 @@ import { initAuth } from "./auth/auth.js"
 
 
 (async function () {
-	await initAuth()
-	initRooter()
+	if (await initAuth() == false) {
+		return
+	}
+	initRouter()
 	render_game()
 })();
 
 
-export function initRooter() {
+export function initRouter() {
+
+	let last_url
 	const navigateTo = url => {
-		history.pushState(null, null, url)
+		if (url != last_url) {
+			history.pushState(null, null, url)
+			last_url = url
+		}
 		router()
 	}
 
@@ -26,7 +33,8 @@ export function initRooter() {
 		const potentialMatches = routes.map(route => {
 			return {
 				route: route,
-				isMatch: location.pathname === route.path
+				isMatch: window.location.pathname === route.path
+				
 			}
 		})
 
@@ -41,7 +49,14 @@ export function initRooter() {
 		match.route.view()
 	}
 
+	window.addEventListener('popstate', () => {
+		last_url = "/"
+		router()
+	});
+
 	document.body.addEventListener("click", e => {
+		console.log('https://' + window.location.hostname + window.location.pathname)
+		console.log(e.target.href)
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault()
 			navigateTo(e.target.href)

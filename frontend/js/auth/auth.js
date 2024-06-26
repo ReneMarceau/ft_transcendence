@@ -45,90 +45,98 @@ export function render_auth() {
 	`
 }
 
-export async function initAuth() {
-    render_auth()
-
-    function waitForSubmit(formId, url) {
-        return new Promise((resolve, reject) => {
-            document.getElementById(formId).addEventListener("submit", async function(event) {
-                event.preventDefault();
-                const username = document.getElementById("login-username").value;
-                const password = document.getElementById("login-password").value;
-                console.log("Login form submitted with username:", username, "and password", password);
-
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: {
-                        username: username,
-                        password: password
-                    },
-                    success: function(response) {
-                        resolve('Login successful.');
-                    },
-                    error: function(response) {
-                        reject('Login failed. Please check your credentials.');
-                    }
-                });
-            } , { once: true });
-        });
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
     }
+    return cookieValue;
+}
+
+export async function initAuth() {
+    render_auth();
+
+    const handleFormSubmit = (formId, resolve, reject) => {
+        return async function(event) {
+            event.preventDefault();
+
+            const csrftoken = getCookie('csrftoken');
+
+
+            let url;
+            let username;
+            let password;
+            let email;
+            let data;
+            if (formId === 'login-form') {
+                url = 'https://localhost/auth/login/';
+                username = document.getElementById("login-username").value;
+                password = document.getElementById("login-password").value;
+                data = {
+                    username: username,
+                    password: password,
+                    csrfmiddlewaretoken: csrftoken
+                };
+            } else if (formId === 'signup-form') {
+                url = 'https://localhost/auth/signup/';
+                username = document.getElementById("signup-username").value;
+                password = document.getElementById("signup-password").value;
+                email = document.getElementById("signup-email").value;
+                data = {
+                    username: username,
+                    email: email,
+                    password: password,
+                    csrfmiddlewaretoken: csrftoken
+                };
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: data,
+
+                success: function(response) {
+                    resolve(`${formId} successful.`);
+                    return true
+                },
+
+                error: function(response) {
+                    alert('Sign up failed. Please try again.');
+                    reject(`${formId} failed.`);
+                    return false
+                }
+            });
+        };
+    };
 
     try {
-        const loginResponse = await waitForSubmit('login-form', 'https://localhost/auth/login/');
-        console.log('Login Response:', loginResponse);
+        const authResponse = await new Promise((resolve, reject) => {
+            document.getElementById('login-form').addEventListener('submit', handleFormSubmit('login-form', resolve, reject), { once: true });
+            document.getElementById('signup-form').addEventListener('submit', handleFormSubmit('signup-form', resolve, reject), { once: true });
+        });
+        console.log('Auth Response:', authResponse);
     } catch (error) {
-        console.error('Login Error:', error);
+        console.error('Auth Error:', error);
+        return false;
     }
 
-    let main_frame = document.getElementById("authDiv")
-    main_frame.innerHTML = ``
-
-    // document.getElementById("login-form").addEventListener("submit", async function(event) {
-    //     event.preventDefault();
-    //     const username = document.getElementById("login-username").value;
-    //     const password = document.getElementById("login-password").value;
-    //     console.log("Login form submitted with username:", username, "and password:", password);
-
-    //     $.ajax({
-    //         url: 'https://localhost/auth/login/',
-    //         method: 'POST',
-    //         data: {
-    //             username: username,
-    //             password: password
-    //         },
-    //         success: function(response) {
-    //             alert('Login successful.');
-    //         },
-    //         error: function(response) {
-    //             alert('Login failed. Please check your credentials.');
-    //         }
-    //     });
-    // });
-
-    // document.getElementById("signup-form").addEventListener("submit", async function(event) {
-    //     event.preventDefault();
-    //     const username = document.getElementById("signup-username").value;
-    //     const email = document.getElementById("signup-email").value;
-    //     const password = document.getElementById("signup-password").value;
-    //     console.log("Signup form submitted with username:", username, "email:", email, "and password:", password);
-
-    //     $.ajax({
-    //         url: 'https://localhost/auth/signup/',
-    //         method: 'POST',
-    //         data: {
-    //             username: username,
-    //             email: email,
-    //             password: password
-    //         },
-    //         success: function(response) {
-    //             alert('Sign up successful. Please login.');
-    //         },
-    //         error: function(response) {
-    //             alert('Sign up failed. Please try again.');
-    //         }
-    //     });
-    // });
-
-    
-} 
+    let main_frame = document.getElementById("authDiv");
+    main_frame.innerHTML = ``;
+    return true
+}
