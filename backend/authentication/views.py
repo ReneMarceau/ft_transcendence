@@ -1,49 +1,44 @@
-from django.contrib.auth import authenticate, login
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from rest_framework import status, viewsets, permissions
+from django.contrib.auth import authenticate
+
+from rest_framework import status, views, permissions
 from rest_framework.response import Response
-from user_management.models import User, Profile
-from .serializers import UserSerializer, ProfileSerializer, LoginSerializer
+
+from user_management.serializers import UserSerializer
+from .serializers import LoginSerializer
+from .jwt.utils import generate_tokens_and_login
 
 
 # Create your views here.
-@method_decorator(csrf_exempt, name='dispatch')
-class SignupView(viewsets.ViewSet):
+class SignupView(views.APIView):
     """
     View for creating a new user.
     """
-    # queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
     
-    def create(self, request, *args, **kwargs):
-        data = request.data
-        serializer = self.serializer_class(data=data)
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            login(request, serializer.instance)
-            return Response({'detail': 'User created successfully.'}, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            tokens = generate_tokens_and_login(request, user)
+            tokens['detail'] = 'User created successfully.'
+            return Response(tokens, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(csrf_exempt, name='dispatch')
-class LoginView(viewsets.ViewSet):
+class LoginView(views.APIView):
     """
     View for logging in a user.
     """
-    # queryset = User.objects.all()
-    serializer_class = LoginSerializer
     permission_classes = [permissions.AllowAny]
 
-    def create(self, request):
-        data = request.data
-        serializer = self.serializer_class(data=data)
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                login(request, user)
-                return Response({'detail': 'Login successful.'}, status=status.HTTP_200_OK)            
+                tokens = generate_tokens_and_login(request, user)
+                tokens['detail'] = 'User logged in successfully.'
+                return Response(tokens, status=status.HTTP_200_OK)
             return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

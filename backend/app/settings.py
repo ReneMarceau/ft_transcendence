@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+AUTH42_CLIENT_ID = os.environ.get('AUTH42_CLIENT_ID')
+AUTH42_SECRET = os.environ.get('AUTH42_SECRET')
+AUTH42_REDIRECT_URI = os.environ.get('AUTH42_REDIRECT_URI')
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,12 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = 'True'
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://localhost:8000', 'https://localhost:3000', 'https://localhost:8000']
-
-CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
 # SSl settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'user_management.apps.UserManagementConfig',
     'authentication.apps.AuthenticationConfig',
 ]
@@ -118,6 +121,39 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+#For development
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# For Production
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ),
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+# }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1400),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,  # Rotates refresh tokens for increased security
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklists old refresh tokens after rotation
+    
+    "ALGORITHM": "HS256",  # Algorithm used for signing the tokens
+    "SIGNING_KEY": os.environ.get("SECRET_KEY"),  # Key used for signing the tokens
+    
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Header type used for JWT tokens
+    "USER_ID_FIELD": "id",  # Field used for identifying the user
+    "USER_ID_CLAIM": "user_id",  # Claim used to store the user ID in the token
+    
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),  # Classes used for creating tokens
+}
 
 
 # Internationalization

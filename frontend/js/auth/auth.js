@@ -112,6 +112,9 @@ export async function initAuth() {
                 data: data,
 
                 success: function(response) {
+                    console.log(response);
+                    localStorage.setItem('access_token', response.access);
+                    localStorage.setItem('refresh_token', response.refresh);
                     resolve(`${formId} successful.`);
                     return true
                 },

@@ -29,8 +29,12 @@ def api_root(request, format=None):
     return Response({
         'users': reverse('user-list', request=request, format=format),
         'profiles': reverse('profile-list', request=request, format=format),
-        'signup': reverse('signup-list', request=request, format=format),
-        'login': reverse('login-list', request=request, format=format),
+        'signup': reverse('signup', request=request, format=format),
+        'login': reverse('login', request=request, format=format),
+        'token': reverse('token_obtain_pair', request=request, format=format),
+        'token_refresh': reverse('token_refresh', request=request, format=format),
+        'oauth2_redirect': reverse('oauth2_redirect', request=request, format=format),
+        'oauth2_callback': reverse('oauth2_callback', request=request, format=format),
     })
 
 urlpatterns = [

@@ -11,24 +11,28 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
 
+    @classmethod
+    def create_user(cls, username, email, password):
+        user = cls(username=username, email=email)
+        user.set_password(password)
+        user.save()
+        return user
+
     def __str__(self):
         return self.username
     
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    class StatusChoices(models.TextChoices):
+        ONLINE = 'online', 'Online'
+        OFFLINE = 'offline', 'Offline'
+        IN_GAME = 'in_game', 'In Game'
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     alias = models.CharField(max_length=50, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default=DEFAULT_AVATAR)
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
     blocked_users = models.ManyToManyField('self', symmetrical=False, related_name='blocked_by', blank=True)
-    ONLINE = 'online'
-    OFFLINE = 'offline'
-    IN_GAME = 'in_game'
-    STATUS = (
-        (ONLINE, 'Online'),
-        (OFFLINE, 'Offline'),
-        (IN_GAME, 'In Game')
-    )
-    status = models.CharField(max_length=10, choices=STATUS, default=OFFLINE)
+    status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.OFFLINE)
 
     def __str__(self):
         return self.user.username
