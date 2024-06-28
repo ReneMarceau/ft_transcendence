@@ -55,8 +55,6 @@ export function initRouter() {
 	});
 
 	document.body.addEventListener("click", e => {
-		console.log('https://' + window.location.hostname + window.location.pathname)
-		console.log(e.target.href)
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault()
 			navigateTo(e.target.href)

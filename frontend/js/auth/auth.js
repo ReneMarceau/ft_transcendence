@@ -100,8 +100,7 @@ function authSignup() {
 
 async function sendRequest(url, data, csrftoken) {
 	console.log(url)
-	console.log(data)
-	console.log(JSON.stringify(data))
+	console.log("[data sent] url: " + url + " data: " + JSON.stringify(data))
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -110,7 +109,7 @@ async function sendRequest(url, data, csrftoken) {
 		},
 		body: JSON.stringify(data)
 	});
-	if (response.status >= 201 && response.status < 300) //200 login, 201 signup
+	if (response.status >= 200 && response.status < 300) //200 login, 201 signup
 	{
 		const responseData = await response.json();
 		console.log(responseData);
