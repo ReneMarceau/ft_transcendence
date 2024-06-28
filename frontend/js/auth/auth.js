@@ -1,50 +1,69 @@
-import { render_game } from "../game/pong.js";
+function createModal(id, title, formAction, fields) {
+    return `
+        <div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="${id}Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="${id}Label">${title}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="${id}-form" action="${formAction}">
+                            ${fields.map(field => `
+                                <div class="form-group">
+                                    <label for="${field.id}">${field.label}</label>
+                                    <input type="${field.type}" class="form-control" id="${field.id}" placeholder="${field.placeholder}" required>
+                                </div>
+                            `).join('')}
+                            <button type="submit" class="btn btn-primary btn-block">${title}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function createModalButton(id, title, color) {
+	return `
+		<button type="button" class="btn btn-${color} m-2" data-toggle="modal" data-target="#${id}">
+			${title}
+		</button>
+		`;
+}
 
 export function render_auth() {
 	let main_frame = document.getElementById("authDiv")
+
+	const login_btn = createModalButton('login-form', 'Login', 'primary');
+
+	const login_fields = [
+		{ id: 'login-username', label: 'Username', type: 'text', placeholder: 'Enter username' },
+		{ id: 'login-password', label: 'Password', type: 'password', placeholder: 'Password' }
+	];
+
+	const signup_btn = createModalButton('signup-form', 'Sign Up', 'primary');
+
+	const signup_fields = [
+		{ id: 'signup-username', label: 'Username', type: 'text', placeholder: 'Username' },
+		{ id: 'signup-email', label: 'Email address', type: 'email', placeholder: 'Enter email' },
+		{ id: 'signup-password', label: 'Password', type: 'password', placeholder: 'Password' }
+	];
+
+
+	const oauth_btn = createModalButton('oauth-form', '42', 'secondary');
 	main_frame.innerHTML = `
-        <h2 class="text-center mt-5">Pong Login</h2>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="signup-tab" data-toggle="tab" href="#signup" role="tab" aria-controls="signup" aria-selected="false">Sign Up</a>
-            </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                <form id="login-form" action="/auth/login/">
-                    <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input type="text" class="form-control" id="login-username" placeholder="Enter username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" class="form-control" id="login-password" placeholder="Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Login</button>
-                </form>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center">
+                <h1 class="mb-4">ft_traanscancdancee</h1>
+                ${login_btn}
+                ${signup_btn}
+				${oauth_btn}
             </div>
-            <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
-                <form id="signup-form" action="/auth/signup/">
-                    <div class="form-group">
-                        <label for="signup-username">Username</label>
-                        <input type="text" class="form-control" id="signup-username" placeholder="Username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-email">Email address</label>
-                        <input type="email" class="form-control" id="signup-email" placeholder="Enter email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <input type="password" class="form-control" id="signup-password" placeholder="Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-                </form>
-            </div>
-        </div>
-	`
+        </div>`;
+	main_frame.innerHTML += createModal('login-form', 'Login', '/auth/login/', login_fields);
+	main_frame.innerHTML += createModal('signup-form', 'Sign Up', '/auth/signup/', signup_fields);
 }
 
 function getCookie(name) {
@@ -69,6 +88,7 @@ function authLogin() {
 		event.preventDefault();
 		const username = document.getElementById("login-username").value;
 		const password = document.getElementById("login-password").value;
+
 		const url = event.target.action
 		const data = {
 			username: username,
@@ -82,6 +102,7 @@ function authLogin() {
 
 function authSignup() {
 	const csrftoken = getCookie('csrftoken');
+
 	document.getElementById('signup-form').addEventListener('submit', function (event) {
 		event.preventDefault();
 		const username = document.getElementById("signup-username").value;
@@ -97,13 +118,6 @@ function authSignup() {
 		}
 		sendRequest(url, data, csrftoken)
 
-	});
-}
-
-function authSignout() {
-	document.getElementById('#logoutBtn').addEventListener('click', function (event) {
-		localStorage.clear();
-		location.reload()
 	});
 }
 
@@ -125,8 +139,6 @@ async function sendRequest(url, data, csrftoken) {
 		localStorage.setItem('access_token', responseData.access);
 		localStorage.setItem('refresh_token', responseData.refresh);
 		location.reload()
-		// let main_frame = document.getElementById("authDiv");
-		// main_frame.innerHTML = ``;
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);

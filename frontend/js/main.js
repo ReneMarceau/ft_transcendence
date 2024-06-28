@@ -26,7 +26,8 @@ export function initRouter() {
 			{ path: "/", view: () => pongMenu() },
 			{ path: "/localgame", view: () => initLocalGame() },
 			{ path: "/aigame", view: () => initAIGame()},
-			{ path: "/remotegame", view: () => initRemoteGame()}
+			{ path: "/remotegame", view: () => initRemoteGame()},
+			{ path: "/profile", view: () => console.log("profile") },
 		]
 
 		const potentialMatches = routes.map(route => {
