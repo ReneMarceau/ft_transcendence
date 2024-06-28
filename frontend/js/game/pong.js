@@ -3,6 +3,7 @@ import { LocalController } from "./controller.js"
 import { AIController } from "./controller.js"
 import { RemoteController } from "./controller.js"
 import { Game } from "./Game.js"
+import { isAuthenticated } from "../auth/auth.js"
 
 export function render_game() {
 	let main_frame = document.getElementById("pongDiv")
@@ -17,18 +18,20 @@ export function render_game() {
 
 
 export async function pongMenu() {
-	let localGameBtn = document.querySelector("#localgamebtn")
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
-	let aiGameBtn = document.querySelector("#aigamebtn")
+	if (isAuthenticated() == true) {
+		let localGameBtn = document.querySelector("#localgamebtn")
+		let remoteGameBtn = document.querySelector("#remotegamebtn")
+		let aiGameBtn = document.querySelector("#aigamebtn")
 
-	console.log("menu")
-	localGameBtn.classList.remove('d-none')
-	remoteGameBtn.classList.remove('d-none')
-	aiGameBtn.classList.remove('d-none')
+		console.log("menu")
+		localGameBtn.classList.remove('d-none')
+		remoteGameBtn.classList.remove('d-none')
+		aiGameBtn.classList.remove('d-none')
+	}
 }
 
 export async function initLocalGame() {
-	console.log("local")	
+	console.log("local")
 	hideMenu()
 	let controller = new LocalController()
 	controller.init()
@@ -37,7 +40,7 @@ export async function initLocalGame() {
 }
 
 export async function initAIGame() {
-	console.log("AI")	
+	console.log("AI")
 	hideMenu()
 	let controller = new AIController()
 	controller.init()

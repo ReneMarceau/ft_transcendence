@@ -73,7 +73,7 @@ function authLogin() {
 			password: password,
 			csrfmiddlewaretoken: csrftoken,
 		}
-		sendRequest(url, data)
+		sendRequest(url, data, csrftoken)
 
 	});
 }
@@ -93,16 +93,15 @@ function authSignup() {
 			email: email,
 			csrfmiddlewaretoken: csrftoken,
 		}
-		sendRequest(url, data)
+		sendRequest(url, data, csrftoken)
 
 	});
 }
 
-async function sendRequest(url, data) {
+async function sendRequest(url, data, csrftoken) {
 	console.log(url)
 	console.log(data)
 	console.log(JSON.stringify(data))
-	const csrftoken = getCookie('csrftoken');
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -111,36 +110,35 @@ async function sendRequest(url, data) {
 		},
 		body: JSON.stringify(data)
 	});
-	if (response.status == 201 || response.status == 200) {
+	if (response.status >= 201 && response.status < 300) //200 login, 201 signup
+	{
 		const responseData = await response.json();
 		console.log(responseData);
 		localStorage.setItem('access_token', responseData.access);
 		localStorage.setItem('refresh_token', responseData.refresh);
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;
-		return true;
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
 		alert('Sign up failed. Please try again.');
-		return false;
 	}
 }
 
 
-function isAuthenticated() {
+export function isAuthenticated() {
 	const access_token = localStorage.getItem('access_token');
 	const refresh_token = localStorage.getItem('refresh_token');
 	return ((access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined)))
 }
+
 export function initAuth() {
-	//localStorage.clear();
+	//localStorage.clear(); //uncomment to clear local storage
 	if (isAuthenticated() == true) {
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;
 	}
-	else
-	{
+	else {
 		render_auth();
 		authLogin();
 		authSignup();
