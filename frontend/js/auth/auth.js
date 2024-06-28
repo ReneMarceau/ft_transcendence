@@ -12,7 +12,7 @@ export function render_auth() {
         </ul>
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                <form id="login-form">
+                <form id="login-form" action="/auth/login/">
                     <div class="form-group">
                         <label for="login-username">Username</label>
                         <input type="text" class="form-control" id="login-username" placeholder="Enter username" required>
@@ -25,7 +25,7 @@ export function render_auth() {
                 </form>
             </div>
             <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
-                <form id="signup-form">
+                <form id="signup-form" action="/auth/signup/">
                     <div class="form-group">
                         <label for="signup-username">Username</label>
                         <input type="text" class="form-control" id="signup-username" placeholder="Username" required>
@@ -46,100 +46,103 @@ export function render_auth() {
 }
 
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
 }
 
-export async function initAuth() {
-    render_auth();
+function authLogin() {
+	const csrftoken = getCookie('csrftoken');
 
-    const handleFormSubmit = (formId, resolve, reject) => {
-        return async function(event) {
-            event.preventDefault();
+	document.getElementById('login-form').addEventListener('submit', function (event) {
+		event.preventDefault();
+		const username = document.getElementById("login-username").value;
+		const password = document.getElementById("login-password").value;
+		const url = event.target.action
+		const data = {
+			username: username,
+			password: password,
+			csrfmiddlewaretoken: csrftoken,
+		}
+		sendRequest(url, data)
 
-            const csrftoken = getCookie('csrftoken');
+	});
+}
+
+function authSignup() {
+	const csrftoken = getCookie('csrftoken');
+	document.getElementById('signup-form').addEventListener('submit', function (event) {
+		event.preventDefault();
+		const username = document.getElementById("signup-username").value;
+		const password = document.getElementById("signup-password").value;
+		const email = document.getElementById("signup-email").value;
+
+		const url = event.target.action
+		const data = {
+			username: username,
+			password: password,
+			email: email,
+			csrfmiddlewaretoken: csrftoken,
+		}
+		sendRequest(url, data)
+
+	});
+}
+
+async function sendRequest(url, data) {
+	console.log(url)
+	console.log(data)
+	console.log(JSON.stringify(data))
+	const csrftoken = getCookie('csrftoken');
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrftoken
+		},
+		body: JSON.stringify(data)
+	});
+	if (response.status == 201 || response.status == 200) {
+		const responseData = await response.json();
+		console.log(responseData);
+		localStorage.setItem('access_token', responseData.access);
+		localStorage.setItem('refresh_token', responseData.refresh);
+		let main_frame = document.getElementById("authDiv");
+		main_frame.innerHTML = ``;
+		return true;
+	} else {
+		const errorData = await response.json();
+		console.error('Error:', errorData);
+		alert('Sign up failed. Please try again.');
+		return false;
+	}
+}
 
 
-            let url;
-            let username;
-            let password;
-            let email;
-            let data;
-            if (formId === 'login-form') {
-                url = 'https://localhost/auth/login/';
-                username = document.getElementById("login-username").value;
-                password = document.getElementById("login-password").value;
-                data = {
-                    username: username,
-                    password: password,
-                    csrfmiddlewaretoken: csrftoken
-                };
-            } else if (formId === 'signup-form') {
-                url = 'https://localhost/auth/signup/';
-                username = document.getElementById("signup-username").value;
-                password = document.getElementById("signup-password").value;
-                email = document.getElementById("signup-email").value;
-                data = {
-                    username: username,
-                    email: email,
-                    password: password,
-                    csrfmiddlewaretoken: csrftoken
-                };
-            }
-
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-                        // Only send the token to relative URLs i.e. locally.
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: data,
-
-                success: function(response) {
-                    console.log(response);
-                    localStorage.setItem('access_token', response.access);
-                    localStorage.setItem('refresh_token', response.refresh);
-                    resolve(`${formId} successful.`);
-                    return true
-                },
-
-                error: function(response) {
-                    alert('Sign up failed. Please try again.');
-                    reject(`${formId} failed.`);
-                    return false
-                }
-            });
-        };
-    };
-
-    try {
-        const authResponse = await new Promise((resolve, reject) => {
-            document.getElementById('login-form').addEventListener('submit', handleFormSubmit('login-form', resolve, reject), { once: true });
-            document.getElementById('signup-form').addEventListener('submit', handleFormSubmit('signup-form', resolve, reject), { once: true });
-        });
-        console.log('Auth Response:', authResponse);
-    } catch (error) {
-        console.error('Auth Error:', error);
-        return false;
-    }
-
-    let main_frame = document.getElementById("authDiv");
-    main_frame.innerHTML = ``;
-    return true
+function isAuthenticated() {
+	const access_token = localStorage.getItem('access_token');
+	const refresh_token = localStorage.getItem('refresh_token');
+	return ((access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined)))
+}
+export function initAuth() {
+	//localStorage.clear();
+	if (isAuthenticated() == true) {
+		let main_frame = document.getElementById("authDiv");
+		main_frame.innerHTML = ``;
+	}
+	else
+	{
+		render_auth();
+		authLogin();
+		authSignup();
+	}
 }
