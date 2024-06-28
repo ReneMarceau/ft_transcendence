@@ -46,12 +46,7 @@ export class Renderer {
 		this.composer.addPass(outputPass);
 	}
 
-	nonGlitch(obj) {
-		if (obj.isMesh && this.glitchLayer.test(obj.layers) === false) {
-			this.materials[obj.uuid] = obj.material
-			obj.material = this.darkMat
-		}
-	}
+
 
 	initLighting() {
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
@@ -119,9 +114,11 @@ export class Renderer {
 	}
 
 	showBoard() {
+		this.canva.classList.remove("d-none")
 		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine, this.paddle1, this.paddle2, this.ball)
 	}
 	hideBoard() {
+		this.canva.classList.add("d-none")
 		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.middleLine, this.paddle1, this.paddle2, this.ball)
 	}
 

@@ -1,3 +1,5 @@
+import { render_game } from "../game/pong.js";
+
 export function render_auth() {
 	let main_frame = document.getElementById("authDiv")
 	main_frame.innerHTML = `
@@ -98,6 +100,13 @@ function authSignup() {
 	});
 }
 
+function authSignout() {
+	document.getElementById('#logoutBtn').addEventListener('click', function (event) {
+		localStorage.clear();
+		location.reload()
+	});
+}
+
 async function sendRequest(url, data, csrftoken) {
 	console.log(url)
 	console.log("[data sent] url: " + url + " data: " + JSON.stringify(data))
@@ -115,12 +124,13 @@ async function sendRequest(url, data, csrftoken) {
 		console.log(responseData);
 		localStorage.setItem('access_token', responseData.access);
 		localStorage.setItem('refresh_token', responseData.refresh);
-		let main_frame = document.getElementById("authDiv");
-		main_frame.innerHTML = ``;
+		location.reload()
+		// let main_frame = document.getElementById("authDiv");
+		// main_frame.innerHTML = ``;
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		alert('Sign up failed. Please try again.');
+		alert('Failed. Please try again.');
 	}
 }
 

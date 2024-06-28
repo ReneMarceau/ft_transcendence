@@ -15,45 +15,51 @@ White='\033[0;37m'        # White
 
 # Logging function
 log() {
-    echo -e "${Blue}[INFO] $1${Reset}"
+    local type=$1
+    local message=$2
+
+    if [ "$type" == "INFO" ]; then
+        echo -e "${Blue}[INFO] ${White}$message${Reset}"
+    elif [ "$type" == "PROMPT" ]; then
+        echo -en "${Green}[PROMPT] ${White}$message${Reset}"
+    elif [ "$type" == "ERROR" ]; then
+        echo -e "${Red}[ERROR] ${White}$message${Reset}"
+    else
+        echo -e "${Red}[ERROR] ${White}Invalid log type${Reset}"
+    fi
 }
 
-error_log() {
-    echo -e "${Red}[ERROR] $1${Reset}"
-}
-
-prompt_for_input() {
-    local prompt_message=$1
-    local input_variable
-
-    while [ -z "$input_variable" ]; do
-        echo -e -n "$prompt_message"
-        read input_variable
-        if [ -z "$input_variable" ]; then
-            error_log "Input cannot be empty."
-        fi
-    done
-
-    echo "$input_variable"
-}
-
-log "Starting .env file creation..."
+log "INFO" "Starting .env file creation..."
 
 # Prompt for database details
-dataBaseNamePrompt=$(prompt_for_input "${Purple}Please enter the database name: ${Reset}")
+while [ -z "$dataBaseNamePrompt" ]; do
+    log "PROMPT" "Please enter the database name: "
+    read dataBaseNamePrompt
+    if [ -z "$dataBaseNamePrompt" ]; then
+        log "ERROR" "Database name cannot be empty."
+    fi
+done
 databaseName="POSTGRES_DB=${dataBaseNamePrompt}"
 
-dataBaseUserPrompt=$(prompt_for_input "${Green}Please enter your username for the database: ${Reset}")
+while [ -z "$dataBaseUserPrompt" ]; do
+    log "PROMPT" "Please enter the username for the database: "
+    read dataBaseUserPrompt
+    if [ -z "$dataBaseUserPrompt" ]; then
+        log "ERROR" "Username cannot be empty."
+    fi
+done
 databaseUser="POSTGRES_USER=${dataBaseUserPrompt}"
 
-dataBasePasswordPrompt=$(prompt_for_input "${Yellow}Please enter your password for that user: ${Reset}")
+while [ -z "$dataBasePasswordPrompt" ]; do
+    log "PROMPT" "Please enter the password for the database: "
+    read dataBasePasswordPrompt
+    if [ -z "$dataBasePasswordPrompt" ]; then
+        log "ERROR" "Password cannot be empty."
+    fi
+done
 databasePassword="POSTGRES_PASSWORD=${dataBasePasswordPrompt}"
 
-log "Database details collected successfully."
-
-# Write to .env at the root of the directory
-echo -e "$databaseName\n$databaseUser\n$databasePassword" > .env
-log ".env file created at the root directory."
+log "INFO" "Database details collected successfully."
 
 # Setup variables for the .env in the backend (for Django)
 POSTGRES_HOST="POSTGRES_HOST=postgres"
@@ -62,18 +68,44 @@ POSTGRES_PORT="POSTGRES_PORT=5432"
 SECRET_KEY="SECRET_KEY=$(openssl rand -base64 48)"
 DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=$(hostname) localhost backend 127.0.0.1 [::1]"
 
-log "Basic backend environment variables set up."
-
 # Prompt for OAuth2 variables
-log "To get OAuth2 application details, visit: https://profile.intra.42.fr/oauth/applications"
-AUTH42_CLIENT=$(prompt_for_input "${Cyan}Please enter your AUTH42_CLIENT ID: ${Reset}")
-AUTH42_SECRET=$(prompt_for_input "${Cyan}Please enter your AUTH42_SECRET: ${Reset}")
-AUTH42_REDIRECT_URI=$(prompt_for_input "${Cyan}Please enter your AUTH42_REDIRECT_URI: ${Reset}")
+log "INFO" "To get OAuth2 application details, visit: https://profile.intra.42.fr/oauth/applications"
 
-log "OAuth2 details collected successfully."
+while [ -z "$AUTH42_CLIENT" ]; do
+    log "PROMPT" "Please enter your AUTH42_CLIENT ID: "
+    read AUTH42_CLIENT
+    if [ -z "$AUTH42_CLIENT" ]; then
+        log "ERROR" "AUTH42_CLIENT ID cannot be empty."
+    fi
+done
+AUTH42_CLIENT="AUTH42_CLIENT=${AUTH42_CLIENT}"
 
+while [ -z "$AUTH42_SECRET" ]; do
+    log "PROMPT" "Please enter your AUTH42_SECRET: "
+    read AUTH42_SECRET
+    if [ -z "$AUTH42_SECRET" ]; then
+        log "ERROR" "AUTH42_SECRET cannot be empty."
+    fi
+done
+AUTH42_SECRET="AUTH42_SECRET=${AUTH42_SECRET}"
+
+while [ -z "$AUTH42_REDIRECT_URI" ]; do
+    log "PROMPT" "Please enter your AUTH42_REDIRECT_URI: "
+    read AUTH42_REDIRECT_URI
+    if [ -z "$AUTH42_REDIRECT_URI" ]; then
+        log "ERROR" "AUTH42_REDIRECT_URI cannot be empty."
+    fi
+done
+AUTH42_REDIRECT_URI="AUTH42_REDIRECT_URI=${AUTH42_REDIRECT_URI}"
+
+
+log "INFO" "OAuth2 details collected successfully."
+
+# Write to .env at the root of the directory
+log "INFO" ".env file created at the root directory."
+echo -e "$databaseName\n$databaseUser\n$databasePassword" > .env
 # Write to backend/.env
-echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS\n\nAUTH42_CLIENT=${AUTH42_CLIENT}\nAUTH42_SECRET=${AUTH42_SECRET}\nAUTH42_REDIRECT_URI=${AUTH42_REDIRECT_URI}\n" > backend/.env
-log "backend/.env file created."
+log "INFO" "backend/.env file created."
+echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS\n\n$AUTH42_CLIENT\n$AUTH42_SECRET\n$AUTH42_REDIRECT_URI\n" > backend/.env
 
-log "Environment setup completed successfully."
+log "INFO" "Environment setup completed successfully."

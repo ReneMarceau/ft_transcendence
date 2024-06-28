@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'True'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(' ')
 
 # SSl settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

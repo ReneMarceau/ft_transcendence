@@ -6,18 +6,17 @@ import { Game } from "./Game.js"
 import { isAuthenticated } from "../auth/auth.js"
 
 export function render_game() {
-	let main_frame = document.getElementById("pongDiv")
+	let main_frame = document.querySelector("#pongDiv")
 	main_frame.innerHTML = `
-		<div class="container">
-					<canvas id="board"></canvas>
-					<canvas id="background"></canvas>
-		</div>
+		<canvas id="board"></canvas>
+		<canvas id="background" class="d-none"></canvas>
 	`
 	renderer.init()
 }
 
 
 export async function pongMenu() {
+	
 	if (isAuthenticated() == true) {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")

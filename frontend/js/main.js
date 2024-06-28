@@ -3,10 +3,9 @@ import { initAuth } from "./auth/auth.js"
 
 
 (async function () {
-	if (await initAuth() == false) {
-		return
-	}
+	initAuth()
 	initRouter()
+
 	render_game()
 })();
 
@@ -50,7 +49,7 @@ export function initRouter() {
 	}
 
 	window.addEventListener('popstate', () => {
-		last_url = "/"
+		last_url = ""
 		router()
 	});
 
