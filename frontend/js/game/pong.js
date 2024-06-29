@@ -21,9 +21,7 @@ export async function pongMenu() {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")
-		let profileBtn = document.querySelector("#profilebtn")
 
-		profileBtn.classList.remove('d-none')
 		localGameBtn.classList.remove('d-none')
 		remoteGameBtn.classList.remove('d-none')
 		aiGameBtn.classList.remove('d-none')
@@ -63,9 +61,7 @@ function hideMenu() {
 	let aiGameBtn = document.querySelector("#aigamebtn")
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let menu = document.querySelector("#menubtn")
-	let profileBtn = document.querySelector("#profilebtn")
 
-	profileBtn.classList.add('d-none')
 	menu.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
 	remoteGameBtn.classList.add('d-none')

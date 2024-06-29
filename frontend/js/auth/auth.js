@@ -1,10 +1,10 @@
 function createModal(id, title, formAction, fields) {
-    return `
+	return `
         <div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="${id}Label" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="${id}Label">${title}</h5>
+                        <h5 class="modal-title text-secondary" id="${id}Label">${title}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -151,6 +151,16 @@ export function isAuthenticated() {
 	const access_token = localStorage.getItem('access_token');
 	const refresh_token = localStorage.getItem('refresh_token');
 	return ((access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined)))
+}
+
+export function authLogout() {
+	const logoutBtn = document.getElementById('logoutBtn');
+	logoutBtn.addEventListener('click', async function (event) {
+		event.preventDefault();
+		localStorage.removeItem('access_token');
+		localStorage.removeItem('refresh_token');
+		location.reload()
+	})
 }
 
 export function initAuth() {

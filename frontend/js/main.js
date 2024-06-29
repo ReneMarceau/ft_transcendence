@@ -1,11 +1,14 @@
 import { render_game, pongMenu, initLocalGame, initAIGame, initRemoteGame } from "./game/pong.js";
 import { initAuth } from "./auth/auth.js"
+import { initNavBar } from "./navbar.js";
+import { initSideBar } from "./sidebar.js";
 
 
 (async function () {
 	initAuth()
 	initRouter()
-
+	await initNavBar()
+	await initSideBar()
 	render_game()
 })();
 
