@@ -1,4 +1,5 @@
 import { render_game, pongMenu, initLocalGame, initAIGame, initRemoteGame } from "./game/pong.js";
+import { initProfile } from "./profile.js";
 import { initAuth } from "./auth/auth.js"
 import { initNavBar } from "./navbar.js";
 import { initSideBar } from "./sidebar.js";
@@ -30,7 +31,7 @@ export function initRouter() {
 			{ path: "/localgame", view: () => initLocalGame() },
 			{ path: "/aigame", view: () => initAIGame()},
 			{ path: "/remotegame", view: () => initRemoteGame()},
-			{ path: "/profile", view: () => console.log("profile") },
+			{ path: "/profile", view: () => initProfile()},
 		]
 
 		const potentialMatches = routes.map(route => {

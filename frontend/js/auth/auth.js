@@ -66,7 +66,7 @@ export function render_auth() {
 	main_frame.innerHTML += createModal('signup-form', 'Sign Up', '/auth/signup/', signup_fields);
 }
 
-function getCookie(name) {
+export function getCookie(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
 		const cookies = document.cookie.split(';');
@@ -150,6 +150,8 @@ async function sendRequest(url, data, csrftoken) {
 export function isAuthenticated() {
 	const access_token = localStorage.getItem('access_token');
 	const refresh_token = localStorage.getItem('refresh_token');
+	//console.log("access_token " + access_token)
+	//console.log("refresh_token " + refresh_token)
 	return ((access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined)))
 }
 

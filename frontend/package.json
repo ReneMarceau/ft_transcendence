@@ -21,6 +21,7 @@
 		"browser-sync": "^3.0.2"
 	},
 	"dependencies": {
-		"three": "^0.161.0"
+		"three": "^0.161.0",
+		"jwt-decode": "^4.0.0"
 	}
 }

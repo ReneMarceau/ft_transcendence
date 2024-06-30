@@ -78,8 +78,7 @@ export class Renderer {
 		this.renderer = new THREE.WebGLRenderer({ canvas: this.canva, antialias: true })
 
 		this.renderer.setSize(this.windowWidth, this.windowHeight);
-		this.renderer.setClearColor(0x0d1117, 1);
-		document.body.appendChild(this.renderer.domElement);
+		this.renderer.setClearColor(0x0d1117, 1);	
 		this.renderer.toneMapping = THREE.CineonToneMapping;
 
 	}
