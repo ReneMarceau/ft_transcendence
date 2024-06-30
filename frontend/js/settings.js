@@ -17,7 +17,7 @@ export async function createSettings() {
 									<div class="img-container">
 										<img id="profilePicture" class="" alt="profile picture" width="200" height="200">
 									</div>
-								<div class="svg-container">
+								<div class="svg-container btn btn-primary p-2 mx-auto">
 									<i class="bi bi-upload"></i>
 								</div>
 							</div>
