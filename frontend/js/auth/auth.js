@@ -1,3 +1,5 @@
+import { getCookie } from '../user.js';
+
 function createModal(id, title, formAction, fields) {
 	return `
         <div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="${id}Label" aria-hidden="true">
@@ -64,21 +66,6 @@ export function render_auth() {
         </div>`;
 	main_frame.innerHTML += createModal('login-form', 'Login', '/auth/login/', login_fields);
 	main_frame.innerHTML += createModal('signup-form', 'Sign Up', '/auth/signup/', signup_fields);
-}
-
-export function getCookie(name) {
-	let cookieValue = null;
-	if (document.cookie && document.cookie !== '') {
-		const cookies = document.cookie.split(';');
-		for (let i = 0; i < cookies.length; i++) {
-			const cookie = cookies[i].trim();
-			if (cookie.substring(0, name.length + 1) === (name + '=')) {
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-				break;
-			}
-		}
-	}
-	return cookieValue;
 }
 
 function authLogin() {

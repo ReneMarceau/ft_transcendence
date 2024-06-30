@@ -6,7 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Transcendence</title>
 	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/slate/bootstrap.min.css	">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -27,10 +28,11 @@
 
 </head>
 
-<body>
+<body class="bg-primary">
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<div id="friendCollapse"></div>
 	<div id="authDiv" class="container"></div>
-	<div id="profileDiv" class="d-none bg-white"></div>
+	<div id="profileDiv" class="d-none bg-dark" style="margin-left: 30%; margin-right: 30%;"></div>
 	<div id="pongDiv" class="container"></div>
 	<div id="gameBtnDiv">
 		<a id="localgamebtn" href="/localgame" class="btn btn-primary d-none" data-link>Local game</a>
@@ -38,7 +40,6 @@
 		<a id="aigamebtn" href="/aigame" class="btn btn-primary d-none" data-link>AI game</a>
 		<a id="menubtn" href="/" class="btn btn-primary d-none">Menu</a>
 	</div>
-	<div id="friendCollapse"></div>
 	
 
 </body>
