@@ -66,3 +66,41 @@ export async function getAvatar(userid) {
 	}
 	return avatar
 }
+
+export async function getFriendList(userid) {
+	const response = await fetch(`/api/profiles/${userid}/`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			'X-CSRFToken': getCookie('csrftoken')
+		},
+	})
+	const data = await response.json()
+	console.log("data.friends =" + data.friends);
+	let friends = ""
+	if (response.status >= 200 && response.status < 300)
+		friends = data.friends
+	else {
+		friends = "error"
+	}
+	return friends
+}
+
+export async function getStatus(userid) {
+	const response = await fetch(`/api/profiles/${userid}/`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			'X-CSRFToken': getCookie('csrftoken')
+		},
+	})
+	const data = await response.json()
+	console.log("data.status =" + data.status);
+	let status = ""
+	if (response.status >= 200 && response.status < 300)
+		status = data.status
+	else {
+		status = "error"
+	}
+	return status
+}
