@@ -28,18 +28,20 @@ export function getCurrentUserId() {
 }
 
 export async function getUsername(userid) {
-	const response = await fetch(`/api/profiles/${userid}`, {
+	const response = await fetch(`/api/users/${userid}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken')
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+			
 		},
 	})
 	const data = await response.json()
-	console.log("data.alias =" + data.alias);
+	console.log("data.username =" + data.username);
 	let username = ""
 	if (response.status >= 200 && response.status < 300)
-		username = data.alias
+		username = data.username
 	else {
 		username = "error"
 	}
