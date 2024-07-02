@@ -34,7 +34,7 @@ export function initRouter() {
 			{ path: "/profile", view: () => initProfile()},
 		]
 
-		const potentialMatches = routes.map(route => {
+		const potentialMatches = routes.map((route) => {
 			return {
 				route: route,
 				isMatch: window.location.pathname === route.path
@@ -50,7 +50,7 @@ export function initRouter() {
 				isMatch: true
 			}
 		}
-		match.route.view()
+		await match.route.view()
 	}
 
 	window.addEventListener('popstate', () => {
@@ -58,7 +58,7 @@ export function initRouter() {
 		router()
 	});
 
-	document.body.addEventListener("click", e => {
+	document.addEventListener("click", e => {
 		if (e.target.matches("[data-link]")) {
 			e.preventDefault()
 			navigateTo(e.target.href)
