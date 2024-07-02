@@ -82,3 +82,7 @@ certs/
 
 # VS Code
 .vscode/
+
+# Avatars Uploaded
+avatars/
+!avatars/default.jpg

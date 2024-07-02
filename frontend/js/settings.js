@@ -54,16 +54,19 @@ async function initSettings() {
 			const file = input.files[0]
 			const formData = new FormData()
 			formData.append("avatar", file)
-			const response = await fetch(`/api/profiles/${userid}/avatar`, { //this route doesnt not exsit
-				method: "PUT",
+			const response = await fetch(`/api/profiles/${userid}/`, {
+				method: "PATCH",
 				headers: {
-					"X-CSRFToken": getCookie("csrftoken")
+					"X-CSRFToken": getCookie("csrftoken"),
+					'Authorization': 'Bearer ' + localStorage.getItem('access_token')
 				},
 				body: formData
 			})
 			if (response.status === 200){
 				const data = await response.json()
 				document.getElementById("profilePicture").src = data.avatar
+			} else {
+				console.error('Upload failed:', response.statusText)
 			}
 		})
 	})

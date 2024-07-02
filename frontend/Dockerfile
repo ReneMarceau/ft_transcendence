@@ -10,9 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# docker exec -it <mycontainer> bash
 RUN npm install -g three
 RUN npm install -g browser-sync
-RUN npm install jwt-decode
+RUN npm install -g jwt-decode
 
 # Copy the rest of the application code into the container
 COPY . .
