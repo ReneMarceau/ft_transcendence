@@ -7,14 +7,14 @@ export class LocalController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = 3
+		this.startTimer = ""
 		this.reset()
 		this.running = true
-		this.stop = false
+		this.stop = true
 		this.ball.in_play = false
 
 		this.restartTimestamp = 0
-
+		this.message = "press space to start the game"
 		this.startTime = Date.now();
 	}
 
@@ -23,10 +23,19 @@ export class LocalController {
 	init() {
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));
 		document.addEventListener("keyup", this.handleKeyUp.bind(this));
+		document.addEventListener("keyup", (event) => {
+			if (event.code === 'Space' && this.stop == true) {
+				console.log("space pressed")
+				this.stop = false;
+				this.message = ""
+				this.startTimer = 3
+				this.countdown()
+			}
+		});
 	}
 
 	handleKeyDown(e) {
-		if (e.code === 'KeyS') this.paddle1.move_down = true;
+		if(e.code === 'KeyS') this.paddle1.move_down = true;
 		if (e.code === 'KeyW') this.paddle1.move_up = true;
 		if (e.key === 'ArrowDown') this.paddle2.move_down = true;
 		if (e.key === 'ArrowUp') this.paddle2.move_up = true;
@@ -51,10 +60,8 @@ export class LocalController {
 	}
 
 	reset() {
-		this.startTimer = 3
 		this.ball.in_play = false
 		this.ball.reset()
-		this.countdown()
 	}
 
 
@@ -64,7 +71,6 @@ export class LocalController {
 			this.paddle1.move()
 			this.paddle2.move()
 			if (Date.now() > this.restartTimestamp && this.running) {
-				this.ball.updateSpeed(); // Update speed after some delay
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
 					if (retval == "right")
@@ -73,10 +79,12 @@ export class LocalController {
 						this.player2Score++
 					if (this.player1Score == 3) {
 						// player 1 wins
+						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
 					else if (this.player2Score == 3) {
 						// player 2 wins
+						this.message = "The winner is " + this.paddle2.name
 						this.running = false
 					}
 					this.ball.in_play = false
@@ -89,8 +97,11 @@ export class LocalController {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
+			player1: this.player1.name,
+			player2: this.player2.name,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
+			message: this.message,
 			startTimer: this.startTimer,
 		}
 	}
@@ -105,14 +116,14 @@ export class AIController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = 3
+		this.startTimer = ""
 		this.reset()
 		this.running = true
-		this.stop = false
+		this.stop = true
 		this.ball.in_play = false
 
 		this.restartTimestamp = 0
-
+		this.message = "press space to start the game"
 		this.startTime = Date.now();
 	}
 
@@ -121,6 +132,15 @@ export class AIController {
 	init() {
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));
 		document.addEventListener("keyup", this.handleKeyUp.bind(this));
+		document.addEventListener("keyup", (event) => {
+			if (event.code === 'Space' && this.stop == true) {
+				console.log("space pressed")
+				this.stop = false;
+				this.message = ""
+				this.startTimer = 3
+				this.countdown()
+			}
+		});
 	}
 
 	handleKeyDown(e) {
@@ -145,10 +165,8 @@ export class AIController {
 	}
 
 	reset() {
-		this.startTimer = 3
 		this.ball.in_play = false
 		this.ball.reset()
-		this.countdown()
 	}
 
 	AImove(paddle) {
@@ -186,7 +204,6 @@ export class AIController {
 			this.paddle1.move()
 			this.paddle2.move()
 			if (Date.now() > this.restartTimestamp && this.running) {
-				this.ball.updateSpeed(); // Update speed after some delay
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
 					if (retval == "right")
@@ -195,10 +212,12 @@ export class AIController {
 						this.player2Score++
 					if (this.player1Score == 3) {
 						// player 1 wins
+						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
 					else if (this.player2Score == 3) {
 						// player 2 wins
+						this.message = "The winner is " + this.paddle2.name
 						this.running = false
 					}
 					this.ball.in_play = false
@@ -211,8 +230,11 @@ export class AIController {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
+			player1: this.player1.name,
+			player2: this.player2.name,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
+			message: this.message,
 			startTimer: this.startTimer,
 		}
 	}
@@ -317,7 +339,7 @@ export class RemoteController {
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.message = "Press space to start the game"
+					this.message = "Press space \n to start the game"
 					this.msg = msg
 					break;
 				case "data":
@@ -368,23 +390,9 @@ class Ball {
 		this.radius = 1 / 50
 		this.x = 0
 		this.y = 0
-		this.speed = 0.01
-		this.speed_timer = 5
+		this.speed = 1 / 120
 		this.in_play = false
 		this.reset()
-	}
-
-	updateSpeed() {
-		if (this.speed_timer > 0) {
-			setTimeout(() => {
-				this.speed_timer--
-				this.updateSpeed()
-			}, 1000)
-		}
-		else {
-			this.speed += this.speed / 5000;
-			this.speed_timer = 5;
-		}
 	}
 
 	reset() {
@@ -398,11 +406,23 @@ class Ball {
 			this.dir.x = Math.max(0.5)
 		this.dir.norm()
 		this.in_play = true
-		this.speed = 0.01
-		this.speed_timer = 5
+		this.speed = 1 / 120
+		this.speed_timer = this.getTimeNow() + 5;
+	}
+
+	getTimeNow() {
+		const d = new Date()
+		return d.getTime() / 1000;
 	}
 
 	move(paddle1, paddle2) {
+		const now = this.getTimeNow()
+		if (now > this.speed_timer) {
+			if (this.speed + 0.0005 <= this.radius - 0.002) {
+				this.speed += 0.0005
+				this.timerBall = this.getTimeNow() + 5;
+			}
+		}
 		this.x += this.speed * this.dir.x
 		this.y += this.speed * this.dir.y
 		this.checkTopWallCollision()
@@ -419,7 +439,7 @@ class Ball {
 	}
 
 	checkTopWallCollision() {
-		if (this.y <= this.radius || this.y >= 1 - this.radius)
+		if ((this.y <= this.radius && this.dir.y <= 0) || (this.y >= 1 - this.radius && this.dir.y >= 0))
 			this.dir.y *= -1
 	}
 
@@ -439,11 +459,11 @@ class Ball {
 	}
 
 	isCollidingLeftPaddle(paddle) {
-		return this.x - this.radius <= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x < 0
+		return this.x - this.radius <= paddle.x && this.x - this.radius > paddle.paddle_margin_x / 2 && this.y + (this.radius / 2) >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle) {
-		return this.x + this.radius >= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x > 0
+		return this.x + this.radius >= paddle.x && this.x + this.radius < 1 - (paddle.paddle_margin_x / 2) && this.y + (this.radius / 2) >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x > 0
 	}
 }
 
@@ -468,7 +488,7 @@ class Paddle {
 		this.height = 0.1
 		this.paddle_margin_x = 1 / 32
 		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 0.01
+		this.paddle_speed = 1 / 96
 		this.name = playerName
 		this.paddleHeight = 1 / 8
 		this.y = (1 / 2) - (this.paddleHeight / 2)

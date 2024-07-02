@@ -1,20 +1,14 @@
 import { graphicEngine } from "./graphic-engine.js"
 import { renderer } from "./graphic-engine.js"
 
-
 export class Game {
 	constructor(controller) {
-		this.initializeRenderer();
+		renderer.showBoard();
 		this.controller = controller;
 		this.graphicEngine = new graphicEngine();
 		this.running = true;
 
 		this.setupMenuButton();
-	}
-
-	initializeRenderer() {
-		renderer.showBoard();
-		renderer.hideBoard();
 	}
 
 	setupMenuButton() {
@@ -33,7 +27,8 @@ export class Game {
 
 	run() {
 		const update = () => {
-			if (!this.running) {
+			if (this.controller.running == false) {
+				//renderer.hideBoard();
 				console.log("game over");
 				return;
 			}

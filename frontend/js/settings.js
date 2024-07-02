@@ -62,9 +62,10 @@ async function initSettings() {
 				},
 				body: formData
 			})
-			if (response.status === 200){
+			if (response.ok){
 				const data = await response.json()
 				document.getElementById("profilePicture").src = data.avatar
+				location.reload()
 			} else {
 				console.error('Upload failed:', response.statusText)
 			}

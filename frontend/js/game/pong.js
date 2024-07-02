@@ -14,9 +14,16 @@ export function render_game() {
 	renderer.init()
 }
 
+function hideProfile() {
+	let profile = document.getElementById("profileDiv")
+	if (profile) {
+		profile.classList.add("d-none")
+	}
+}
+
 
 export async function pongMenu() {
-	
+	hideProfile()
 	if (isAuthenticated() == true) {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
