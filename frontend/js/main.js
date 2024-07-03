@@ -29,16 +29,16 @@ export function initRouter() {
 		const routes = [
 			{ path: "/", view: () => pongMenu() },
 			{ path: "/localgame", view: () => initLocalGame() },
-			{ path: "/aigame", view: () => initAIGame()},
-			{ path: "/remotegame", view: () => initRemoteGame()},
-			{ path: "/profile", view: () => initProfile()},
+			{ path: "/aigame", view: () => initAIGame() },
+			{ path: "/remotegame", view: () => initRemoteGame() },
+			{ path: "/profile", view: () => initProfile() },
 		]
 
 		const potentialMatches = routes.map((route) => {
 			return {
 				route: route,
 				isMatch: window.location.pathname === route.path
-				
+
 			}
 		})
 
@@ -57,12 +57,13 @@ export function initRouter() {
 		last_url = ""
 		router()
 	});
-
-	document.addEventListener("click", e => {
-		if (e.target.matches("[data-link]")) {
-			e.preventDefault()
-			navigateTo(e.target.href)
-		}
-	})
+	document.addEventListener("DOMContentLoaded", () => {
+		document.addEventListener("click", e => {
+			if (e.target.matches("[data-link]")) {
+				e.preventDefault()
+				navigateTo(e.target.href)
+			}
+		})
+	});
 	router()
 }

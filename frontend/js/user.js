@@ -48,6 +48,27 @@ export async function getUsername(userid) {
 	return username
 }
 
+export async function getEmail(userid) {
+	const response = await fetch(`/api/users/${userid}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+
+		},
+	})
+	const data = await response.json()
+	console.log("data.email =" + data.email);
+	let email = ""
+	if (response.status >= 200 && response.status < 300)
+		email = data.email
+	else {
+		email = "error"
+	}
+	return email
+}
+
 export async function getAvatar(userid) {
 	const response = await fetch(`/api/profiles/${userid}`, {
 		method: "GET",

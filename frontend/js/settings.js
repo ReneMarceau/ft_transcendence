@@ -1,5 +1,4 @@
-import { getCookie, getCurrentUserId, getUsername, getAvatar } from "./user.js"
-
+import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar } from "./user.js"
 
 export async function createSettings() {
 	document.querySelector('body').insertAdjacentHTML('afterbegin', `
@@ -23,17 +22,10 @@ export async function createSettings() {
 								</div>
 							</div>
 							<h2 id="profile-main-username" class="fs-1"></h2>
+							<h3 id="profile-main-email" class="fs-3"></h3>
 						</div>
 						<hr>
 						<div id="profile-settings" class="d-flex flex-column align-items-center">
-							<div class="d-flex justify-content-between w-75">
-								<span class="fs-4">Username</span>
-								<span class="fs-4"><a id="changeUsernameBtn" class="btn p-1">Change</a></span>
-							</div>
-							<div class="d-flex justify-content-between w-75">
-								<span class="fs-4">Password</span>
-								<span class="fs-4"><a class="btn p-1">Change</a></span>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -61,8 +53,7 @@ async function ChangeImage(userid) {
 			body: formData
 		})
 		if (response.ok) {
-			//const data = await response.json()
-			// document.getElementById("profilePicture").src = data.avatar
+			console.log('Upload successful!')
 			location.reload()
 		} else {
 			console.error('Upload failed:', response.statusText)
@@ -70,46 +61,101 @@ async function ChangeImage(userid) {
 	})
 }
 
-async function ChangeUsername(userid) {
-	// Prompt the user to enter a new username
-	const newUsername = prompt("Enter the new username:");
+function render_buttons(userid) {
+	const main_frame = document.getElementById("profile-settings");
+	main_frame.innerHTML = '';
 
-	// Check if the user provided a new username
-	if (newUsername) {
-		try {
-			const response = await fetch(`/api/users/${userid}/`, {
-				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-					"X-CSRFToken": getCookie("csrftoken"),
-					'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-				},
-				body: JSON.stringify({ username: newUsername })
+	const formData = [
+		{ id: 'changeUsernameForm', label: 'New Username', type: 'text' },
+		{ id: 'changeEmailForm', label: 'New Email', type: 'email' },
+		{ id: 'changePasswordForm', label: 'New Password', type: 'password' }
+	];
+
+	let buttonsHTML = '<div class="d-flex align-items-center">';
+	formData.forEach((data, index) => {
+		buttonsHTML += `<button id="change${data.id}Btn" type="button" class="btn btn-primary m-1">${data.label}</button>`;
+	});
+	buttonsHTML += '</div>';
+
+	main_frame.insertAdjacentHTML('beforeend', buttonsHTML);
+	formData.forEach(data => {
+		let formHTML = `
+            <form class="mt-3 d-none" id="${data.id}" action="/api/users/${userid}/">
+				<label for="new${data.id}" class="m-1">${data.label}</label>
+                <div class="form-group d-flex align-items-center">
+                    <input type="${data.type}" class="form-control m-1" id="new${data.id}" name="new${data.id}">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        `;
+		main_frame.insertAdjacentHTML('beforeend', formHTML);
+	});
+
+	document.getElementById("changeUsernameForm").classList.remove("d-none");
+	formData.forEach(data => {
+		const changeBtn = document.getElementById(`change${data.id}Btn`);
+		const changeForm = document.getElementById(data.id);
+
+		changeBtn.addEventListener("click", function () {
+			const allForms = document.querySelectorAll('form');
+			allForms.forEach(changeForm => {
+				changeForm.classList.add('d-none');
 			});
-			if (response.ok) {
-				// const data = await response.json();
-				// getUsername(userid) = data.username;
-				location.reload()
-			} else {
-				console.error('Username change failed:', response.statusText);
-			}
-		} catch (error) {
-			console.error('Error:', error);
+			changeForm.classList.remove('d-none');
+		});
+	});
+}
+
+async function changeInfo(userid, type, newInfo) {
+	try {
+		const response = await fetch(`/api/users/${userid}/`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": getCookie("csrftoken"),
+				'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+			},
+			body: JSON.stringify({ [type]: newInfo })
+		});
+
+		const responseData = await response.json(); // Assuming response contains JSON data
+		console.log('Response:', responseData); // Log response data
+
+		if (response.ok) {
+			console.log(`${type} changed successfully!`);
+			location.reload();
+		} else {
+			console.error(`${type} change failed:`, response.statusText);
 		}
-	} else {
-		console.log('Username change cancelled or no username entered');
+	} catch (error) {
+		console.error(`${type} change failed:`, error);
 	}
+}
+
+async function initChangeInfo(userid) {
+	const forms = document.getElementById("profile-settings").querySelectorAll("form");
+	forms.forEach(form => {
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const input = form.querySelector("input").value;
+			const type = form.id.slice(6, -4).toLowerCase();
+			console.log(`Changing ${type}...`);
+			console.log(`New ${type}:`, input);
+			await changeInfo(userid, type, input);
+		});
+	});
 }
 
 async function initSettings() {
 	const userid = getCurrentUserId()
 	document.getElementById("profile-main-username").innerText = await getUsername(userid)
+	document.getElementById("profile-main-email").innerText = await getEmail(userid)
 	document.getElementById("profilePicture").src = await getAvatar(userid)
 
 	const changeImageBtn = document.getElementById("profile-picture-container").querySelector(".svg-container");
 	changeImageBtn.addEventListener("click", () => ChangeImage(userid));
-	const changeUsernameBtn = document.getElementById("changeUsernameBtn");
-	changeUsernameBtn.addEventListener("click", () => ChangeUsername(userid));
 
+	render_buttons(userid);
+	initChangeInfo(userid);
 
 }
