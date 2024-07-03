@@ -16,7 +16,7 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-AUTH42_CLIENT_ID = os.environ.get('AUTH42_CLIENT_ID')
+AUTH42_CLIENT_ID = os.environ.get('AUTH42_CLIENT')
 AUTH42_SECRET = os.environ.get('AUTH42_SECRET')
 AUTH42_REDIRECT_URI = os.environ.get('AUTH42_REDIRECT_URI')
 
