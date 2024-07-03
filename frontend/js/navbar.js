@@ -18,7 +18,7 @@ export async function initNavBar() {
 }
 
 async function createButtons() {
-	if (isAuthenticated() == true) {
+	if (isAuthenticated() === true) {
 		let nav = document.querySelector("#navBarButtons")
 		nav.innerHTML = `
             <div class="d-flex navbar-nav ms-auto">

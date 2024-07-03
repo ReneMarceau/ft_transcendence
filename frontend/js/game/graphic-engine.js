@@ -281,7 +281,7 @@ export class graphicEngine {
 	}
 
 	displayScore(player1Score, player2Score) {
-		if (player1Score == undefined || player2Score == undefined)
+		if (player1Score === undefined || player2Score === undefined)
 			return
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px 'Press Start 2P', cursive")
 		this.ctx.fillStyle = this.textColor;
@@ -292,7 +292,7 @@ export class graphicEngine {
 	}
 
 	displayMessage(message) {
-		if (message == "" || message == undefined)
+		if (message === "" || message === undefined)
 			return
 		const len = message.length
 		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
@@ -301,9 +301,9 @@ export class graphicEngine {
 	}
 
 	displayNames(player1, player2) {
-		if (player1 == undefined)
+		if (player1 === undefined)
 			player1 = "Player 1"
-		if (player2 == undefined)
+		if (player2 === undefined)
 			player2 = "Player 2"
 		const len1 = player1.length
 		const len2 = player2.length

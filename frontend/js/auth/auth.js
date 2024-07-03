@@ -119,7 +119,7 @@ async function sendRequest(url, data, csrftoken) {
 		},
 		body: JSON.stringify(data)
 	});
-	if (response.status >= 200 && response.status < 300) //200 login, 201 signup
+	if (response.ok) //200 login, 201 signup
 	{
 		const responseData = await response.json();
 		console.log(responseData);
@@ -129,7 +129,7 @@ async function sendRequest(url, data, csrftoken) {
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		alert('Failed. Please try again.');
+		alert(errorData.detail);
 	}
 }
 
@@ -139,7 +139,10 @@ export function isAuthenticated() {
 	const refresh_token = localStorage.getItem('refresh_token');
 	//console.log("access_token " + access_token)
 	//console.log("refresh_token " + refresh_token)
-	return ((access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined)))
+	const is_authenticated = (access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined))
+	if (is_authenticated) 
+		return true;
+	return false;
 }
 
 export function authLogout() {
@@ -154,7 +157,7 @@ export function authLogout() {
 
 export function initAuth() {
 	//localStorage.clear(); //uncomment to clear local storage
-	if (isAuthenticated() == true) {
+	if (isAuthenticated() === true) {
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;
 	}
@@ -204,10 +207,14 @@ export async function disable2FA() {
 		const responseData = await response.json();
 		console.log(responseData);
 		alert('2FA disable successfully!');
+		location.reload();
 	} else {
 		const errorData = await response.json();
+		if (errorData.detail === '2FA is not enabled for this user.')
+			alert('2FA is not enabled for this user.');
+		else
+			alert('Failed. Please try again.');
 		console.error('Error:', errorData);
-		alert('Failed. Please try again.');
 	}
 }
 
@@ -227,7 +234,7 @@ async function generateTwoFa() {
 		const blob = await response.blob();
 		const url = URL.createObjectURL(blob);
 
-		qrCodeContainer.innerHTML = `<img src="${url}" alt="QR Code" />`;
+		qrCodeContainer.innerHTML = `<img src="${url}" alt="QR Code" style="width: 200px, height: 200px"/>`;
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
@@ -239,7 +246,7 @@ export async function verifyToken() {
 	const token = document.getElementById('totpToken').value;
 	console.log('Verifying token:', token);
 
-	const response = await fetch('/auth/verify-token/', {
+	const response = await fetch('/auth/2fa/verify-token/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -247,7 +254,7 @@ export async function verifyToken() {
 			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
 		},
 		credentials: 'same-origin',
-		body: JSON.stringify({ token: token })
+		body: JSON.stringify({ otp: token })
 	});
 
 	if (response.ok) {

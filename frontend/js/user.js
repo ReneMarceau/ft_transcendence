@@ -80,7 +80,7 @@ export async function getAvatar(userid) {
 	const data = await response.json()
 	console.log("data.avatar =" + data.avatar);
 	let avatar = ""
-	if (response.status >= 200 && response.status < 300)
+	if (response.ok)
 		avatar = data.avatar
 	else {
 		avatar = "error"
@@ -99,12 +99,33 @@ export async function getFriendList(userid) {
 	const data = await response.json()
 	console.log("data.friends =" + data.friends);
 	let friends = ""
-	if (response.status >= 200 && response.status < 300)
+	if (response.ok)
 		friends = data.friends
 	else {
 		friends = "error"
 	}
 	return friends
+}
+
+export async function getIs2Fa(userid) {
+	const response = await fetch(`/api/users/${userid}/`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		},
+	})
+	const data = await response.json()
+	console.log(data);
+	console.log("data.is2fa =" + data.is_2fa_enabled);
+	let is2fa = ""
+	if (response.ok)
+		is2fa = data.is_2fa_enabled
+	else {
+		is2fa = "error"
+	}
+	return is2fa
 }
 
 export async function getStatus(userid) {
@@ -118,7 +139,7 @@ export async function getStatus(userid) {
 	const data = await response.json()
 	console.log("data.status =" + data.status);
 	let status = ""
-	if (response.status >= 200 && response.status < 300)
+	if (response.ok)
 		status = data.status
 	else {
 		status = "error"

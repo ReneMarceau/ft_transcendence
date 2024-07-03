@@ -24,7 +24,7 @@ async function createFriendList(friendList) {
         </li>
         `
     }
-    if (friendListElement == "") {
+    if (friendListElement === "") {
         friendListElement = "you have no friends, yet..."
     }
     return friendListElement
@@ -63,7 +63,7 @@ async function createSidebar(){
 
 export async function initSideBar() {
     const friendBtn = document.getElementById("friendBtn")
-    if (isAuthenticated == false) {
+    if (isAuthenticated() === false) {
         if (friendBtn != undefined)
             friendBtn.innerHTML = ""
         return
