@@ -28,11 +28,22 @@ export async function pongMenu() {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")
+		let tournamentBtn = document.querySelector("#tournamentbtn")
 
+		tournamentBtn.classList.remove('d-none')
 		localGameBtn.classList.remove('d-none')
 		remoteGameBtn.classList.remove('d-none')
 		aiGameBtn.classList.remove('d-none')
 	}
+}
+
+export async function initTournament() {
+	console.log("tournament")
+	hideMenu()
+	let controller = new LocalController()
+	controller.init()
+	let game = new Game(controller,)
+	game.run()
 }
 
 export async function initLocalGame() {
@@ -67,9 +78,11 @@ function hideMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
 	let aiGameBtn = document.querySelector("#aigamebtn")
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
+	let tournamentBtn = document.querySelector("#tournamentbtn")
 	let menu = document.querySelector("#menubtn")
 
 	menu.classList.add('d-none')
+	tournamentBtn.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
 	remoteGameBtn.classList.add('d-none')
 	aiGameBtn.classList.add('d-none')
