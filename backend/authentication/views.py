@@ -37,8 +37,12 @@ class LoginView(views.APIView):
             password = serializer.validated_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
+                is_2fa_enabled = user.is_2fa_enabled
                 tokens = generate_tokens_and_login(request, user)
                 tokens['detail'] = 'User logged in successfully.'
-                return Response(tokens, status=status.HTTP_200_OK)
+                return Response({
+                    'is_2fa_enabled': is_2fa_enabled,
+                    **tokens
+                }, status=status.HTTP_200_OK)
             return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
