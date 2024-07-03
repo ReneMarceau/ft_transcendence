@@ -1,3 +1,4 @@
+import { disable2FA, enable2FA, verifyToken } from "./auth/auth.js"
 import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar } from "./user.js"
 
 export async function createSettings() {
@@ -27,6 +28,10 @@ export async function createSettings() {
 						<hr>
 						<div id="profile-settings" class="d-flex flex-column align-items-center">
 						</div>
+						<hr>
+						<div id="2fa-settings" class="d-flex flex-column align-items-center">
+						</div>
+						<div id="qr-code-container"></div>
 					</div>
 				</div>
 			</div
@@ -63,7 +68,7 @@ async function ChangeImage(userid) {
 
 function render_buttons(userid) {
 	const main_frame = document.getElementById("profile-settings");
-	main_frame.innerHTML = '';
+	main_frame.innerHTML = '<h2>Informations Settings</h2>';
 
 	const formData = [
 		{ id: 'changeUsernameForm', label: 'New Username', type: 'text' },
@@ -146,6 +151,20 @@ async function initChangeInfo(userid) {
 	});
 }
 
+async function render_two_fa_settings() {
+	const twofaSettings = document.getElementById("2fa-settings");
+	twofaSettings.innerHTML = `
+			<h2 class="mb-4">2FA Settings</h2>
+            <div class="d-flex">
+                <button id="enable2faBtn" class="btn btn-primary mx-2">Enable 2FA</button>
+                <button id="disable2faBtn" class="btn btn-primary mx-2">Disable 2FA</button>
+            </div>
+			`;
+	//<input type="text" id="totpToken" placeholder="Enter TOTP Token">
+	//<button id="verifyBtn" class="btn btn-primary mx-2">Verify Token</button>
+
+}
+
 async function initSettings() {
 	const userid = getCurrentUserId()
 	document.getElementById("profile-main-username").innerText = await getUsername(userid)
@@ -157,5 +176,25 @@ async function initSettings() {
 
 	render_buttons(userid);
 	initChangeInfo(userid);
+
+	render_two_fa_settings();
+	const enable2faBtn = document.getElementById("enable2faBtn");
+	const disable2faBtn = document.getElementById("disable2faBtn");
+
+	enable2faBtn.addEventListener("click", async () => {
+		console.log("Enabling 2FA...");
+		await enable2FA();
+	});
+	disable2faBtn.addEventListener("click", async () => {
+		console.log("Disabling 2FA...");
+		await disable2FA();
+		location.reload();
+	});
+
+	// const verifyBtn = document.getElementById("verifyBtn");
+	// verifyBtn.addEventListener("click", async () => {
+	// 	console.log("Verifying token...");
+	// 	await verifyToken();
+	// });
 
 }

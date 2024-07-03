@@ -164,3 +164,98 @@ export function initAuth() {
 		authSignup();
 	}
 }
+
+export async function enable2FA() {
+	const response = await fetch('/auth/2fa/enable-2fa/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		},
+		credentials: 'same-origin'
+	});
+	if (response.ok) {
+		const responseData = await response.json();
+		console.log(responseData);
+		alert('2FA enabled successfully!');
+		generateTwoFa();
+	} else {
+		const errorData = await response.json();
+		if (errorData.detail === '2FA is already enabled for this user.')
+			alert('2FA is already enabled for this user.');
+		else
+			alert('Failed. Please try again.');
+		console.error('Error:', errorData);
+	}
+}
+
+export async function disable2FA() {
+	const response = await fetch('/auth/2fa/disable-2fa/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		},
+		credentials: 'same-origin'
+	});
+	if (response.ok) {
+		const responseData = await response.json();
+		console.log(responseData);
+		alert('2FA disable successfully!');
+	} else {
+		const errorData = await response.json();
+		console.error('Error:', errorData);
+		alert('Failed. Please try again.');
+	}
+}
+
+async function generateTwoFa() {
+	const qrCodeContainer = document.getElementById('qr-code-container');
+	qrCodeContainer.innerHTML = '';
+	const response = await fetch(`/auth/2fa/generate-qr/`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		},
+		credentials: 'same-origin'
+	});
+	if (response.ok) {
+		const blob = await response.blob();
+		const url = URL.createObjectURL(blob);
+
+		qrCodeContainer.innerHTML = `<img src="${url}" alt="QR Code" />`;
+	} else {
+		const errorData = await response.json();
+		console.error('Error:', errorData);
+		alert('Failed. Please try again.');
+	}
+}
+
+export async function verifyToken() {
+	const token = document.getElementById('totpToken').value;
+	console.log('Verifying token:', token);
+
+	const response = await fetch('/auth/verify-token/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+		},
+		credentials: 'same-origin',
+		body: JSON.stringify({ token: token })
+	});
+
+	if (response.ok) {
+		console.log('Token verified');
+		alert('Token verified successfully.');
+	} else {
+		const errorData = await response.json();
+		console.error('Error verifying token:', errorData);
+		alert('Failed to verify token. Please try again.');
+	}
+}
