@@ -24,7 +24,7 @@ export class LocalController {
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));
 		document.addEventListener("keyup", this.handleKeyUp.bind(this));
 		document.addEventListener("keyup", (event) => {
-			if (event.code === 'Space' && this.stop == true) {
+			if (event.code === 'Space' && this.stop === true) {
 				console.log("space pressed")
 				this.stop = false;
 				this.message = ""
@@ -73,16 +73,16 @@ export class LocalController {
 			if (Date.now() > this.restartTimestamp && this.running) {
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
-					if (retval == "right")
+					if (retval === "right")
 						this.player1Score++
 					else
 						this.player2Score++
-					if (this.player1Score == 3) {
+					if (this.player1Score === 3) {
 						// player 1 wins
 						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
-					else if (this.player2Score == 3) {
+					else if (this.player2Score === 3) {
 						// player 2 wins
 						this.message = "The winner is " + this.paddle2.name
 						this.running = false
@@ -133,7 +133,7 @@ export class AIController {
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));
 		document.addEventListener("keyup", this.handleKeyUp.bind(this));
 		document.addEventListener("keyup", (event) => {
-			if (event.code === 'Space' && this.stop == true) {
+			if (event.code === 'Space' && this.stop === true) {
 				console.log("space pressed")
 				this.stop = false;
 				this.message = ""
@@ -206,16 +206,16 @@ export class AIController {
 			if (Date.now() > this.restartTimestamp && this.running) {
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
-					if (retval == "right")
+					if (retval === "right")
 						this.player1Score++
 					else
 						this.player2Score++
-					if (this.player1Score == 3) {
+					if (this.player1Score === 3) {
 						// player 1 wins
 						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
-					else if (this.player2Score == 3) {
+					else if (this.player2Score === 3) {
 						// player 2 wins
 						this.message = "The winner is " + this.paddle2.name
 						this.running = false
@@ -276,9 +276,9 @@ export class RemoteController {
 	update() {
 		if (this.stop)
 			return
-		if (this.serverMsg.command == "data")
+		if (this.serverMsg.command === "data")
 			return this.serverMsg
-		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3) { // Game over
+		if (this.serverMsg.player1Score === 3 || this.serverMsg.player2Score === 3) { // Game over
 			this.running = false
 			return this.serverMsg
 		}
@@ -304,7 +304,7 @@ export class RemoteController {
 	}
 
 	initEventListener() {
-		if (this.websocket == undefined) {
+		if (this.websocket === undefined) {
 			console.log("Websocket is undefined")
 			return
 		}
@@ -355,10 +355,10 @@ export class RemoteController {
 		document.addEventListener("keydown", (e) => {
 			if (!this.isSocketConnected())
 				return
-			if (this.state == "running") {
-				if (e.key == 'ArrowDown')
+			if (this.state === "running") {
+				if (e.key === 'ArrowDown')
 					this.websocket.send("down")
-				else if (e.key == 'ArrowUp')
+				else if (e.key === 'ArrowUp')
 					this.websocket.send("up")
 			}
 		})
@@ -367,9 +367,9 @@ export class RemoteController {
 			if (!this.isSocketConnected())
 				return
 			console.log(this.state)
-			if (this.state == "running" && this.state == "running")
+			if (this.state === "running" && this.state === "running")
 				this.websocket.send("stop")
-			if (e.code == 'Space' && this.state == "getready") {
+			if (e.code === 'Space' && this.state === "getready") {
 				this.websocket.send("ready")
 				console.log("sending ready")
 				this.state = "running"
@@ -496,7 +496,7 @@ class Paddle {
 		this.bottom = this.y - this.paddleHeight
 		this.move_up = false
 		this.move_down = false
-		if (side == "right")
+		if (side === "right")
 			this.x = this.paddle_margin_x
 		else
 			this.x = 1 - this.paddle_margin_x

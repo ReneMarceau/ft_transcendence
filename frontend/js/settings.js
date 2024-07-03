@@ -1,5 +1,5 @@
-import { disable2FA, enable2FA, verifyToken } from "./auth/auth.js"
-import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar } from "./user.js"
+import { disable2FA, enable2FA, isAuthenticated, verifyToken } from "./auth/auth.js"
+import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar, getIs2Fa } from "./user.js"
 
 export async function createSettings() {
 	document.querySelector('body').insertAdjacentHTML('afterbegin', `
@@ -159,13 +159,16 @@ async function render_two_fa_settings() {
                 <button id="enable2faBtn" class="btn btn-primary mx-2">Enable 2FA</button>
                 <button id="disable2faBtn" class="btn btn-primary mx-2">Disable 2FA</button>
             </div>
+			<input type="text" id="totpToken" placeholder="Enter TOTP Token">
+			<button id="verifyBtn" class="btn btn-primary mx-2">Verify Token</button>
 			`;
-	//<input type="text" id="totpToken" placeholder="Enter TOTP Token">
-	//<button id="verifyBtn" class="btn btn-primary mx-2">Verify Token</button>
 
 }
 
 async function initSettings() {
+	if (isAuthenticated() === false)
+		return;
+
 	const userid = getCurrentUserId()
 	document.getElementById("profile-main-username").innerText = await getUsername(userid)
 	document.getElementById("profile-main-email").innerText = await getEmail(userid)
@@ -181,6 +184,12 @@ async function initSettings() {
 	const enable2faBtn = document.getElementById("enable2faBtn");
 	const disable2faBtn = document.getElementById("disable2faBtn");
 
+	const is2fa = await getIs2Fa(userid);
+	if (is2fa)
+		enable2faBtn.classList.add("d-none");
+	else
+		disable2faBtn.classList.add("d-none");
+
 	enable2faBtn.addEventListener("click", async () => {
 		console.log("Enabling 2FA...");
 		await enable2FA();
@@ -188,13 +197,12 @@ async function initSettings() {
 	disable2faBtn.addEventListener("click", async () => {
 		console.log("Disabling 2FA...");
 		await disable2FA();
-		location.reload();
 	});
 
-	// const verifyBtn = document.getElementById("verifyBtn");
-	// verifyBtn.addEventListener("click", async () => {
-	// 	console.log("Verifying token...");
-	// 	await verifyToken();
-	// });
+	const verifyBtn = document.getElementById("verifyBtn");
+	verifyBtn.addEventListener("click", async () => {
+		console.log("Verifying token...");
+		await verifyToken();
+	});
 
 }

@@ -24,7 +24,7 @@ function hideProfile() {
 
 export async function pongMenu() {
 	hideProfile()
-	if (isAuthenticated() == true) {
+	if (isAuthenticated() === true) {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")

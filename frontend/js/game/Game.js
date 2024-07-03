@@ -27,7 +27,7 @@ export class Game {
 
 	run() {
 		const update = () => {
-			if (this.controller.running == false) {
+			if (this.controller.running === false) {
 				//renderer.hideBoard();
 				console.log("game over");
 				return;

@@ -1,3 +1,4 @@
+import { isAuthenticated } from "./auth/auth.js"
 import { renderer } from "./game/graphic-engine.js"
 import { getCurrentUserId, getUsername, getAvatar } from "./user.js"
 
@@ -9,13 +10,14 @@ function hidePong() {
 	gameBtnDiv.innerHTML = ""
 }
 
-export async function initProfile() {
+export async function initProfile(userid = getCurrentUserId()) {
 	hidePong()
+	if (isAuthenticated() === false)
+		return;
 
 	let profile = document.getElementById("profileDiv")
 	profile.classList.remove("d-none")
 
-	const userid = getCurrentUserId()
 	const username = await getUsername(userid)
 	const avatar = await getAvatar(userid)
 	renderProfile(username, avatar)
