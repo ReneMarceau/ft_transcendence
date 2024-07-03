@@ -1,4 +1,5 @@
-""" URL configuration for app project.
+"""
+URL configuration for app project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -14,13 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls.static import static
-
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
 
-from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
@@ -35,6 +35,10 @@ def api_root(request, format=None):
         'token_refresh': reverse('token_refresh', request=request, format=format),
         'oauth2_redirect': reverse('oauth2_redirect', request=request, format=format),
         'oauth2_callback': reverse('oauth2_callback', request=request, format=format),
+        'generate_qr': reverse('generate_qr', request=request, format=format),
+        'verify_token': reverse('verify_token', request=request, format=format),
+        'enable_2fa': reverse('enable_2fa', request=request, format=format),
+        'disable_2fa': reverse('disable_2fa', request=request, format=format),
     })
 
 urlpatterns = [

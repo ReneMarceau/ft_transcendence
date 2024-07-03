@@ -8,6 +8,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=50, unique=True)
     password = models.CharField(max_length=150)
+    is_2fa_enabled = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
 

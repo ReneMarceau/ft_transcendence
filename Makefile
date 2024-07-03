@@ -26,11 +26,11 @@ help:
 	@echo "  ${GREEN}make down${RESET}              - Stop the Docker containers"
 	@echo "  ${GREEN}make restart${RESET}           - Restart the Docker containers"
 	@echo "  ${GREEN}make migrate${RESET}           - Apply Django migrations"
-	@echo "  ${GREEN}make createsuperuser${RESET}    - Create a Django superuser"
-	@echo "  ${GREEN}make test${RESET}              - Run tests"
+	@echo "  ${GREEN}make createsuperuser${RESET}   - Create a Django superuser"
 	@echo "  ${GREEN}make clean${RESET}             - Remove Docker containers and images"
-	@echo "  ${GREEN}make deploy${RESET}            - Deploy the application"
+	@echo "  ${GREEN}make deploy / re${RESET}       - Deploy the application"
 	@echo "  ${GREEN}make check${RESET}             - Check if all dependencies are installed"
+	@echo "  ${GREEN}make install${RESET}           - Install Python dependencies"
 
 # Build the Docker containers
 .PHONY: build
@@ -72,13 +72,6 @@ createsuperuser:
 	@$(DJANGO_MANAGE) createsuperuser
 	@echo "${GREEN}Superuser created.${RESET}"
 
-# Run tests
-.PHONY: test
-test:
-	@echo "${YELLOW}Running tests...${RESET}"
-	@$(DJANGO_MANAGE) test
-	@echo "${GREEN}Tests completed.${RESET}"
-
 # Remove Docker containers and images
 .PHONY: clean
 clean: down
@@ -89,15 +82,15 @@ clean: down
 	@echo "${GREEN}Clean complete.${RESET}"
 
 # Deploy the application
-.PHONY: deploy
-deploy: clean check build migrate
+.PHONY: deploy re
+deploy re: clean check build
 	@echo "${YELLOW}Deploying application...${RESET}"
 	@$(DOCKER_COMPOSE) up
 	@echo "${GREEN}Deployment complete.${RESET}"
 
 # Check if all required dependencies are functional
 .PHONY: check
-check: venv install
+check: venv
 	@if ! $(DOCKER) info > /dev/null 2>&1; then \
 		echo "${RED}Docker is not running.${RESET}"; \
 		exit 1; \
@@ -112,6 +105,7 @@ check: venv install
 		openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/nginx.key -out nginx/certs/nginx.crt -subj "/CN=localhost"; \
 		echo "${GREEN}SSL certificates generated.${RESET}"; \
 	fi
+	@echo "Before starting backend development, run ${CYAN}make install${RESET} to install Python dependencies."
 
 # Check if venv is present then create it
 .PHONY: venv

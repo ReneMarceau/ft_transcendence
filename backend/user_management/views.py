@@ -20,10 +20,8 @@ class BaseViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            updated_fields = {field: serializer.validated_data[field] for field in serializer.validated_data}
             return Response({
                 'detail': f'{self.get_serializer().Meta.model.__name__} updated successfully.',
-                'updated_fields': updated_fields
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -45,12 +45,15 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
     'user_management.apps.UserManagementConfig',
     'authentication.apps.AuthenticationConfig',
 ]
@@ -64,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -142,8 +146,6 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1400),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,  # Rotates refresh tokens for increased security
-    "BLACKLIST_AFTER_ROTATION": True,  # Blacklists old refresh tokens after rotation
     
     "ALGORITHM": "HS256",  # Algorithm used for signing the tokens
     "SIGNING_KEY": os.environ.get("SECRET_KEY"),  # Key used for signing the tokens
@@ -166,6 +168,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+# Site ID for django.contrib.sites
+SITE_ID = 1
 
 
 # Static files (CSS, JavaScript, Images)

@@ -6,7 +6,7 @@ class UserMeta:
     Reusable Meta class for User-related serializers.
     """
     model = User
-    fields = ['id', 'username', 'email', 'password', 'date_joined', 'last_login']
+    fields = ['id', 'username', 'email', 'password', 'is_2fa_enabled', 'date_joined', 'last_login']
     read_only_fields = ['id', 'date_joined', 'last_login']
     extra_kwargs = {
         'password': {'write_only': True},
@@ -30,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
+        instance.is_2fa_enabled = validated_data.get('is_2fa_enabled', instance.is_2fa_enabled)
         if 'password' in validated_data:
             instance.set_password(validated_data['password'])
         instance.save()
