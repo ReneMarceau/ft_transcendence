@@ -16,7 +16,6 @@ export class Renderer {
 
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
-
 	}
 
 	init() {
@@ -30,7 +29,7 @@ export class Renderer {
 		this.initLighting()
 		this.initPostProcessing()
 		this.initShadows();
-
+		this.initEarth();
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}
 
@@ -45,6 +44,102 @@ export class Renderer {
 
 		const outputPass = new OutputPass();
 		this.composer.addPass(outputPass);
+	}
+
+	initEarth() {
+		function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
+			const uniforms = {
+			  color1: { value: new THREE.Color(rimHex) },
+			  color2: { value: new THREE.Color(facingHex) },
+			  fresnelBias: { value: 0.1 },
+			  fresnelScale: { value: 1.0 },
+			  fresnelPower: { value: 4.0 },
+			};
+			const vs = `
+			uniform float fresnelBias;
+			uniform float fresnelScale;
+			uniform float fresnelPower;
+			
+			varying float vReflectionFactor;
+			
+			void main() {
+			  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+			  vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+			
+			  vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );
+			
+			  vec3 I = worldPosition.xyz - cameraPosition;
+			
+			  vReflectionFactor = fresnelBias + fresnelScale * pow( 1.0 + dot( normalize( I ), worldNormal ), fresnelPower );
+			
+			  gl_Position = projectionMatrix * mvPosition;
+			}
+			`;
+			const fs = `
+			uniform vec3 color1;
+			uniform vec3 color2;
+			
+			varying float vReflectionFactor;
+			
+			void main() {
+			  float f = clamp( vReflectionFactor, 0.0, 1.0 );
+			  gl_FragColor = vec4(mix(color2, color1, vec3(f)), f);
+			}
+			`;
+			const fresnelMat = new THREE.ShaderMaterial({
+			  uniforms: uniforms,
+			  vertexShader: vs,
+			  fragmentShader: fs,
+			  transparent: true,
+			  blending: THREE.AdditiveBlending,
+			  // wireframe: true,
+			});
+			return fresnelMat;
+		  }
+
+		this.earthGroup = new THREE.Group();
+		this.earthGroup.rotation.z = -23.4 * Math.PI / 180;
+		this.scene.add(this.earthGroup);
+
+		const detail = 20;
+		const loader = new THREE.TextureLoader();
+		const geometry = new THREE.IcosahedronGeometry(1, detail);
+		const material = new THREE.MeshPhongMaterial({
+			map: loader.load("./textures/00_earthmap1k.jpg"),
+			specularMap: loader.load("./textures/02_earthspec1k.jpg"),
+			bumpMap: loader.load("./textures/01_earthbump1k.jpg"),
+			side: THREE.DoubleSide,
+			bumpScale: 0.5,
+		});
+		this.earthMesh = new THREE.Mesh(geometry, material);
+		this.earthGroup.add(this.earthMesh);
+
+		const lightsMat = new THREE.MeshBasicMaterial({
+			map: loader.load("./textures/03_earthlights1k.jpg"),
+			blending: THREE.AdditiveBlending,
+			transparent: true,
+		});
+		this.lightsMesh = new THREE.Mesh(geometry, lightsMat);
+		this.earthGroup.add(this.lightsMesh);
+
+		const cloudsMat = new THREE.MeshStandardMaterial({
+			map: loader.load("./textures/04_earthcloudmap.jpg"),
+			transparent: true,
+			opacity: 0.5,
+			blending: THREE.AdditiveBlending,
+			alphaMap: loader.load('./textures/05_earthcloudmaptrans.jpg'),
+			alphaTest: 0.3,
+		});
+		this.cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
+		this.cloudsMesh.scale.setScalar(1.003);
+		this.earthGroup.add(this.cloudsMesh);
+
+
+		const fresnelMat = getFresnelMat();
+		this.glowMesh = new THREE.Mesh(geometry, fresnelMat);
+		this.glowMesh.scale.setScalar(1.01);
+		this.earthGroup.add(this.glowMesh);
+
 	}
 
 	initStars() {
@@ -66,22 +161,26 @@ export class Renderer {
 	}
 
 	initLighting() {
+		const sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
+		sunLight.position.set(-2, 0.5, 1.5);
+		this.scene.add(sunLight);
+
 		this.pointLight = new THREE.PointLight(0xebfde7, 10);
 		this.pointLight.position.set(2, 2, 2);
 		this.pointLight.intensity = 1;
 		this.scene.add(this.pointLight)
 
 
-		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
-		const spotLight = new THREE.SpotLight(0xffffff, 5);
+		// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
+		// const spotLight = new THREE.SpotLight(0xffffff, 5);
 
-		spotLight.position.set(0, 0, 2);
-		spotLight.castShadow = true;
+		// spotLight.position.set(0, 0, 2);
+		// spotLight.castShadow = true;
 
-		spotLight.shadow.mapSize.width = this.windowWidth
-		spotLight.shadow.mapSize.height = this.windowHeight
+		// spotLight.shadow.mapSize.width = this.windowWidth
+		// spotLight.shadow.mapSize.height = this.windowHeight
 
-		this.scene.add(ambientLight, spotLight);
+		// this.scene.add(ambientLight, spotLight);
 	}
 
 	initShadows() {
@@ -139,11 +238,15 @@ export class Renderer {
 	}
 
 	showBoard() {
-		this.canva.classList.remove("d-none")
+		console.log("showing board")
+		document.getElementById("board").classList.remove("d-none")
+		this.scene.remove(this.earthGroup)
 		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
 	}
 	hideBoard() {
-		this.canva.classList.add("d-none")
+		console.log("hide board")
+		document.getElementById("board").classList.add("d-none")
+		this.scene.add(this.earthGroup)
 		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
 	}
 
@@ -204,6 +307,13 @@ export class Renderer {
 	}
 
 	render() {
+		if (this.earthGroup) {
+			this.earthMesh.rotateY += 1;
+			this.lightsMesh.rotateY += 0.02;
+			this.cloudsMesh.rotateY += 0.023;
+			this.glowMesh.rotateY+= 0.2;
+		}
+
 		this.controls.update()
 		this.composer.render()
 	}

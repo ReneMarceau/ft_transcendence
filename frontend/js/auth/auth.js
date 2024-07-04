@@ -57,9 +57,9 @@ export function render_auth() {
 
 	const oauth_btn = createModalButton('oauth-form', '42', 'secondary');
 	main_frame.innerHTML = `
-        <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="d-flex justify-content-center align-items-center" style="height:80%">
             <div class="text-center">
-                <h1 class="mb-4">ft_traanscancdancee</h1>
+                <h1 class="" style="font-family: 'Press Start 2P', cursive">ft_traanscancdancee</h1>
                 ${login_btn}
                 ${signup_btn}
 				${oauth_btn}

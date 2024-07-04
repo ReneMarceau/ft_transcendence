@@ -8,9 +8,12 @@ import { isAuthenticated } from "../auth/auth.js"
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
 	main_frame.innerHTML = `
-		<canvas id="board"></canvas>
-		<canvas id="background"></canvas>
+	<canvas id="board" class="d-none"></canvas>
+	<canvas id="background"></canvas>
 	`
+	// <div class="text-center">
+	// 	<h1 id="ft_title" class="d-none" style="font-family: 'Press Start 2P', cursive">ft_trnascnacdance</h1>
+	// </div>
 	renderer.init()
 }
 
@@ -29,7 +32,9 @@ export async function pongMenu() {
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")
 		let tournamentBtn = document.querySelector("#tournamentbtn")
+		let ftTitle = document.querySelector("#ft_title")
 
+		ftTitle.classList.remove('d-none')
 		tournamentBtn.classList.remove('d-none')
 		localGameBtn.classList.remove('d-none')
 		remoteGameBtn.classList.remove('d-none')

@@ -6,11 +6,11 @@ import { initSideBar } from "./sidebar.js";
 
 
 (async function () {
+	render_game()
 	initAuth()
 	initRouter()
 	await initNavBar()
 	await initSideBar()
-	render_game()
 })();
 
 export function initRouter() {
