@@ -9,7 +9,7 @@ export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
 	main_frame.innerHTML = `
 		<canvas id="board"></canvas>
-		<canvas id="background" class="d-none"></canvas>
+		<canvas id="background"></canvas>
 	`
 	renderer.init()
 }
