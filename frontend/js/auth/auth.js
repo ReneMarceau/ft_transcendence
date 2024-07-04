@@ -1,4 +1,5 @@
 import { getCookie } from '../user.js';
+import { createAlert, reloadPage } from "../utils.js"
 
 function createModal(id, title, formAction, fields) {
 	return `
@@ -125,11 +126,12 @@ async function sendRequest(url, data, csrftoken) {
 		console.log(responseData);
 		localStorage.setItem('access_token', responseData.access);
 		localStorage.setItem('refresh_token', responseData.refresh);
-		location.reload()
+		createAlert('success', responseData.detail);
+		reloadPage();
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		alert(errorData.detail);
+		createAlert('danger', errorData.detail);
 	}
 }
 
@@ -151,7 +153,8 @@ export function authLogout() {
 		event.preventDefault();
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('refresh_token');
-		location.reload()
+		createAlert('success', 'Logged out successfully!');
+		reloadPage();
 	})
 }
 
@@ -181,14 +184,11 @@ export async function enable2FA() {
 	if (response.ok) {
 		const responseData = await response.json();
 		console.log(responseData);
-		alert('2FA enabled successfully!');
+		createAlert('success', responseData.detail);
 		generateTwoFa();
 	} else {
 		const errorData = await response.json();
-		if (errorData.detail === '2FA is already enabled for this user.')
-			alert('2FA is already enabled for this user.');
-		else
-			alert('Failed. Please try again.');
+		createAlert('danger', errorData.detail);
 		console.error('Error:', errorData);
 	}
 }
@@ -206,14 +206,11 @@ export async function disable2FA() {
 	if (response.ok) {
 		const responseData = await response.json();
 		console.log(responseData);
-		alert('2FA disable successfully!');
-		location.reload();
+		createAlert('success', responseData.detail);
+		reloadPage();
 	} else {
 		const errorData = await response.json();
-		if (errorData.detail === '2FA is not enabled for this user.')
-			alert('2FA is not enabled for this user.');
-		else
-			alert('Failed. Please try again.');
+		createAlert('danger', errorData.detail);
 		console.error('Error:', errorData);
 	}
 }
@@ -259,10 +256,11 @@ export async function verifyToken() {
 
 	if (response.ok) {
 		console.log('Token verified');
-		alert('Token verified successfully.');
+		const responseData = await response.json();
+		createAlert('success', responseData.detail);
 	} else {
 		const errorData = await response.json();
 		console.error('Error verifying token:', errorData);
-		alert('Failed to verify token. Please try again.');
+		createAlert('danger', errorData.detail);
 	}
 }

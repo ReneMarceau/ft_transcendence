@@ -13,7 +13,6 @@ import { initSideBar } from "./sidebar.js";
 	render_game()
 })();
 
-
 export function initRouter() {
 
 	let last_url

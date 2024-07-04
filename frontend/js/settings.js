@@ -1,5 +1,6 @@
 import { disable2FA, enable2FA, isAuthenticated, verifyToken } from "./auth/auth.js"
 import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar, getIs2Fa } from "./user.js"
+import { createAlert, reloadPage } from "./utils.js"
 
 export async function createSettings() {
 	document.querySelector('body').insertAdjacentHTML('afterbegin', `
@@ -58,9 +59,13 @@ async function ChangeImage(userid) {
 			body: formData
 		})
 		if (response.ok) {
+			const responseData = await response.json()
 			console.log('Upload successful!')
-			location.reload()
+			createAlert('success', responseData.detail)
+			reloadPage()
 		} else {
+			const errorData = await response.json()
+			createAlert('danger',errorData.detail)
 			console.error('Upload failed:', response.statusText)
 		}
 	})
@@ -145,7 +150,8 @@ async function changeInfo(userid, type, newInfo) {
 
 		if (response.ok) {
 			console.log(`${type} changed successfully!`);
-			location.reload();
+			createAlert('success', `${type} changed successfully!`);
+			reloadPage();
 		} else {
 			console.error(`${type} change failed:`, response.statusText);
 		}
@@ -168,7 +174,8 @@ async function initChangeInfo(userid) {
 
                 if (newPassword !== confirmPassword) {
                     console.error('Passwords do not match!');
-                    alert('Passwords do not match!');
+					createAlert('danger', 'Passwords do not match!');
+                	//alert('Passwords do not match!');
                     return;
                 }
                 await changeInfo(userid, type, newPassword);
