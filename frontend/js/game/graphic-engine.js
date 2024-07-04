@@ -240,6 +240,8 @@ export class Renderer {
 	showBoard() {
 		console.log("showing board")
 		document.getElementById("board").classList.remove("d-none")
+		this.camera.position.set(0, 0, 5);
+		this.camera.lookAt(0, 0, 0)
 		this.scene.remove(this.earthGroup)
 		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
 	}
