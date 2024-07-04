@@ -1,5 +1,3 @@
-
-
 export function reloadPage() {
     const overlay = document.createElement('div');
     overlay.id = 'overlay';
@@ -28,10 +26,7 @@ export function createAlert(type, message) {
     };
 
     const alert = document.createElement('div');
-    alert.style.position = 'fixed';
-    alert.style.top = '70px';
-    alert.style.right = '20px';
-    alert.style.zIndex = '10000';
+    alert.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 10000;'
     alert.classList.add('alert', 'alert-dismissible', `alert-${type}`);
     alert.innerHTML = `
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
