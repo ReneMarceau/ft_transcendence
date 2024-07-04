@@ -32,9 +32,9 @@ export async function pongMenu() {
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")
 		let tournamentBtn = document.querySelector("#tournamentbtn")
-		let ftTitle = document.querySelector("#ft_title")
+		// let ftTitle = document.querySelector("#ft_title")
 
-		ftTitle.classList.remove('d-none')
+		// ftTitle.classList.remove('d-none')
 		tournamentBtn.classList.remove('d-none')
 		localGameBtn.classList.remove('d-none')
 		remoteGameBtn.classList.remove('d-none')
