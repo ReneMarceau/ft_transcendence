@@ -55,14 +55,15 @@ export function render_auth() {
 	];
 
 
-	const oauth_btn = createModalButton('oauth-form', '42', 'secondary');
 	main_frame.innerHTML = `
         <div class="d-flex justify-content-center align-items-center" style="height:80%">
             <div class="text-center">
                 <h1 class="" style="font-family: 'Press Start 2P', cursive">ft_traanscancdancee</h1>
                 ${login_btn}
                 ${signup_btn}
-				${oauth_btn}
+				<a class="btn btn-secondary" id="oauth-form" href="/auth/oauth2/redirect/">
+					<img src="42.svg" alt="42 logo" style="width: 25px; height: 25px; padding: 0px"/>
+				</a>
             </div>
         </div>`;
 	main_frame.innerHTML += createModal('login-form', 'Login', '/auth/login/', login_fields);
@@ -117,11 +118,15 @@ async function sendRequest(url, data, csrftoken) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': csrftoken
+
 		},
 		body: JSON.stringify(data)
 	});
 	if (response.ok) //200 login, 201 signup
 	{
+		if (response.status === 200) {
+			//login
+		}
 		const responseData = await response.json();
 		console.log(responseData);
 		localStorage.setItem('access_token', responseData.access);
@@ -156,19 +161,6 @@ export function authLogout() {
 		createAlert('success', 'Logged out successfully!');
 		reloadPage();
 	})
-}
-
-export function initAuth() {
-	//localStorage.clear(); //uncomment to clear local storage
-	if (isAuthenticated() === true) {
-		let main_frame = document.getElementById("authDiv");
-		main_frame.innerHTML = ``;
-	}
-	else {
-		render_auth();
-		authLogin();
-		authSignup();
-	}
 }
 
 export async function enable2FA() {
@@ -262,5 +254,19 @@ export async function verifyToken() {
 		const errorData = await response.json();
 		console.error('Error verifying token:', errorData);
 		createAlert('danger', errorData.detail);
+	}
+}
+
+
+export function initAuth() {
+	//localStorage.clear(); //uncomment to clear local storage
+	if (isAuthenticated() === true) {
+		let main_frame = document.getElementById("authDiv");
+		main_frame.innerHTML = ``;
+	}
+	else {
+		render_auth();
+		authLogin();
+		authSignup();
 	}
 }
