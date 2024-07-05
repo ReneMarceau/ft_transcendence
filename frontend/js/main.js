@@ -30,8 +30,8 @@ export function initRouter() {
 			{ path: "/localgame", view: () => initLocalGame() },
 			{ path: "/aigame", view: () => initAIGame() },
 			{ path: "/remotegame", view: () => initRemoteGame() },
-			{ path: "/profile", view: () => initProfile() },
-			{ path: "/tournament", view: () => initTournament() },
+			{ path: "/profile", view: () => initProfile() }
+			// { path: "/tournament", view: () => initTournament() },
 		]
 
 		const potentialMatches = routes.map((route) => {

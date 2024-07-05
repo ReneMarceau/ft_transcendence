@@ -38,8 +38,27 @@
 		<a id="localgamebtn" href="/localgame" class="btn btn-primary d-none" data-link>Local game</a>
 		<a id="remotegamebtn" href="/remotegame" class="btn btn-primary d-none" data-link>Remote game</a>
 		<a id="aigamebtn" href="/aigame" class="btn btn-primary d-none" data-link>AI game</a>
-		<a id="tournamentbtn" href="/tournament" class="btn btn-primary d-none" data-link>Tournament</a>
+		<!-- <a id="tournamentbtn" href="/tournament" class="btn btn-primary d-none" data-link>Tournament</a> -->
 		<a id="menubtn" href="/" class="btn btn-primary d-none">Menu</a>
+		<!-- Debug Dropdown Button -->
+		<div class="btn-group">
+			<button type="button" class="btn btn-primary dropdown-toggle" id="debugDropdownButton" aria-haspopup="true" aria-expanded="false">
+				Tournament
+			</button>
+			<div class="dropdown-menu" id="debugDropdownMenu">
+				<a class="dropdown-item" href="#">New tournament</a>
+				<a class="dropdown-item" href="#">Join tournament</a>
+			</div>
+		</div>
+	</div>
+	<div id="pongDiv" class="container"></div>
+
+	<script>
+		document.getElementById('debugDropdownButton').addEventListener('click', function() {
+			var dropdownMenu = document.getElementById('debugDropdownMenu');
+			dropdownMenu.classList.toggle('show');
+		});
+	</script>
 	</div>
 	<div id="pongDiv" class="container"></div>
 	

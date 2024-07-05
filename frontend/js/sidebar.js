@@ -58,7 +58,6 @@ async function createSidebar(){
             collapse.classList.remove("show")
         });
     }
-
 }
 
 export async function initSideBar() {
@@ -68,6 +67,5 @@ export async function initSideBar() {
             friendBtn.innerHTML = ""
         return
     }
-
     await createSidebar()
 }
