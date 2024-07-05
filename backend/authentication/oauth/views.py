@@ -31,8 +31,10 @@ class OAuth2CallbackView(views.APIView):
             tokens = self.generate_tokens(user)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(tokens, status=status.HTTP_200_OK)
+        
+        # Redirect to frontend with tokens
+        url = f'{settings.FRONTEND_URL}/oauth?refresh={tokens["refresh"]}&access={tokens["access"]}&expiration={tokens["expiration"]}&detail={tokens["detail"]}'
+        return redirect(url)
 
     def exchange_code_for_token(self, code):
         token_response = requests.post('https://api.intra.42.fr/oauth/token', data={

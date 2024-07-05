@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 AUTH42_CLIENT_ID = os.environ.get('AUTH42_CLIENT')
 AUTH42_SECRET = os.environ.get('AUTH42_SECRET')
-AUTH42_REDIRECT_URI = os.environ.get('AUTH42_REDIRECT_URI')
+AUTH42_REDIRECT_URI = 'https://localhost/auth/oauth2/callback/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +31,8 @@ SECRET_KEY = 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos
 DEBUG = 'True'
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(' ')
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # SSl settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django_otp',
@@ -90,6 +93,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 ASGI_APPLICATION = 'app.asgi.application'
+
+# Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.redis.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    }
+}
 
 
 # Database
