@@ -6,6 +6,8 @@ services:
       dockerfile: backend/Dockerfile
     container_name: backend
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
     env_file:
@@ -72,12 +74,25 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 20s
-      retries: 10
-      start_period: 5s
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # Redis Cache & Websocket
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - transcendance-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # vault:
 
@@ -91,6 +106,8 @@ services:
 volumes:
   postgres_data:
     name: postgres_data
+  redis_data:
+    name: redis_data
 
 # Network
 networks:
