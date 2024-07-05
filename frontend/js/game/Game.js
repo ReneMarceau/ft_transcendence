@@ -4,10 +4,12 @@ import { renderer } from "./graphic-engine.js"
 export class Game {
 	constructor(controller) {
 		renderer.showBoard();
+		
 		this.controller = controller;
 		this.graphicEngine = new graphicEngine();
 		this.running = true;
 
+		window.addEventListener('resize', renderer.handleWindowResize, false);
 		this.setupMenuButton();
 	}
 

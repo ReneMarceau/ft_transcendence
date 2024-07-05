@@ -319,6 +319,12 @@ export class Renderer {
 		this.controls.update()
 		this.composer.render()
 	}
+
+	handleWindowResize () {
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+	}
 }
 
 export const renderer = new Renderer()
