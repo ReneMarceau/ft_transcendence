@@ -4,8 +4,6 @@ import { getCurrentUserId, getUsername, getAvatar } from "./user.js"
 
 function hidePong() {
 	renderer.hideBoard()
-	const pongDiv = document.getElementById("pongDiv")
-	pongDiv.innerHTML = ""
 	const gameBtnDiv = document.getElementById("gameBtnDiv")
 	gameBtnDiv.innerHTML = ""
 }

@@ -9,7 +9,6 @@ export class Game {
 		this.graphicEngine = new graphicEngine();
 		this.running = true;
 
-		window.addEventListener('resize', renderer.handleWindowResize, false);
 		this.setupMenuButton();
 	}
 

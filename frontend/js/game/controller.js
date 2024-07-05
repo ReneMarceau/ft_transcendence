@@ -125,6 +125,11 @@ export class AIController {
 		this.restartTimestamp = 0
 		this.message = "press space to start the game"
 		this.startTime = Date.now();
+
+		this.lastAIUpdateTime = Date.now();
+        this.aiUpdateInterval = 1000; // 1 second in milliseconds
+
+		this.predictedY = null;
 	}
 
 	cleanup() { }
@@ -169,30 +174,38 @@ export class AIController {
 		this.ball.reset()
 	}
 
-	AImove(paddle) {
-		// paddle.paddle_speed = Math.random() / 250
+	predictBallPosition() {
+		const ballFutureX = this.ball.x + this.ball.dir.x * this.aiUpdateInterval / 1000 * this.ball.speed;
+		const ballFutureY = this.ball.y + this.ball.dir.y * this.aiUpdateInterval / 1000 * this.ball.speed;
 
-		if (this.ball.x > 0.5) {
-			if (this.ball.y > paddle.y + (paddle.paddleHeight / 2)) {
-				paddle.move_up = true
-				paddle.move_down = false
-			}
-			else {
-				paddle.move_up = false
-				paddle.move_down = true
-			}
-			if (this.ball.y < paddle.y + (paddle.paddleHeight / 2)) {
-				paddle.move_up = true
-				paddle.move_down = false
-			}
-			else {
-				paddle.move_up = false
-				paddle.move_down = true
-			}
+		if (ballFutureX > 1 - this.ball.radius || ballFutureX < this.ball.radius) {
+			this.ball.dir.x *= -1;
+			this.ball.dir.norm();
 		}
-		else {
-			paddle.move_up = false
-			paddle.move_down = false
+		if (ballFutureY > 1 - this.ball.radius || ballFutureY < this.ball.radius) {
+			this.ball.dir.y *= -1;
+			this.ball.dir.norm();
+		}
+
+		// Calculate the predicted future position of the ball
+		return this.ball.y + this.ball.dir.y * (Math.abs(this.ball.x - this.paddle2.x) / Math.abs(this.ball.dir.x));
+	}
+
+	AImove(paddle) {
+		if (this.predictedY === null) return;
+		const paddleCenterY = paddle.y + paddle.paddleHeight / 2;
+		if (Math.abs(this.predictedY - paddleCenterY) < 0.01) {
+			paddle.move_up = false;
+			paddle.move_down = false;
+		}else if (this.predictedY > paddle.y + paddle.paddleHeight / 2) {
+			paddle.move_up = false;
+			paddle.move_down = true;
+		} else if (this.predictedY < paddle.y + paddle.paddleHeight / 2) {
+			paddle.move_up = true;
+			paddle.move_down = false;
+		} else {
+			paddle.move_up = false;
+			paddle.move_down = false;
 		}
 	}
 
@@ -200,7 +213,12 @@ export class AIController {
 
 		let retval = "none"
 		if (this.ball.in_play) {
-			this.AImove(this.paddle2)
+			const currentTime = Date.now();
+			if (currentTime - this.lastAIUpdateTime >= this.aiUpdateInterval) {
+				this.predictedY = this.predictBallPosition();
+				this.lastAIUpdateTime = currentTime;
+			}
+			this.AImove(this.paddle2);
 			this.paddle1.move()
 			this.paddle2.move()
 			if (Date.now() > this.restartTimestamp && this.running) {
@@ -416,13 +434,6 @@ class Ball {
 	}
 
 	move(paddle1, paddle2) {
-		const now = this.getTimeNow()
-		if (now > this.speed_timer) {
-			if (this.speed + 0.0005 <= this.radius - 0.002) {
-				this.speed += 0.0005
-				this.timerBall = this.getTimeNow() + 5;
-			}
-		}
 		this.x += this.speed * this.dir.x
 		this.y += this.speed * this.dir.y
 		this.checkTopWallCollision()

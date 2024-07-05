@@ -69,7 +69,7 @@ export async function initLocalGame() {
 	hideMenu()
 	let controller = new LocalController()
 	controller.init()
-	let game = new Game(controller,)
+	let game = new Game(controller)
 	game.run()
 }
 
@@ -78,7 +78,7 @@ export async function initAIGame() {
 	hideMenu()
 	let controller = new AIController()
 	controller.init()
-	let game = new Game(controller,)
+	let game = new Game(controller)
 	game.run()
 }
 
@@ -88,7 +88,7 @@ export async function initRemoteGame() {
 	hideMenu()
 	let controller = new RemoteController()
 	controller.init()
-	let game = new Game(controller,)
+	let game = new Game(controller)
 	game.run()
 }
 

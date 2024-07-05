@@ -30,7 +30,10 @@ export class Renderer {
 		this.initPostProcessing()
 		this.initShadows();
 		this.initEarth();
+
+		window.addEventListener('resize', this.handleWindowResize.bind(this));
 		this.renderer.setAnimationLoop(this.render.bind(this))
+
 	}
 
 	initPostProcessing() {
@@ -305,6 +308,7 @@ export class Renderer {
 	initCameraPos() {
 		this.camera.position.set(0, 0, 5);
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+		this.controls.enableZoom = false;
 		this.controls.enableDamping = true;
 	}
 
@@ -321,9 +325,9 @@ export class Renderer {
 	}
 
 	handleWindowResize () {
-		this.camera.aspect = window.innerWidth / window.innerHeight;
 		this.camera.updateProjectionMatrix();
-		renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setSize(this.windowWidth, this.windowHeight);
 	}
 }
 
