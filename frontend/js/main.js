@@ -39,7 +39,7 @@ export function initRouter() {
 		const potentialMatches = routes.map((route) => {
 			return {
 				route: route,
-				isMatch: window.location.pathname === route.path
+				isMatch:  window.location.pathname + window.location.search === route.path
 
 			}
 		})
@@ -59,6 +59,7 @@ export function initRouter() {
 		last_url = ""
 		router()
 	});
+	
 	document.addEventListener("DOMContentLoaded", () => {
 		document.addEventListener("click", e => {
 			if (e.target.matches("[data-link]")) {

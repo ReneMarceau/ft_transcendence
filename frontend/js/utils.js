@@ -6,7 +6,8 @@ export function reloadPage() {
     document.body.appendChild(overlay);
 
     setTimeout(() => {
-        location.reload();
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.location.replace(cleanUrl);
     }, 500);
 
 }

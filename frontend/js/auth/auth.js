@@ -1,5 +1,6 @@
 import { getCookie } from '../user.js';
 import { createAlert, reloadPage } from "../utils.js"
+import { initOAuth } from './oauth.js';
 
 function createModal(id, title, formAction, fields) {
 	return `
@@ -136,7 +137,19 @@ async function sendRequest(url, data, csrftoken) {
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		createAlert('danger', errorData.detail);
+		if (errorData.username) {
+			createAlert('danger', errorData.username);
+		}
+		else if (errorData.password) {
+			createAlert('danger', errorData.password);
+		}
+		else if (errorData.email) {
+			createAlert('danger', errorData.email);
+		}
+		else 
+		{
+			createAlert('danger', errorData.detail);
+		}
 	}
 }
 
@@ -260,6 +273,7 @@ export async function verifyToken() {
 
 export function initAuth() {
 	//localStorage.clear(); //uncomment to clear local storage
+	initOAuth();
 	if (isAuthenticated() === true) {
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;

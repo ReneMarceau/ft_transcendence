@@ -309,16 +309,23 @@ export class Renderer {
 		this.camera.position.set(0, 0, 5);
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.controls.enableZoom = false;
+		this.controls.enablePan = false;
 		this.controls.enableDamping = true;
+		this.controls.rotateSpeed = 0.5;
+	}
+
+	rotateEarth() {
+		this.earthMesh.rotateY += 1;
+		this.lightsMesh.rotateY += 0.02;
+		this.cloudsMesh.rotateY += 0.023;
+		this.glowMesh.rotateY+= 0.2;
 	}
 
 	render() {
-		if (this.earthGroup) {
-			this.earthMesh.rotateY += 1;
-			this.lightsMesh.rotateY += 0.02;
-			this.cloudsMesh.rotateY += 0.023;
-			this.glowMesh.rotateY+= 0.2;
-		}
+		this.earthMesh.rotateY += 1;
+		this.lightsMesh.rotateY += 0.02;
+		this.cloudsMesh.rotateY += 0.023;
+		this.glowMesh.rotateY+= 0.2;
 
 		this.controls.update()
 		this.composer.render()
