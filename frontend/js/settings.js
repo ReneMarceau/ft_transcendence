@@ -1,4 +1,4 @@
-import { disable2FA, enable2FA, isAuthenticated, verifyToken } from "./auth/auth.js"
+import { disable2FA, enable2FA, isAuthenticated } from "./auth/auth.js"
 import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar, getIs2Fa } from "./user.js"
 import { createAlert, reloadPage } from "./utils.js"
 
@@ -234,12 +234,6 @@ async function initSettings() {
 	disable2faBtn.addEventListener("click", async () => {
 		console.log("Disabling 2FA...");
 		await disable2FA();
-	});
-
-	const verifyBtn = document.getElementById("verifyBtn");
-	verifyBtn.addEventListener("click", async () => {
-		console.log("Verifying token...");
-		await verifyToken();
 	});
 
 }

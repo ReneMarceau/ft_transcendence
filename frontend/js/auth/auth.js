@@ -71,6 +71,27 @@ export function render_auth() {
 	main_frame.innerHTML += createModal('signup-form', 'Sign Up', '/auth/signup/', signup_fields);
 }
 
+function render_2fa() {
+	document.getElementById('login-form').innerHTML += `
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-secondary" id="twofa-Label">2FA token</h5>
+				</div>
+				<div class="modal-body">
+					<form id="twofa-form" action="/auth/2fa/verify-token/">
+						<div class="form-group">
+							<label for="twofa-input">token</label>
+							<input type="number" class="form-control" id="two2fa-input" placeholder="123 456" required>
+							<button type="submit" class="btn btn-primary btn-block">Verify</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	`
+}
+
 function authLogin() {
 	const csrftoken = getCookie('csrftoken');
 
@@ -125,31 +146,31 @@ async function sendRequest(url, data, csrftoken) {
 	});
 	if (response.ok) //200 login, 201 signup
 	{
-		if (response.status === 200) {
-			//login
-		}
 		const responseData = await response.json();
 		console.log(responseData);
-		localStorage.setItem('access_token', responseData.access);
-		localStorage.setItem('refresh_token', responseData.refresh);
-		createAlert('success', responseData.detail);
-		reloadPage();
+		if (response.status === 200) {
+			if (responseData.is_2fa_enabled == true) {
+				render_2fa();
+				await verifyToken();
+			}
+		}
+		else {
+			localStorage.setItem('access_token', responseData.access);
+			localStorage.setItem('refresh_token', responseData.refresh);
+			createAlert('success', responseData.detail);
+			reloadPage();
+		}
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		if (errorData.username) {
+		if (errorData.username)
 			createAlert('danger', errorData.username);
-		}
-		else if (errorData.password) {
+		else if (errorData.password)
 			createAlert('danger', errorData.password);
-		}
-		else if (errorData.email) {
+		else if (errorData.email)
 			createAlert('danger', errorData.email);
-		}
-		else 
-		{
+		else
 			createAlert('danger', errorData.detail);
-		}
 	}
 }
 
@@ -160,7 +181,7 @@ export function isAuthenticated() {
 	//console.log("access_token " + access_token)
 	//console.log("refresh_token " + refresh_token)
 	const is_authenticated = (access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined))
-	if (is_authenticated) 
+	if (is_authenticated)
 		return true;
 	return false;
 }
@@ -244,8 +265,7 @@ async function generateTwoFa() {
 	}
 }
 
-export async function verifyToken() {
-	const token = document.getElementById('totpToken').value;
+export async function verifyToken(token) {
 	console.log('Verifying token:', token);
 
 	const response = await fetch('/auth/2fa/verify-token/', {
