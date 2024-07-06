@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status, views
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from utils.utils import timestamp_to_iso
+from authentication.jwt.utils import generate_tokens_and_login
+from user_management.models import Profile
 
 
 User = get_user_model()
@@ -28,12 +29,12 @@ class OAuth2CallbackView(views.APIView):
             user_data = self.get_user_info(access_token)
             user = self.create_or_update_user(user_data)
             login(request, user)
-            tokens = self.generate_tokens(user)
+            tokens = generate_tokens_and_login(request, user)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         # Redirect to frontend with tokens
-        url = f'{settings.FRONTEND_URL}/oauth?refresh={tokens["refresh"]}&access={tokens["access"]}&expiration={tokens["expiration"]}&detail={tokens["detail"]}'
+        url = f'{settings.FRONTEND_URL}?refresh={tokens["refresh"]}&access={tokens["access"]}&expiration={tokens["expires"]}&detail={tokens["detail"]}'
         return redirect(url)
 
     def exchange_code_for_token(self, code):
@@ -68,18 +69,17 @@ class OAuth2CallbackView(views.APIView):
                 'last_name': user_data['last_name'],
             }
         )
+
+        # Get the avatar URL from the user_data
+        avatar_url = user_data.get('image', {}).get('link')
+        if avatar_url:
+            profile, profile_created = Profile.objects.update(
+                user=user,
+                defaults={'avatar': avatar_url}
+            )
+
         return user
 
-    def generate_tokens(self, user):
-        refresh = RefreshToken.for_user(user)
-        access_token = refresh.access_token
-        expiration = timestamp_to_iso(access_token['exp'])
-        return {
-            'refresh': str(refresh),
-            'access': str(access_token),
-            'expiration': expiration,
-            'detail': 'User authenticated successfully with 42.'
-        }
 
 def redirect_to_42(request):
     return redirect(f'https://api.intra.42.fr/oauth/authorize?client_id={settings.AUTH42_CLIENT_ID}&redirect_uri={settings.AUTH42_REDIRECT_URI}&response_type=code')
