@@ -206,6 +206,9 @@ export class Renderer {
 		this.renderer = new THREE.WebGLRenderer({ canvas: this.canva, antialias: true })
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(this.windowWidth, this.windowHeight);
+		this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+		this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
 	}
 
 	initGameBoard() {
