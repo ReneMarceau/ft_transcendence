@@ -4,10 +4,12 @@ import { AIController } from "./controller.js"
 import { RemoteController } from "./controller.js"
 import { Game } from "./Game.js"
 import { isAuthenticated } from "../auth/auth.js"
+import { Tournament } from "./tournament.js"
 
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
 	main_frame.innerHTML = `
+	<div id="playerForm" class="md-5"></div>
 	<canvas id="board" class="d-none"></canvas>
 	<canvas id="background"></canvas>
 	`
@@ -24,8 +26,8 @@ export function render_game() {
 	</div>
 	`
 	tournamentBtn.addEventListener("click", function () {
-			var dropdownMenu = document.getElementById('debugDropdownMenu');
-			dropdownMenu.classList.toggle('show');
+		var dropdownMenu = document.getElementById('debugDropdownMenu');
+		dropdownMenu.classList.toggle('show');
 	});
 
 	renderer.init()
@@ -41,6 +43,9 @@ function hideProfile() {
 
 export async function pongMenu() {
 	hideProfile()
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
+
 	if (isAuthenticated() === true) {
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
@@ -58,10 +63,7 @@ export async function pongMenu() {
 export async function initTournament() {
 	console.log("tournament")
 	hideMenu()
-	let controller = new LocalController()
-	controller.init()
-	let game = new Game(controller,)
-	game.run()
+		const tournament = new Tournament()
 }
 
 export async function initLocalGame() {
@@ -69,8 +71,9 @@ export async function initLocalGame() {
 	hideMenu()
 	let controller = new LocalController()
 	controller.init()
-	let game = new Game(controller)
+	let game = new Game(controller,)
 	game.run()
+
 }
 
 export async function initAIGame() {

@@ -33,7 +33,7 @@ export function initRouter() {
 			{ path: "/remotegame", view: () => initRemoteGame() },
 			{ path: "/profile", view: () => initProfile() },
 			{ path: "/oauth", view: () => initOAuth()},
-			// { path: "/tournament", view: () => initTournament() },
+			{ path: "/tournament", view: () => initTournament() },
 		]
 
 		const potentialMatches = routes.map((route) => {

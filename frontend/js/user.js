@@ -27,7 +27,7 @@ export function getCurrentUserId() {
 	}
 }
 
-export async function getUsername(userid) {
+export async function getUsername(userid = getCurrentUserId()) {
 	const response = await fetch(`/api/users/${userid}`, {
 		method: "GET",
 		headers: {
