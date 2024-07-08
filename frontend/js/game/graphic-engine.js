@@ -158,7 +158,11 @@ export class Renderer {
 		starsGeometry.setAttribute(
 			"position", new THREE.Float32BufferAttribute(stars, 3)
 		);
-		var starsMaterial = new THREE.PointsMaterial({ color: 0x888888 });
+		var starsMaterial = new THREE.PointsMaterial({ 
+			color: 0xFFFFFF,
+			size: 2, // Adjust this value to make the stars bigger
+			sizeAttenuation: true // This makes sure the stars do not get too big when close to the camera
+		 });
 		this.starField = new THREE.Points(starsGeometry, starsMaterial);
 		this.scene.add(this.starField);
 	}
