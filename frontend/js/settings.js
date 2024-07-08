@@ -110,7 +110,7 @@ function render_buttons(userid) {
                 <form class="mt-3 d-none" id="${data.id}" action="/api/users/${userid}/">
                     <label for="new${data.id}" class="m-1">${data.label}</label>
                     <div class="form-group d-flex align-items-center">
-                        <input type="${data.type}" class="form-control m-1" id="new${data.id}" name="new${data.id}">
+                        <input type="${data.type}" class="form-control m-1" id="new${data.id}" name="new${data.id}" placeholder="${data.label}">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
