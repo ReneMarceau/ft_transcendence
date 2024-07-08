@@ -36,6 +36,7 @@ export async function enable2FA() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
             'Authorization': 'Bearer ' + localStorage.getItem('access_token')
         },
@@ -58,6 +59,7 @@ export async function disable2FA() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
             'Authorization': 'Bearer ' + localStorage.getItem('access_token')
         },
@@ -90,8 +92,16 @@ async function generateTwoFa() {
     if (response.ok) {
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-
-        qrCodeContainer.innerHTML = `<img src="${url}" alt="QR Code" style="width: 200px, height: 200px"/>`;
+        document.getElementById("enable2faBtn").classList.add('d-none');
+        qrCodeContainer.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+        <div class="text-center">
+            <p>Scan the QR code with your authenticator app</p>
+            <h3 class="text-warning">Dont lose your secret key<i class="bi bi-exclamation-triangle"></i></h3>
+            <img src="${url}" alt="QR Code" style="max-width: 300px; max-height: 300px"/>
+            </div>
+        </div>
+        `;
     } else {
         const errorData = await response.json();
         console.error('Error:', errorData);

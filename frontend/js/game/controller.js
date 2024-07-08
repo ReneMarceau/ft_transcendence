@@ -186,8 +186,6 @@ export class AIController {
 			this.ball.dir.y *= -1;
 			this.ball.dir.norm();
 		}
-
-		// Calculate the predicted future position of the ball
 		return this.ball.y + this.ball.dir.y * (Math.abs(this.ball.x - this.paddle2.x) / Math.abs(this.ball.dir.x));
 	}
 

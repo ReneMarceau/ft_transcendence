@@ -141,14 +141,12 @@ async function sendRequest(url, data, csrftoken) {
 	} else {
 		const errorData = await response.json();
 		console.error('Error:', errorData);
-		if (errorData.username)
-			createAlert('danger', errorData.username);
-		else if (errorData.password)
-			createAlert('danger', errorData.password);
-		else if (errorData.email)
-			createAlert('danger', errorData.email);
-		else
-			createAlert('danger', errorData.detail);
+		const errorKeys = ['username', 'password', 'email', 'detail'];
+		const errorKey = errorKeys.find(key => errorData[key]);
+		
+		if (errorKey) {
+			createAlert('danger', errorData[errorKey]);
+		}
 	}
 }
 
