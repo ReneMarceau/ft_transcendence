@@ -108,9 +108,9 @@ export class Renderer {
 		const loader = new THREE.TextureLoader();
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
 		const material = new THREE.MeshPhongMaterial({
-			map: loader.load("./textures/00_earthmap1k.jpg"),
-			specularMap: loader.load("./textures/02_earthspec1k.jpg"),
-			bumpMap: loader.load("./textures/01_earthbump1k.jpg"),
+			map: loader.load("./textures/earth/00_earthmap1k.jpg"),
+			specularMap: loader.load("./textures/earth/02_earthspec1k.jpg"),
+			bumpMap: loader.load("./textures/earth/01_earthbump1k.jpg"),
 			side: THREE.DoubleSide,
 			bumpScale: 0.5,
 		});
@@ -118,7 +118,7 @@ export class Renderer {
 		this.earthGroup.add(this.earthMesh);
 
 		const lightsMat = new THREE.MeshBasicMaterial({
-			map: loader.load("./textures/03_earthlights1k.jpg"),
+			map: loader.load("./textures/earth/03_earthlights1k.jpg"),
 			blending: THREE.AdditiveBlending,
 			transparent: true,
 		});
@@ -126,11 +126,11 @@ export class Renderer {
 		this.earthGroup.add(this.lightsMesh);
 
 		const cloudsMat = new THREE.MeshStandardMaterial({
-			map: loader.load("./textures/04_earthcloudmap.jpg"),
+			map: loader.load("./textures/earth/04_earthcloudmap.jpg"),
 			transparent: true,
 			opacity: 0.5,
 			blending: THREE.AdditiveBlending,
-			alphaMap: loader.load('./textures/05_earthcloudmaptrans.jpg'),
+			alphaMap: loader.load('./textures/earth/05_earthcloudmaptrans.jpg'),
 			alphaTest: 0.3,
 		});
 		this.cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
@@ -178,16 +178,16 @@ export class Renderer {
 		this.scene.add(this.pointLight)
 
 
-		// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
-		// const spotLight = new THREE.SpotLight(0xffffff, 5);
+		this.ambientLight = new THREE.AmbientLight(0xffffff, 1); // Ambient light
+		this.spotLight = new THREE.SpotLight(0xffffff, 15);
 
-		// spotLight.position.set(0, 0, 2);
-		// spotLight.castShadow = true;
+		this.spotLight.position.set(0, 0, 2);
+		this.spotLight.castShadow = true;
 
-		// spotLight.shadow.mapSize.width = this.windowWidth
-		// spotLight.shadow.mapSize.height = this.windowHeight
+		this.spotLight.shadow.mapSize.width = this.windowWidth
+		this.spotLight.shadow.mapSize.height = this.windowHeight
 
-		// this.scene.add(ambientLight, spotLight);
+		//this.scene.add(this.ambientLight, this.spotLight);
 	}
 
 	initShadows() {
@@ -253,27 +253,39 @@ export class Renderer {
 		this.camera.position.set(0, 0, 5);
 		this.camera.lookAt(0, 0, 0)
 		this.scene.remove(this.earthGroup)
+		this.scene.add(this.ambientLight, this.spotLight);
 		this.scene.add(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
 	}
 	hideBoard() {
 		console.log("hide board")
 		document.getElementById("board").classList.add("d-none")
 		this.scene.add(this.earthGroup)
+		this.scene.remove(this.ambientLight, this.spotLight);
 		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
 	}
 
 	initMaterials() {
-		this.backgroundMat = new THREE.MeshPhongMaterial({
-			color: 0x2E2E2E,
+		const textureLoader = new THREE.TextureLoader();
+
+		this.backgroundMat = new THREE.MeshStandardMaterial({
+			map: textureLoader.load('./textures/asteroid/ground_0010_color_1k.jpg'),               // Color texture
+			aoMap: textureLoader.load('./textures/asteroid/ground_0010_ao_1k.jpg'),                // Ambient Occlusion texture
+			normalMap: textureLoader.load('./textures/asteroid/ground_0010_normal_opengl_1k.png'), // Normal map
+			//displacementMap: textureLoader.load('./textures/asteroid/ground_0010_height_1k.png'),  // Height map (used as displacement map)
+			roughnessMap: textureLoader.load('./textures/asteroid/ground_0010_roughness_1k.jpg'),  // Roughness map
+			metalness: 0.5,              // Adjust metalness as needed
+			roughness: 1,                // Adjust roughness as needed
 			side: THREE.DoubleSide,
 		});
 
-		this.paddlesMat = new THREE.MeshPhongMaterial({
-			color: 0xD3D3D3,
+		this.paddlesMat = new THREE.MeshStandardMaterial({
+			color: 0xFFFFFF,      // White tint
+			emissive: 0xFFFFFF,   // Green emissive color
+			emissiveIntensity: 1, // Intensity of the emissive glow
 			side: THREE.DoubleSide,
 		});
 
-		this.ballMat = new THREE.MeshPhysicalMaterial({
+		this.ballMat = new THREE.MeshStandardMaterial({
 			color: 0xFFFFFF,      // White tint
 			side: THREE.DoubleSide,
 		});
@@ -363,7 +375,7 @@ export class graphicEngine {
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
-		this.textColor = "#888888"
+		this.textColor = "#FFFFFF"
 
 		this.scoreScale = this.height / 5
 		this.scoreMarginRight = this.mid + (this.width / 4) - (this.scoreScale * 0.2);

@@ -193,6 +193,7 @@ export class AIController {
 
 	AImove(paddle) {
 		if (this.predictedY === null) return;
+		if (this.ball.x < 0.5) return;
 		const paddleCenterY = paddle.y + paddle.paddleHeight / 2;
 		if (Math.abs(this.predictedY - paddleCenterY) < 0.01) {
 			paddle.move_up = false;

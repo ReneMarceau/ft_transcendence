@@ -65,7 +65,7 @@ export async function getEmail(userid) {
 		email = data.email
 	else {
 		email = "error"
-	}
+	}	
 	return email
 }
 
