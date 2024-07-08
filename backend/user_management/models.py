@@ -24,9 +24,9 @@ class User(AbstractUser):
     
 class Profile(models.Model):
     class StatusChoices(models.TextChoices):
-        ONLINE = 'online', 'Online'
-        OFFLINE = 'offline', 'Offline'
-        IN_GAME = 'in_game', 'In Game'
+        ONLINE = 'online', 'online'
+        OFFLINE = 'offline', 'offline'
+        IN_GAME = 'in_game', 'in game'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     alias = models.CharField(max_length=50, blank=True)

@@ -1,30 +1,62 @@
-# # user_management/consumers.py
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 
-# import json
-# from channels.generic.websocket import AsyncWebsocketConsumer
-# from asgiref.sync import sync_to_async
-# from django.contrib.auth import get_user_model
-# import redis
+class StatusConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+        if self.user.is_authenticated:
+            await self.accept()
+            await self.channel_layer.group_add(
+                f"user_{self.user.username}",
+                self.channel_name
+            )
+            await self.update_status("online")
 
-# User = get_user_model()
-# r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    async def disconnect(self, close_code):
+        if self.user.is_authenticated:
+            await self.channel_layer.group_discard(
+                f"user_{self.user.username}",
+                self.channel_name
+            )
+            await self.update_status("offline")
 
-# class StatusConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         if self.scope["user"].is_anonymous:
-#             await self.close()
-#         else:
-#             self.user = self.scope["user"]
-#             await self.set_user_status(self.user.id, "online")
-#             await self.accept()
+    async def receive(self, text_data):
+        pass
 
-#     async def disconnect(self, close_code):
-#         await self.set_user_status(self.user.id, "offline")
+    async def update_status(self, status):
+        # Update status in the database
+        profile = await self.get_profile()
+        await self.set_profile_status(profile, status)
 
-#     async def receive(self, text_data):
-#         pass  # No need to handle incoming messages for status updates
+        # Notify friends
+        friends = await self.get_friends(profile)
+        for friend in friends:
+            await self.channel_layer.group_send(
+                f"user_{friend.user.username}",
+                {
+                    "type": "status_update",
+                    "username": self.user.username,
+                    "status": status
+                }
+            )
 
-#     @sync_to_async
-#     def set_user_status(self, user_id, status):
-#         r.set(f"user_{user_id}_status", status)
-#         # You can also update the User model or a custom Profile model if needed.
+    @database_sync_to_async
+    def get_profile(self):
+        from user_management.models import Profile
+        return Profile.objects.get(user=self.user)
+    
+    @database_sync_to_async
+    def set_profile_status(self, profile, status):
+        profile.status = status
+        profile.save()
+
+    @database_sync_to_async
+    def get_friends(self, profile):
+        return list(profile.friends.all())
+
+    async def status_update(self, event):
+        await self.send(text_data=json.dumps({
+            "username": event["username"],
+            "status": event["status"],
+        }))

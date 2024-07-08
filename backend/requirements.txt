@@ -29,6 +29,7 @@ itypes==1.2.0
 Jinja2==3.1.4
 MarkupSafe==2.1.5
 msgpack==1.0.8
+msgpack-python==0.5.6
 packaging==24.1
 phonenumbers==8.13.40
 pillow==10.3.0

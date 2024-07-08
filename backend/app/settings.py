@@ -16,6 +16,8 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
 FRONTEND_URL = 'https://localhost'
 
 AUTH42_CLIENT_ID = os.environ.get('AUTH42_CLIENT')
@@ -46,6 +48,7 @@ SESSION_COOKIE_SECURE = True
 
 INSTALLED_APPS = [
     'corsheaders',
+    'daphne',
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -99,7 +102,7 @@ ASGI_APPLICATION = 'app.asgi.application'
 # Channels
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.redis.RedisChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             'hosts': [('redis', 6379)],
         },

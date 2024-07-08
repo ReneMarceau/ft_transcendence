@@ -28,7 +28,6 @@ class OAuth2CallbackView(views.APIView):
             access_token = self.exchange_code_for_token(code)
             user_data = self.get_user_info(access_token)
             user = self.create_or_update_user(user_data)
-            login(request, user)
             tokens = generate_tokens_and_login(request, user)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -71,12 +70,12 @@ class OAuth2CallbackView(views.APIView):
         )
 
         # Get the avatar URL from the user_data
-        avatar_url = user_data.get('image', {}).get('link')
-        if avatar_url:
-            profile, profile_created = Profile.objects.update(
-                user=user,
-                defaults={'avatar': avatar_url}
-            )
+        # avatar_url = user_data.get('image', {}).get('link')
+        # if avatar_url:
+        #     profile, profile_created = Profile.objects.update(
+        #         user=user,
+        #         # avatar=avatar_url,
+        #     )
 
         return user
 
