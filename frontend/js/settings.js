@@ -1,4 +1,5 @@
-import { disable2FA, enable2FA, isAuthenticated } from "./auth/auth.js"
+import { isAuthenticated } from "./auth/auth.js"
+import { enable2FA, disable2FA } from "./auth/2fa.js"
 import { getCookie, getCurrentUserId, getUsername, getEmail, getAvatar, getIs2Fa } from "./user.js"
 import { createAlert, reloadPage } from "./utils.js"
 
@@ -196,8 +197,6 @@ async function render_two_fa_settings() {
                 <button id="enable2faBtn" class="btn btn-primary mx-2">Enable 2FA</button>
                 <button id="disable2faBtn" class="btn btn-primary mx-2">Disable 2FA</button>
             </div>
-			<input type="text" id="totpToken" placeholder="Enter TOTP Token">
-			<button id="verifyBtn" class="btn btn-primary mx-2">Verify Token</button>
 			`;
 
 }

@@ -1,6 +1,7 @@
-import { getCookie } from '../user.js';
+import { getCookie, getCurrentUserId } from '../user.js';
 import { createAlert, reloadPage } from "../utils.js"
 import { initOAuth } from './oauth.js';
+import { verifyToken, render_2fa } from './2fa.js';
 
 function createModal(id, title, formAction, fields) {
 	return `
@@ -71,27 +72,6 @@ export function render_auth() {
 	main_frame.innerHTML += createModal('signup-form', 'Sign Up', '/auth/signup/', signup_fields);
 }
 
-function render_2fa() {
-	document.getElementById('login-form').innerHTML += `
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title text-secondary" id="twofa-Label">2FA token</h5>
-				</div>
-				<div class="modal-body">
-					<form id="twofa-form" action="/auth/2fa/verify-token/">
-						<div class="form-group">
-							<label for="twofa-input">token</label>
-							<input type="number" class="form-control" id="two2fa-input" placeholder="123 456" required>
-							<button type="submit" class="btn btn-primary btn-block">Verify</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	`
-}
-
 function authLogin() {
 	const csrftoken = getCookie('csrftoken');
 
@@ -139,7 +119,7 @@ async function sendRequest(url, data, csrftoken) {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'X-CSRFToken': csrftoken
+			'X-CSRFToken': csrftoken,
 
 		},
 		body: JSON.stringify(data)
@@ -148,11 +128,9 @@ async function sendRequest(url, data, csrftoken) {
 	{
 		const responseData = await response.json();
 		console.log(responseData);
-		if (response.status === 200) {
-			if (responseData.is_2fa_enabled == true) {
-				render_2fa();
-				await verifyToken();
-			}
+		if (responseData.is_2fa_enabled == true) {
+			render_2fa();
+			handle2FA(responseData);
 		}
 		else {
 			localStorage.setItem('access_token', responseData.access);
@@ -174,6 +152,14 @@ async function sendRequest(url, data, csrftoken) {
 	}
 }
 
+function handle2FA(responseData) {
+	document.getElementById('twofa-form').addEventListener('submit', async function (event) {
+		event.preventDefault();
+		const token = document.getElementById("twofa-input").value;
+		const url = event.target.action;
+		await verifyToken(url, responseData, token);
+	});
+}
 
 export function isAuthenticated() {
 	const access_token = localStorage.getItem('access_token');
@@ -196,100 +182,6 @@ export function authLogout() {
 		reloadPage();
 	})
 }
-
-export async function enable2FA() {
-	const response = await fetch('/auth/2fa/enable-2fa/', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-		},
-		credentials: 'same-origin'
-	});
-	if (response.ok) {
-		const responseData = await response.json();
-		console.log(responseData);
-		createAlert('success', responseData.detail);
-		generateTwoFa();
-	} else {
-		const errorData = await response.json();
-		createAlert('danger', errorData.detail);
-		console.error('Error:', errorData);
-	}
-}
-
-export async function disable2FA() {
-	const response = await fetch('/auth/2fa/disable-2fa/', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-		},
-		credentials: 'same-origin'
-	});
-	if (response.ok) {
-		const responseData = await response.json();
-		console.log(responseData);
-		createAlert('success', responseData.detail);
-		reloadPage();
-	} else {
-		const errorData = await response.json();
-		createAlert('danger', errorData.detail);
-		console.error('Error:', errorData);
-	}
-}
-
-async function generateTwoFa() {
-	const qrCodeContainer = document.getElementById('qr-code-container');
-	qrCodeContainer.innerHTML = '';
-	const response = await fetch(`/auth/2fa/generate-qr/`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-		},
-		credentials: 'same-origin'
-	});
-	if (response.ok) {
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-
-		qrCodeContainer.innerHTML = `<img src="${url}" alt="QR Code" style="width: 200px, height: 200px"/>`;
-	} else {
-		const errorData = await response.json();
-		console.error('Error:', errorData);
-		alert('Failed. Please try again.');
-	}
-}
-
-export async function verifyToken(token) {
-	console.log('Verifying token:', token);
-
-	const response = await fetch('/auth/2fa/verify-token/', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-		},
-		credentials: 'same-origin',
-		body: JSON.stringify({ otp: token })
-	});
-
-	if (response.ok) {
-		console.log('Token verified');
-		const responseData = await response.json();
-		createAlert('success', responseData.detail);
-	} else {
-		const errorData = await response.json();
-		console.error('Error verifying token:', errorData);
-		createAlert('danger', errorData.detail);
-	}
-}
-
 
 export function initAuth() {
 	//localStorage.clear(); //uncomment to clear local storage

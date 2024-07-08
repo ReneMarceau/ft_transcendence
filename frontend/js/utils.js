@@ -26,6 +26,7 @@ export function createAlert(type, message) {
         }
     };
 
+    console.log(`Creating alert with type: ${type} and message: ${message}`);
     const alert = document.createElement('div');
     alert.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 10000;'
     alert.classList.add('alert', 'alert-dismissible', `alert-${type}`);
