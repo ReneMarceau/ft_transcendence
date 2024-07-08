@@ -7,7 +7,7 @@ export class Tournament {
         this.winner = ""
         this.players = []
         this.game_nb = 1
-        this.displayForm()
+        this.displayForm()   
     }
 
 

@@ -20,13 +20,13 @@ export function render_game() {
 	let tournamentBtn = document.querySelector("#tournamentbtn")
 	tournamentBtn.innerHTML = `
 	Tournament
-	<div class="dropdown-menu" id="debugDropdownMenu">
+	<div class="dropdown-menu" id="dropdownMenu">
 		<a class="dropdown-item" href="#">New tournament</a>
 		<a class="dropdown-item" href="#">Join tournament</a>
 	</div>
 	`
 	tournamentBtn.addEventListener("click", function () {
-		var dropdownMenu = document.getElementById('debugDropdownMenu');
+		var dropdownMenu = document.getElementById('dropdownMenu');
 		dropdownMenu.classList.toggle('show');
 	});
 

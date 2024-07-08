@@ -106,7 +106,7 @@ export class Renderer {
 
 		const detail = 20;
 		const loader = new THREE.TextureLoader();
-		const geometry = new THREE.IcosahedronGeometry(1, detail);
+		const geometry = new THREE.IcosahedronGeometry(1.5, detail);
 		const material = new THREE.MeshPhongMaterial({
 			map: loader.load("./textures/earth/00_earthmap1k.jpg"),
 			specularMap: loader.load("./textures/earth/02_earthspec1k.jpg"),
@@ -333,19 +333,12 @@ export class Renderer {
 		this.controls.rotateSpeed = 0.5;
 	}
 
-	rotateEarth() {
-		this.earthMesh.rotateY += 1;
-		this.lightsMesh.rotateY += 0.02;
-		this.cloudsMesh.rotateY += 0.023;
-		this.glowMesh.rotateY+= 0.2;
-	}
-
 	render() {
-		this.earthMesh.rotateY += 1;
-		this.lightsMesh.rotateY += 0.02;
-		this.cloudsMesh.rotateY += 0.023;
-		this.glowMesh.rotateY+= 0.2;
-
+		this.earthMesh.rotation.y += 0.002;
+		this.lightsMesh.rotation.y += 0.002;
+		this.cloudsMesh.rotation.y += 0.0023;
+		this.glowMesh.rotation.y += 0.002;
+		this.starField.rotation.y -= 0.0002;
 		this.controls.update()
 		this.composer.render()
 	}

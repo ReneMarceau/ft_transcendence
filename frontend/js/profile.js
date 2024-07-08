@@ -23,7 +23,7 @@ export async function initProfile(userid = getCurrentUserId()) {
 
 function renderProfile(username, avatar) {
 	document.getElementById("profileDiv").innerHTML = `
-    <div class="justify-content-center p-4 align-items-center">
+    <div class="justify-content-center align-items-center">
 		<div class="row">
 			<div class="col-md-6 text-center">
 				<img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="width: 200px; height: 200px;">
