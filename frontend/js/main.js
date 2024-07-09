@@ -15,15 +15,14 @@ import { initSideBar } from "./sidebar.js";
 })();
 
 export function initRouter() {
-
-	let last_url
+	let last_url;
 	const navigateTo = url => {
 		if (url != last_url) {
-			history.pushState(null, null, url)
-			last_url = url
+			history.pushState(null, null, url);
+			last_url = url;
 		}
-		router()
-	}
+		router();
+	};
 
 	const router = async () => {
 		const routes = [
@@ -31,42 +30,59 @@ export function initRouter() {
 			{ path: "/localgame", view: () => initLocalGame() },
 			{ path: "/aigame", view: () => initAIGame() },
 			{ path: "/remotegame", view: () => initRemoteGame() },
-			{ path: "/profile", view: () => initProfile() },
-			{ path: "/oauth", view: () => initOAuth()},
+			{ path: "/profile", view: (params) => initProfile(params.id) },
+			{ path: "/oauth", view: () => initOAuth() },
 			{ path: "/tournament", view: () => initTournament() },
-		]
+		];
 
-		const potentialMatches = routes.map((route) => {
+		const parseQueryParams = (queryString) => {
+			const params = new URLSearchParams(queryString);
+			const result = {};
+			for (const [key, value] of params.entries()) {
+				result[key] = value;
+			}
+			return result;
+		};
+
+		const potentialMatches = routes.map(route => {
+			const routePath = window.location.pathname.split('?')[0];
+			const isMatch = routePath === route.path;
+			const queryParams = isMatch ? parseQueryParams(window.location.search) : {};
 			return {
 				route: route,
-				isMatch:  window.location.pathname + window.location.search === route.path
+				isMatch: isMatch,
+				params: queryParams
+			};
+		});
 
-			}
-		})
-
-		let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch)
+		let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 
 		if (!match) {
 			match = {
 				route: routes[0],
-				isMatch: true
-			}
+				isMatch: true,
+				params: {}
+			};
 		}
-		await match.route.view()
-	}
+
+		await match.route.view(match.params);
+	};
 
 	window.addEventListener('popstate', () => {
-		last_url = ""
-		router()
+		last_url = "";
+		router();
 	});
-	
+
 	document.addEventListener("DOMContentLoaded", () => {
 		document.addEventListener("click", e => {
 			if (e.target.matches("[data-link]")) {
-				e.preventDefault()
-				navigateTo(e.target.href)
+				e.preventDefault();
+				navigateTo(e.target.href);
+			} else if (e.target.closest("[data-link]")) {
+				e.preventDefault();
+				navigateTo(e.target.closest("[data-link]").href);
 			}
-		})
+		});
 	});
-	router()
+	router();
 }

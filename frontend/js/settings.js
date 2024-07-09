@@ -24,17 +24,19 @@ export async function createSettings() {
 									</div>
 								</div>
 							</div>
-							<div class="row">
-								<label for="profile-main-username" class="col-sm-2 col-form-label">Username:</label>
-								<div class="col-sm-10">
-									<input type="text" readonly="" class="form-control-plaintext" id="profile-main-username" value="">
+							<div class="container">
+								<div class="row mb-3">
+									<label for="profile-main-username" class="col-sm-2 col-form-label">Username:</label>
+									<div class="col-sm-10">
+										<h3 id="profile-main-username" class="form-control-plaintext"></h3>
+									</div>
 								</div>
-							</div>
-							<div class="row">
-								<label for="profile-main-email" class="col-sm-2 col-form-label">Email:</label>
-								<div class="col-sm-10">
-        							<input type="text" readonly="" class="form-control-plaintext" id="profile-main-email" value="">
-      							</div>
+								<div class="row">
+									<label for="profile-main-email" class="col-sm-2 col-form-label">Email:</label>
+									<div class="col-sm-10">
+										<h3 id="profile-main-email" class="form-control-plaintext"></h3>
+									</div>
+								</div>
 							</div>
 						</div>
 						<hr>
@@ -221,8 +223,8 @@ async function initSettings() {
 		return;
 
 	const userid = getCurrentUserId()
-	document.getElementById("profile-main-username").value = await getUsername(userid)
-	document.getElementById("profile-main-email").value = await getEmail(userid)
+	document.getElementById("profile-main-username").innerHTML = await getUsername(userid)
+	document.getElementById("profile-main-email").innerHTML = await getEmail(userid)
 	document.getElementById("profilePicture").src = await getAvatar(userid)
 
 	const changeImageBtn = document.getElementById("profile-picture-container").querySelector(".svg-container");

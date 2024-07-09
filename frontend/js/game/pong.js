@@ -100,9 +100,7 @@ function hideMenu() {
 	let aiGameBtn = document.querySelector("#aigamebtn")
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let tournamentBtn = document.querySelector("#tournamentbtn")
-	let menu = document.querySelector("#menubtn")
 
-	menu.classList.add('d-none')
 	tournamentBtn.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
 	remoteGameBtn.classList.add('d-none')
