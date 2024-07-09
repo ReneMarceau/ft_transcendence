@@ -40,6 +40,47 @@ function hideProfile() {
 	}
 }
 
+let ws = null
+
+window.addEventListener("beforeunload", function (event) {
+	if (ws) {
+		ws.close()
+	}
+})
+
+async function updateFriendStatus(username, status) {
+	const friendElements = document.querySelectorAll('.nav-item');
+	friendElements.forEach(friendElement => {
+		const friendLink = friendElement.querySelector('a.nav-link');
+		if (friendLink && friendLink.textContent.trim() === username) {
+			const statusBadge = friendElement.querySelector('span.badge');
+			statusBadge.textContent = status;
+		}
+	});
+}
+
+function initWebsocket() {
+	ws = new WebSocket(`wss://${window.location.host}/ws/status/`)
+	ws.onopen = function (event) {
+		console.log("[open] Connection established");
+	}
+	ws.onmessage = function (event) {
+		const data = JSON.parse(event.data)
+		console.log(data)
+		updateFriendStatus(data.username, data.status)
+	}
+	ws.onclose = function (event) {
+		if (event.wasClean) {
+			console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+		} else {
+			console.log('[close] Connection died');
+		}
+	}
+
+	ws.onerror = function (error) {
+		console.log(`[error] ${error.message}`);
+	}
+}
 
 export async function pongMenu() {
 	hideProfile()
@@ -47,6 +88,7 @@ export async function pongMenu() {
 	pongTournament.innerHTML = ""
 
 	if (isAuthenticated() === true) {
+		initWebsocket()
 		let localGameBtn = document.querySelector("#localgamebtn")
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")

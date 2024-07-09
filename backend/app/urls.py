@@ -39,12 +39,19 @@ def api_root(request, format=None):
         'verify_token': reverse('verify_token', request=request, format=format),
         'enable_2fa': reverse('enable_2fa', request=request, format=format),
         'disable_2fa': reverse('disable_2fa', request=request, format=format),
+        'games': reverse('game-list', request=request, format=format),
+        'tournaments': reverse('tournament-list', request=request, format=format),
+        'scores': reverse('score-list', request=request, format=format),
+        'statistics': reverse('statistic-list', request=request, format=format),
     })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
     path('api/', include('user_management.urls')),
+    path('api/', include('game.urls')),
+    path('api/', include('tournament.urls')),
+    path('api/', include('metrics.urls')),
     path('', api_root),
 ]
 

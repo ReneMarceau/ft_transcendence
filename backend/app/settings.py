@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'channels',
     'rest_framework',
@@ -64,11 +65,15 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     'user_management.apps.UserManagementConfig',
     'authentication.apps.AuthenticationConfig',
+    'metrics.apps.MetricsConfig',
+    'game.apps.GameConfig',
+    'tournament.apps.TournamentConfig',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -196,6 +201,7 @@ SITE_ID = 1
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' 
 
 # Media files
 MEDIA_URL = '/media/'
