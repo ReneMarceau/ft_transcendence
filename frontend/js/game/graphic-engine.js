@@ -50,13 +50,13 @@ export class Renderer {
 	}
 
 	initEarth() {
-		function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
+		function getFresnelMat({ rimHex = 0x0088ff, facingHex = 0x000000 } = {}) {
 			const uniforms = {
-			  color1: { value: new THREE.Color(rimHex) },
-			  color2: { value: new THREE.Color(facingHex) },
-			  fresnelBias: { value: 0.1 },
-			  fresnelScale: { value: 1.0 },
-			  fresnelPower: { value: 4.0 },
+				color1: { value: new THREE.Color(rimHex) },
+				color2: { value: new THREE.Color(facingHex) },
+				fresnelBias: { value: 0.1 },
+				fresnelScale: { value: 1.0 },
+				fresnelPower: { value: 4.0 },
 			};
 			const vs = `
 			uniform float fresnelBias;
@@ -90,15 +90,15 @@ export class Renderer {
 			}
 			`;
 			const fresnelMat = new THREE.ShaderMaterial({
-			  uniforms: uniforms,
-			  vertexShader: vs,
-			  fragmentShader: fs,
-			  transparent: true,
-			  blending: THREE.AdditiveBlending,
-			  // wireframe: true,
+				uniforms: uniforms,
+				vertexShader: vs,
+				fragmentShader: fs,
+				transparent: true,
+				blending: THREE.AdditiveBlending,
+				// wireframe: true,
 			});
 			return fresnelMat;
-		  }
+		}
 
 		this.earthGroup = new THREE.Group();
 		this.earthGroup.rotation.z = -23.4 * Math.PI / 180;
@@ -158,11 +158,11 @@ export class Renderer {
 		starsGeometry.setAttribute(
 			"position", new THREE.Float32BufferAttribute(stars, 3)
 		);
-		var starsMaterial = new THREE.PointsMaterial({ 
+		var starsMaterial = new THREE.PointsMaterial({
 			color: 0xFFFFFF,
 			size: 2, // Adjust this value to make the stars bigger
 			sizeAttenuation: true // This makes sure the stars do not get too big when close to the camera
-		 });
+		});
 		this.starField = new THREE.Points(starsGeometry, starsMaterial);
 		this.scene.add(this.starField);
 	}
@@ -343,8 +343,13 @@ export class Renderer {
 		this.composer.render()
 	}
 
-	handleWindowResize () {
+	handleWindowResize() {
+		this.windowWidth = window.innerWidth;
+		this.windowHeight = window.innerHeight;
+
+		this.camera.aspect = this.windowWidth / this.windowHeight;
 		this.camera.updateProjectionMatrix();
+
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(this.windowWidth, this.windowHeight);
 	}
