@@ -34,7 +34,7 @@ export async function getUsername(userid = getCurrentUserId()) {
 			"Content-Type": "application/json",
 			'X-CSRFToken': getCookie('csrftoken'),
 			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-			
+
 		},
 	})
 	const data = await response.json()
@@ -65,7 +65,7 @@ export async function getEmail(userid) {
 		email = data.email
 	else {
 		email = "error"
-	}	
+	}
 	return email
 }
 
@@ -128,7 +128,7 @@ export async function getIs2Fa(userid) {
 	return is2fa
 }
 
-export async function getStatus(userid) {
+export async function getStatus(userid = getCurrentUserId()) {
 	const response = await fetch(`/api/profiles/${userid}/`, {
 		method: "GET",
 		headers: {
@@ -145,4 +145,20 @@ export async function getStatus(userid) {
 		status = "error"
 	}
 	return status
+}
+
+export async function getStats(userid = getCurrentUserId()) {
+	const response = await fetch(`/api/metrics/statistics/${userid}/`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			'X-CSRFToken': getCookie('csrftoken')
+		},
+	})
+	const data = await response.json()
+	if (response.ok)
+		return data
+	else {
+		return "error"
+	}
 }

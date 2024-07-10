@@ -1,6 +1,6 @@
 import { isAuthenticated } from "./auth/auth.js"
 import { renderer } from "./game/graphic-engine.js"
-import { getCurrentUserId, getUsername, getAvatar } from "./user.js"
+import { getCurrentUserId, getUsername, getAvatar, getStats } from "./user.js"
 
 function hidePong() {
 	renderer.hideBoard()
@@ -20,10 +20,17 @@ export async function initProfile(userid = getCurrentUserId()) {
 	const username = await getUsername(userid)
 	const avatar = await getAvatar(userid)
 	renderProfile(username, avatar);
-	renderStats();
+	const stats = await getStats(userid)
+	renderStats(stats, userid);
+	await renderHistory(stats, userid);
 }
 
-function renderStats() {
+function renderStats(stats, userid) {
+	console.log(stats)
+	const games_won = stats.games_won;
+	const games_lost = stats.games_lost;
+	const games_total = games_won + games_lost;
+	const winrate = games_total > 0 ? Math.round(games_won / games_total * 100) : 0;
 	let stats_div = document.getElementById("stats")
 	stats_div.innerHTML = `
         <div id="profile-stats" class="container text-center">
@@ -31,25 +38,25 @@ function renderStats() {
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Winrate</h5>
-                        <h1 class="card-body fs-4">x%</h1>
+                        <h1 class="card-body fs-4">${winrate}%</h1>
                     </div>
                 </div>
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
-                        <h5 class="card-title">Games</h5>
-                        <h1 class="card-body fs-4">x</h1>
+                        <h5 class="card-title">Game Played</h5>
+                        <h1 class="card-body fs-4">${games_total}</h1>
                     </div>
                 </div>
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Wins</h5>
-                        <h1 class="card-body fs-4">x</h1>
+                        <h1 class="card-body fs-4">${games_won}</h1>
                     </div>
                 </div>
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Losses</h5>
-                        <h1 class="card-body fs-4">x</h1>
+                        <h1 class="card-body fs-4">${games_lost}</h1>
                     </div>
                 </div>
             </div>
@@ -58,35 +65,104 @@ function renderStats() {
 		`
 }
 
+async function renderHistory(stats, userid) {
+	const game_history = stats.game_history;
+	console.log(game_history)
+	let history_div = document.getElementById("history")
+	history_div.innerHTML = `
+		<div id="match-history" class="container text-center">	
+	`
+	if (game_history.length === 0) {
+		history_div.innerHTML += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No game played yet...</div>`
+	}
+	else {
+		for (let i = 0; i < game_history.length; i++) {
+			const game = game_history[i]
+			console.log(game)
+			if (game.players.length < 2) //ignore AI games tempory cause create issues, need to fix later tho
+				continue
+			console.log(`HELLOoooo`)
+			
+			const [player1, player2] = game.players
+			const player1_username = await getUsername(player1)
+			const player1_avatar = await getAvatar(player1)
+			const score_player1 = game.scores[0]
+			
+			
+			const player2_username = await getUsername(player2)
+			const player2_avatar = await getAvatar(player2)
+			const score_player2 = game.scores[1]
+			
+			console.log(`player1 = ${player1}= ${player1_username}`)
+			console.log(`player2 = ${player2}= ${player2_username}`)
+			
+			let game_status;
+			if (game.winner === getCurrentUserId())
+				game_status = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">Win</h5></div>`
+			else
+				game_status = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">Loss</h5></div>`
+			history_div.innerHTML += `
+			<div class="row align-items-center bg-dark justify-content-around border border-primary border-3 rounded p-2 m-2">
+				<div class="col-2"><img src="${player1_avatar}" class="img-fluid rounded float-left"></div>
+				<div class="col-3">
+					<div class="d-flex flex-column">
+						<div class="p-1">
+							<h5 class="user-link fs-4 fw-bold text-center"><a href="/profile?id=${player1}" data-link>${player1_username}</a></h5>
+						</div>
+						<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${score_player1.points}</h5></div>
+					</div>
+				</div>
+				<div class="col-2">
+						<div class="d-flex align-items-center flex-column">
+							<div class="p-1">${game_status}</h5></div>
+							<div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.type}</h5></div>
+						</div>
+					</div>
+				<div class="col-3">
+					<div class="d-flex flex-column">
+						<div class="p-1">
+							<h5 class="user-link fs-4 fw-bold text-center"><a href="/profile?id=${player2}" data-link>${player2_username}</a></h5>
+						</div>
+						<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${score_player2.points}</h5></div>
+					</div>
+				</div>
+				<div class="col-2"><img src="${player2_avatar}" class="img-fluid rounded float-left"></div>
+			</div>
+		`
+		}
+	}
+}
+
 function renderProfile(username, avatar) {
 	document.getElementById("profileDiv").innerHTML = `
-	<div class="row justify-content-center align-items-center">
-		<div class="col-md-6 text-center mb-4 mb-md-0">
-			<img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="max-width: 200px; max-height: 200px;">
-		</div>
-		<div class="col-md-6 text-center text-md-start">
-			<h1 class="bold py-3 fs-2 fw-bold" style="font-family: 'Press Start 2P', cursive; word-wrap: break-word;">${username}</h1>
-		</div>
-	</div>
-	<hr class="w-25 mx-auto"/>
-	<section class="p-4">
-		<div class="card">
-			<div class="card-header bg-primary text-white">
-				User Stats
-			</div>
-			<div id="stats" class="card-body bg-dark">
-			</div>
-		</div>
-	</section>
-	<hr class="w-25 mx-auto"/>
-	<section id="history" class="p-4">
-		<div class="card">
-			<div class="card-header bg-primary text-white">
-				Game History
-			</div>
-			<div class="card-body bg-dark">
-			</div>
-		</div>
-	</section>
-	`
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+                <img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="max-width: 200px; max-height: 200px;">
+            </div>
+            <div class="col-md-8 text-center text-md-start">
+                <h1 class="bold py-3 fs-2 fw-bold" style="font-family: 'Press Start 2P', cursive; word-wrap: break-word;">${username}</h1>
+            </div>
+        </div>
+        <hr class="w-50 mx-auto my-4"/>
+        <section class="p-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    User Stats
+                </div>
+                <div id="stats" class="card-body bg-dark">
+                    <!-- Content for user stats goes here -->
+                </div>
+            </div>
+        </section>
+        <section class="p-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Game History
+                </div>
+                <div id="history" class="card-body bg-dark overflow-auto" style="max-height: 20vh;">
+                    <!-- Content for game history goes here -->
+                </div>
+            </div>
+        </section>
+    `;
 }

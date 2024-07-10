@@ -71,6 +71,10 @@ async function ChangeImage(userid) {
 			},
 			body: formData
 		})
+		if (response.status == 413) {
+			createAlert('danger', 'File too large, max size is 2MB')
+			console.error('Upload failed:', response.detail);
+		}
 		if (response.ok) {
 			const responseData = await response.json()
 			console.log('Upload successful!')
@@ -78,8 +82,8 @@ async function ChangeImage(userid) {
 			reloadPage()
 		} else {
 			const errorData = await response.json()
-			createAlert('danger',errorData.detail)
-			console.error('Upload failed:', response.statusText)
+			createAlert('danger', errorData.detail)
+			console.error('Upload failed')
 		}
 	})
 }
@@ -102,9 +106,9 @@ function render_buttons(userid) {
 
 	main_frame.insertAdjacentHTML('beforeend', buttonsHTML);
 	formData.forEach(data => {
-        let formHTML = '';
-        if (data.id === 'changePasswordForm') {
-            formHTML = `
+		let formHTML = '';
+		if (data.id === 'changePasswordForm') {
+			formHTML = `
                 <form class="mt-3 d-none" id="${data.id}" action="/api/users/${userid}/">
                     <label for="new${data.id}" class="m-1">${data.label}</label>
                     <div class="form-group d-flex align-items-center">
@@ -117,8 +121,8 @@ function render_buttons(userid) {
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             `;
-        } else {
-            formHTML = `
+		} else {
+			formHTML = `
                 <form class="mt-3 d-none" id="${data.id}" action="/api/users/${userid}/">
                     <label for="new${data.id}" class="m-1">${data.label}</label>
                     <div class="form-group d-flex align-items-center">
@@ -127,9 +131,9 @@ function render_buttons(userid) {
                     </div>
                 </form>
             `;
-        }
-        main_frame.insertAdjacentHTML('beforeend', formHTML);
-    });
+		}
+		main_frame.insertAdjacentHTML('beforeend', formHTML);
+	});
 
 	document.getElementById("changeUsernameForm").classList.remove("d-none");
 	formData.forEach(data => {
@@ -168,7 +172,7 @@ async function changeInfo(userid, type, newInfo) {
 		} else {
 			const errorKeys = ['username', 'password', 'email', 'detail'];
 			const errorKey = errorKeys.find(key => responseData[key]);
-			
+
 			if (errorKey) {
 				createAlert('danger', responseData[errorKey]);
 			}
@@ -188,15 +192,15 @@ async function initChangeInfo(userid) {
 
 			if (type === 'password') {
 				const newPassword = form.querySelector(`#new${form.id}`).value;
-                const confirmPassword = form.querySelector(`#confirm${form.id}`).value;
+				const confirmPassword = form.querySelector(`#confirm${form.id}`).value;
 
-                if (newPassword !== confirmPassword) {
-                    console.error('Passwords do not match!');
+				if (newPassword !== confirmPassword) {
+					console.error('Passwords do not match!');
 					createAlert('danger', 'Passwords do not match!');
-                	//alert('Passwords do not match!');
-                    return;
-                }
-                await changeInfo(userid, type, newPassword);
+					//alert('Passwords do not match!');
+					return;
+				}
+				await changeInfo(userid, type, newPassword);
 			}
 
 			console.log(`Changing ${type}...`);
