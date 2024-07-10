@@ -97,8 +97,8 @@ export class LocalController {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
-			player1: this.player1.name,
-			player2: this.player2.name,
+			player1: this.player1,
+			player2: this.player2,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
@@ -112,7 +112,7 @@ export class AIController {
 		this.paddle1 = new Paddle(player1, "right")
 		this.paddle2 = new Paddle(player2, "left")
 		this.player1 = player1
-		this.player2 = player2
+		this.player2 = "AI"
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
@@ -247,8 +247,8 @@ export class AIController {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
-			player1: this.player1.name,
-			player2: this.player2.name,
+			player1: this.player1,
+			player2: this.player2,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,

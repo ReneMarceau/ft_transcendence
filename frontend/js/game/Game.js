@@ -14,8 +14,8 @@ export class Game {
 
 	setupMenuButton() {
 		const menuButton = document.querySelector("#menubtn");
-		menuButton.classList.remove("d-none");
 		if (menuButton) {
+			menuButton.classList.remove("d-none");
 			menuButton.addEventListener("click", this.handleMenuButtonClick.bind(this));
 		}
 	}
