@@ -43,7 +43,7 @@ function renderStats(stats, userid) {
                 </div>
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
-                        <h5 class="card-title">Game Played</h5>
+                        <h5 class="card-title">Games</h5>
                         <h1 class="card-body fs-4">${games_total}</h1>
                     </div>
                 </div>
