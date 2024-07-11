@@ -2,6 +2,7 @@ import { getCookie, getCurrentUserId } from '../user.js';
 import { createAlert, reloadPage } from "../utils.js"
 import { initOAuth } from './oauth.js';
 import { verifyToken, render_2fa } from './2fa.js';
+import { jwtDecode } from "jwt-decode"
 
 function createModal(id, title, formAction, fields) {
 	return `
@@ -164,10 +165,24 @@ export function isAuthenticated() {
 	const refresh_token = localStorage.getItem('refresh_token');
 	//console.log("access_token " + access_token)
 	//console.log("refresh_token " + refresh_token)
-	const is_authenticated = (access_token && (access_token != undefined)) || (refresh_token && (refresh_token != undefined))
-	if (is_authenticated)
-		return true;
-	return false;
+	if (access_token === null && refresh_token === null)
+		return false;
+	try{
+		const decoded = jwtDecode(localStorage.getItem('access_token'));
+		//console.log(decoded);
+		if (decoded.exp < Date.now() / 1000) {
+			console.log("Token expired")
+			localStorage.removeItem('access_token');
+			localStorage.removeItem('refresh_token');
+			return false;
+		}
+	}
+	catch (error) {
+		console.error('Error decoding token:', error);
+		return null;
+	}
+	console.log("Token valid")
+	return true;
 }
 
 export function authLogout() {
