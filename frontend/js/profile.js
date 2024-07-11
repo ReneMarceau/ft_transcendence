@@ -80,6 +80,12 @@ async function getGameData(game,) {
 		game.scores[1]
 	]);
 
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    let userid = id;
+    if (id === null)
+        userid = getCurrentUserId();    
+
 	return {
 		player1,
 		player2,
@@ -89,7 +95,7 @@ async function getGameData(game,) {
 		player2_username: player2Data[0],
 		player2_avatar: player2Data[1],
 		score_player2: player2Data[2],
-		status: game.winner === getCurrentUserId()
+		status: game.winner === userid
 			? `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">Win</h5></div>`
 			: `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">Loss</h5></div>`
 	};
@@ -102,7 +108,7 @@ async function renderHistory(stats, userid) {
 	history_div.innerHTML = `
 		<div id="match-history" class="container text-center">	
 	`
-	if (game_history.length === 0) {
+	if (game_history === undefined || game_history.length === 0) {
 		history_div.innerHTML += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No game played yet...</div>`
 	} else {
 		await Promise.all(game_history.map(async (game) => {
