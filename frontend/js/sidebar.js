@@ -65,6 +65,7 @@ async function createSidebar() {
                                 ${friendListElement}
                             </div>
 					   </ul>
+                       <hr>
                        friendRequest here
 				</div>
 			</div>
