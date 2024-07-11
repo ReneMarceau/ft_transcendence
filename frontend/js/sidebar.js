@@ -52,7 +52,7 @@ async function createSidebar() {
 
 	const friendCollapse = document.getElementById("friendCollapse")
 	friendCollapse.innerHTML = `
-    <div class="container position-absolute top-5 start-70 end-0 bg-dark" style="max-width: 30%; z-index: 1000">
+    <div class="container position-absolute top-5 start-70 end-0 bg-dark" style="z-index: 1000">
 			<div class="collapse" id="sidebarCollapse">	
                 <div class="input-group m-3">
                     <input type="number" class="form-control" id="addFriendInput" placeholder="Enter friend's USER_ID (only)" aria-describedby="addFriendBtn">
