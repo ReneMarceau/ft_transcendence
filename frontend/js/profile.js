@@ -66,18 +66,16 @@ function renderStats(stats, userid) {
 }
 
 async function getGameData(game,) {
-	const [player1, player2] = game.players;
-
 	let player1Data = await Promise.all([
-		getUsername(player1),
-		getAvatar(player1),
-		game.scores[0]
+		getUsername(game.player1),
+		getAvatar(game.player1),
+		game.score_player1
 	]);
 
 	let player2Data = await Promise.all([
-		getUsername(player2),
-		getAvatar(player2),
-		game.scores[1]
+		getUsername(game.player2),
+		getAvatar(game.player2),
+		game.score_player2
 	]);
 
     const params = new URLSearchParams(window.location.search);
@@ -87,8 +85,8 @@ async function getGameData(game,) {
         userid = getCurrentUserId();    
 
 	return {
-		player1,
-		player2,
+		player1: game.player1,
+		player2: game.player2,
 		player1_username: player1Data[0],
 		player1_avatar: player1Data[1],
 		score_player1: player1Data[2],
@@ -112,7 +110,7 @@ async function renderHistory(stats, userid) {
 		history_div.innerHTML += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No game played yet...</div>`
 	} else {
 		await Promise.all(game_history.map(async (game) => {
-			if (game.players.length < 2) // Ignore AI games temporarily (to be fixed)
+			if (game.player2 === null) // Ignore AI games temporarily (to be fixed)
 				return;
 
 			const game_data = await getGameData(game);
@@ -125,7 +123,7 @@ async function renderHistory(stats, userid) {
                             <div class="p-1">
                                 <h5 class="user-link fs-4 fw-bold text-center"><a href="/profile?id=${game_data.player1}" data-link>${game_data.player1_username}</a></h5>
                             </div>
-                            <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game_data.score_player1.points}</h5></div>
+                            <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game_data.score_player1}</h5></div>
                         </div>
                     </div>
                     <div class="col-2">
@@ -139,7 +137,7 @@ async function renderHistory(stats, userid) {
                             <div class="p-1">
                                 <h5 class="user-link fs-4 fw-bold text-center"><a href="/profile?id=${game_data.player2}" data-link>${game_data.player2_username}</a></h5>
                             </div>
-                            <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game_data.score_player2.points}</h5></div>
+                            <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game_data.score_player2}</h5></div>
                         </div>
                     </div>
                     <div class="col-2"><img src="${game_data.player2_avatar}" class="img-fluid rounded float-left"></div>
@@ -165,7 +163,6 @@ function renderProfile(username, avatar) {
                     User Stats
                 </div>
                 <div id="stats" class="card-body bg-dark">
-                    <!-- Content for user stats goes here -->
                 </div>
             </div>
         </section>
@@ -175,7 +172,6 @@ function renderProfile(username, avatar) {
                     Game History
                 </div>
                 <div id="history" class="card-body bg-dark overflow-auto" style="max-height: 20vh;">
-                    <!-- Content for game history goes here -->
                 </div>
             </div>
         </section>
