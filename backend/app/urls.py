@@ -40,8 +40,6 @@ def api_root(request, format=None):
         'enable_2fa': reverse('enable_2fa', request=request, format=format),
         'disable_2fa': reverse('disable_2fa', request=request, format=format),
         'games': reverse('game-list', request=request, format=format),
-        'tournaments': reverse('tournament-list', request=request, format=format),
-        'scores': reverse('score-list', request=request, format=format),
         'statistics': reverse('statistic-list', request=request, format=format),
     })
 
