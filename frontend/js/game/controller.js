@@ -18,20 +18,23 @@ export class LocalController {
 		this.startTime = Date.now();
 	}
 
-	cleanup() { }
+	cleanup() {
+		console.log("cleanup controller")
+		document.removeEventListener("keydown", this.handleKeyDown);
+		document.removeEventListener("keyup", this.handleKeyUp);
+	}
 
 	init() {
+		console.log("init controller")
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));
 		document.addEventListener("keyup", this.handleKeyUp.bind(this));
-		document.addEventListener("keyup", (event) => {
-			if (event.code === 'Space' && this.stop === true) {
-				console.log("space pressed")
-				this.stop = false;
-				this.message = ""
-				this.startTimer = 3
-				this.countdown()
-			}
-		});
+	}
+
+	getWinner(){
+		if (this.player1Score === 3)
+			return this.player1
+		else if (this.player2Score === 3)
+			return this.player2
 	}
 
 	handleKeyDown(e) {
@@ -46,6 +49,13 @@ export class LocalController {
 		if (e.code === 'KeyW') this.paddle1.move_up = false;
 		if (e.key === 'ArrowDown') this.paddle2.move_down = false;
 		if (e.key === 'ArrowUp') this.paddle2.move_up = false;
+		if (e.code === 'Space' && this.stop === true) {
+			console.log("space pressed")
+			this.stop = false;
+			this.message = ""
+			this.startTimer = 3
+			this.countdown()
+		}
 	}
 
 	countdown() {

@@ -4,92 +4,95 @@ import { LocalController } from "./controller.js"
 import { Game } from "./Game.js"
 
 const Status = {
-	WAITING: 0,
-	PLAYING: 1,
-	END: 2
+    WAITING: 0,
+    PLAYING: 1,
+    SEMI: 2,
+    FINAL: 3,
+    END: 4
 }
 
 
 export class Tournament {
     constructor() {
-		this.players = []
+        this.players = []
         this.winner = ""
-		this.winner_semi = []
+        this.winner_semi = []
         this.game_nb = 1
-		this.is_running = false
-     	this.displayForm()
-		this.init()
+        this.is_running = false
+        this.status = Status.WAITING
+        this.displayForm()
+        this.init()
     }
 
-	init()
-	{
-		const tournamentForm = document.getElementById("tournamentForm")
-		tournamentForm.addEventListener("submit", async (e) => {
-			e.preventDefault()
-			this.status = Status.WAITING
-			this.players[1] = document.getElementById("player1Tournament").value
-			this.players[2] = document.getElementById("player2Tournament").value
-			this.players[3] = document.getElementById("player3Tournament").value
-			this.players[4] = document.getElementById("player4Tournament").value
-		})
+    init() {
+        const tournamentForm = document.getElementById("tournamentForm")
+        tournamentForm.addEventListener("submit", (e) => {
+            e.preventDefault()
+            this.players[1] = document.getElementById("player1Tournament").value
+            this.players[2] = document.getElementById("player2Tournament").value
+            this.players[3] = document.getElementById("player3Tournament").value
+            this.players[4] = document.getElementById("player4Tournament").value
+            this.status = Status.SEMI
+            this.hideForm()
+        })
+        
+        document.addEventListener("keyup", this.handleKeyUp.bind(this))
 
-		document.addEventListener("keyup", (e) => {
-			if (this.status != Status.PLAYING)
-			{
-				if (e.code === "Space") {
-					this.hideForm()
-					this.playGame()
-				}
-			}
-		})
-	}
+        document.addEventListener("gameEnd", (e) => {
+            this.is_running = false
+            if (this.game_nb == 2)
+                this.winner_semi[1] = e.detail
+            else if (this.game_nb == 3)
+                this.winner_semi[2] = e.detail
+            else if (this.game_nb == 4 || this.status == Status.FINAL)
+                this.winner = e.detail
+        })
+    }
 
-	endGame()
-	{
-		if (this.game_nb === 1)
-		{
-			this.winner_semi[1] = this.players[1] //temporary i need to remake the event listener stuff
-		}
-		else if (this.game_nb === 2)
-		{
-			this.winner_semi[2] = this.players[3]
-		}
-		else if (this.game_nb === 3)
-		{
-			this.winner = this.players[1]
-		}
-	}
+    handleKeyUp(e){
+        if (e.code === "Space") {
+            console.log(this.status)
+            if ((this.status === Status.SEMI || this.status === Status.FINAL) && !this.is_running) {
+                this.playGame()
+                this.is_running = true
+            }
+        }
+    }
 
-	playGame()
-	{	
-		this.status = Status.PLAYING
-		if (this.game_nb === 1)
-		{
-			const controller = new LocalController(this.players[1], this.players[2])
-			const game = new Game(controller)
-			controller.init
-			game.run()
-			this.game_nb++
-		}
-		else if (this.game_nb === 2)
-		{
-			const controller = new LocalController(this.players[3], this.players[4])
-			const game = new Game(controller)
-			controller.init
-			game.run()
-			this.game_nb++
-		}
+    playGame() {
+        if (this.status === Status.END)
+            return
+        if (this.game_nb === 1) {
+            const controller = new LocalController(this.players[1], this.players[2])
+            controller.init
+            // console.log("game number 1")
+            // document.removeEventListener("keyup", this.handleKeyUp)
+            const game = new Game(controller, true)
+            game.run()
+            this.game_nb++
+            return
+        }
+        else if (this.game_nb === 2) {
+            const controller = new LocalController(this.players[3], this.players[4])
+            controller.init
+            const game = new Game(controller, true)
+            game.run()
+            this.game_nb++
+            this.status = Status.FINAL
+            return
+        }
 
-		if (this.game_nb === 3)
-		{
-			const controller = new LocalController(this.winner_semi[1], winner_semi[2])
-			const game = new Game(controller)
-			controller.init
-			game.run()
-			this.game_nb++
-		}
+        if (this.game_nb === 3) {
+            const controller = new LocalController(this.winner_semi[1], winner_semi[2])
+            controller.init
+            const game = new Game(controller, true)
+            game.run()
+            this.game_nb++
+            this.status = Status.END
+            return
+        }
 
-	}
+    }
 
 
     async displayForm() {
@@ -102,10 +105,10 @@ export class Tournament {
         }
     }
 
-	hideForm() {
-		const playerForm = document.getElementById("playerForm")
-		playerForm.innerHTML = ""
-	}
+    hideForm() {
+        const playerForm = document.getElementById("playerForm")
+        playerForm.innerHTML = ""
+    }
 
 }
 
