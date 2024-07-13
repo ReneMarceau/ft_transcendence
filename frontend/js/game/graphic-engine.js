@@ -426,6 +426,13 @@ export class graphicEngine {
 		this.Renderer.paddle2.position.set(this.Renderer.boardStartX + (paddle_x) * this.Renderer.boardWidth, this.Renderer.boardStartY - ((paddle_y + this.Renderer.hlf_pdl_height) * this.Renderer.boardHeight), 0.1)
 	}
 
+	displayBracket(players) {
+		console.log("displayBracket")
+		console.log(players)
+		this.Renderer.hideBoard()
+
+	}
+
 	displayScore(player1Score, player2Score) {
 		if (player1Score === undefined || player2Score === undefined)
 			return

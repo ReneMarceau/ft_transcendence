@@ -56,7 +56,7 @@ async function createSidebar() {
 			<div class="collapse" id="sidebarCollapse">	
                 <div class="input-group m-3">
                     <input type="number" class="form-control" id="addFriendInput" placeholder="Enter friend's USER_ID (only)" aria-describedby="addFriendBtn">
-                    <button type="button" class="btn btn-primary" id="addFriendBtn">Add Friend</button>
+                    <button type="button" class="btn btn-primary mr-3" id="addFriendBtn">Add Friend</button>
                 </div>
 				<div id="friendSidebar" class="d-flex m-2 p-2 flex-column align-items-stretch flex-shrink-0 text-bg-white">
 					<h3 class="text-white fs-3 fw-bold">Friends</h3>

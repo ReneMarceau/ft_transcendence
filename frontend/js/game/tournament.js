@@ -85,7 +85,7 @@ export class Tournament {
         }
 
         if (this.game_nb === 3) {
-            const controller = new LocalController(this.winner_semi[1], this.winner_semi[2])
+            const controller = new LocalController(this.winner_semi[1], winner_semi[2])
             controller.init()
             const game = new Game(controller, true)
             game.run()
