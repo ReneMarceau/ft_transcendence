@@ -38,9 +38,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Profile model.
-    """
+    from .FriendRequest.serializers import FriendRequestSerializer
+    friend_requests_sent = serializers.SerializerMethodField()
+    friend_requests_received = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
-        fields = ['user', 'alias', 'avatar', 'friends', 'blocked_users', 'status']
+        fields = ['user', 'alias', 'avatar', 'friends', 'blocked_users', 'status', 'friend_requests_sent', 'friend_requests_received']
+
+    def get_friend_requests_sent(self, obj):
+        from .FriendRequest.serializers import FriendRequestSerializer
+        from .FriendRequest.models import FriendRequest
+        friend_requests = FriendRequest.objects.filter(sender=obj)
+        return FriendRequestSerializer(friend_requests, many=True).data
+    
+    def get_friend_requests_received(self, obj):
+        from .FriendRequest.serializers import FriendRequestSerializer
+        from .FriendRequest.models import FriendRequest
+        friend_requests = FriendRequest.objects.filter(receiver=obj)
+        return FriendRequestSerializer(friend_requests, many=True).data

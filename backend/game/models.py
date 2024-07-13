@@ -18,14 +18,13 @@ class GameStatus(models.TextChoices):
     FINISHED = 'finished', 'Finished'
 
 class Game(models.Model):
-    """Model for a game."""
     type = models.CharField(max_length=20, choices=GameType.choices)
     status = models.CharField(max_length=20, choices=GameStatus.choices, default=GameStatus.CREATED)
     winner = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name='won_games', null=True, blank=True)
     player1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='games_as_player1')
     player2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='games_as_player2')
-    score_player1 = models.IntegerField(default=0)
-    score_player2 = models.IntegerField(default=0)
+    score_player1 = models.PositiveIntegerField(default=0)
+    score_player2 = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True, blank=True)
 

@@ -35,5 +35,18 @@ class Profile(models.Model):
     blocked_users = models.ManyToManyField('self', symmetrical=False, related_name='blocked_by', blank=True)
     status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.OFFLINE)
 
+    def send_friend_request(self, receiver):
+        from .FriendRequest.models import FriendRequest
+        if not FriendRequest.objects.filter(sender=self, receiver=receiver).exists():
+            FriendRequest.objects.create(sender=self, receiver=receiver)
+
+    def accept_friend_request(self, request):
+        from .FriendRequest.models import FriendRequest
+        try:
+            friend_request = FriendRequest.objects.get(receiver=self, sender=request)
+            friend_request.accept()
+        except FriendRequest.DoesNotExist:
+            pass
+
     def __str__(self):
         return self.user.username

@@ -1,8 +1,10 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import MethodNotAllowed
 
 from .models import User, Profile
+from .FriendRequest.models import FriendRequest
 from user_management.serializers import UserSerializer, ProfileSerializer
 from authentication.permissions import IsOwnerOrReadOnly, IsAdminUserOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -58,3 +60,29 @@ class ProfileViewSet(BaseViewSet):
 
     def create(self, request, *args, **kwargs):
         raise MethodNotAllowed("POST", detail="Profile creation is not allowed via this endpoint. Profiles are created automatically when a user is created.")
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def send_friend_request(self, request, pk=None):
+        receiver = self.get_object()
+        sender = request.user.profile
+
+        if sender == receiver:
+            return Response({'detail': 'You cannot send a friend request to yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
+            return Response({'detail': 'Friend request already sent.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        sender.send_friend_request(receiver)
+        return Response({'detail': 'Friend request sent successfully.'}, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def accept_friend_request(self, request, pk=None):
+        sender = self.get_object()
+        receiver = request.user.profile
+
+        try:
+            friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
+            friend_request.accept()
+            return Response({'detail': 'Friend request accepted successfully.'}, status=status.HTTP_200_OK)
+        except FriendRequest.DoesNotExist:
+            return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)

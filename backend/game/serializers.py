@@ -4,11 +4,8 @@ from user_management.models import Profile
 from .models import Game
 
 class GameSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Game model.
-    """
     player1 = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
-    player2 = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
+    player2 = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False, allow_null=True)
     winner = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False, allow_null=True)
 
     class Meta:

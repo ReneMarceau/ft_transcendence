@@ -5,9 +5,6 @@ from .serializers import GameSerializer
 
 # Create your views here.
 class GameViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for the Game model.
-    """
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
