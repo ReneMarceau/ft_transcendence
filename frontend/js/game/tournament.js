@@ -35,10 +35,19 @@ export class Tournament {
             this.status = Status.SEMI
             this.hideForm()
         })
-        
-        document.addEventListener("keyup", this.handleKeyUp.bind(this))
+
+        document.addEventListener("keyup", (e) => {
+            if (e.code === 'Space') {
+                console.log(this.status)
+                if ((this.status === Status.SEMI || this.status === Status.FINAL) && !this.is_running) {
+                    this.playGame()
+                    this.is_running = true
+                }
+            }
+        })
 
         document.addEventListener("gameEnd", (e) => {
+            console.log("gameEnd")
             this.is_running = false
             if (this.game_nb == 2)
                 this.winner_semi[1] = e.detail
@@ -46,17 +55,10 @@ export class Tournament {
                 this.winner_semi[2] = e.detail
             else if (this.game_nb == 4 || this.status == Status.FINAL)
                 this.winner = e.detail
+            console .log(this.winner)
+            console.log(this.winner_semi[1])
+            console.log(this.winner_semi[2])
         })
-    }
-
-    handleKeyUp(e){
-        if (e.code === "Space") {
-            console.log(this.status)
-            if ((this.status === Status.SEMI || this.status === Status.FINAL) && !this.is_running) {
-                this.playGame()
-                this.is_running = true
-            }
-        }
     }
 
     playGame() {
@@ -64,7 +66,7 @@ export class Tournament {
             return
         if (this.game_nb === 1) {
             const controller = new LocalController(this.players[1], this.players[2])
-            controller.init
+            controller.init()
             // console.log("game number 1")
             // document.removeEventListener("keyup", this.handleKeyUp)
             const game = new Game(controller, true)
@@ -74,7 +76,7 @@ export class Tournament {
         }
         else if (this.game_nb === 2) {
             const controller = new LocalController(this.players[3], this.players[4])
-            controller.init
+            controller.init()
             const game = new Game(controller, true)
             game.run()
             this.game_nb++
@@ -83,8 +85,8 @@ export class Tournament {
         }
 
         if (this.game_nb === 3) {
-            const controller = new LocalController(this.winner_semi[1], winner_semi[2])
-            controller.init
+            const controller = new LocalController(this.winner_semi[1], this.winner_semi[2])
+            controller.init()
             const game = new Game(controller, true)
             game.run()
             this.game_nb++
