@@ -88,7 +88,7 @@ export async function getAvatar(userid) {
 	return avatar
 }
 
-export async function getFriendList(userid) {
+export async function getFriendList(userid = getCurrentUserId()) {
 	const response = await fetch(`/api/profiles/${userid}/`, {
 		method: "GET",
 		headers: {

@@ -1,6 +1,8 @@
 import { isAuthenticated } from "./auth/auth.js"
 import { renderer } from "./game/graphic-engine.js"
-import { getCurrentUserId, getUsername, getAvatar, getStats } from "./user.js"
+import { getCurrentUserId, getUsername, getAvatar, getStats, getFriendList, getCookie } from "./user.js"
+import { createAlert } from "./utils.js"
+import { initSideBar } from "./sidebar.js"
 
 function hidePong() {
 	renderer.hideBoard()
@@ -19,7 +21,7 @@ export async function initProfile(userid = getCurrentUserId()) {
 
 	const username = await getUsername(userid)
 	const avatar = await getAvatar(userid)
-	renderProfile(username, avatar);
+	renderProfile(userid, username, avatar);
 	const stats = await getStats(userid)
 	renderStats(stats, userid);
 	await renderHistory(stats, userid);
@@ -31,6 +33,18 @@ function renderStats(stats, userid) {
 	const games_lost = stats.games_lost;
 	const games_total = games_won + games_lost;
 	const winrate = games_total > 0 ? Math.round(games_won / games_total * 100) : 0;
+
+    let winrate_color = "text-secondary"
+    if (winrate >= 75) {
+        winrate_color = "text-success"
+    }
+    else if (winrate < 25) {
+        winrate_color = "text-danger"
+    }
+    else if (winrate > 25) {
+        winrate_color = "text-warning"
+    }
+
 	let stats_div = document.getElementById("stats")
 	stats_div.innerHTML = `
         <div id="profile-stats" class="container text-center">
@@ -38,7 +52,7 @@ function renderStats(stats, userid) {
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Winrate</h5>
-                        <h1 class="card-body fs-4">${winrate}%</h1>
+                        <h1 class="card-body fs-4 ${winrate_color}">${winrate}%</h1>
                     </div>
                 </div>
                 <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
@@ -65,7 +79,7 @@ function renderStats(stats, userid) {
 		`
 }
 
-async function getGameData(game,) {
+async function getGameData(game, userid) {
 	let player1Data = await Promise.all([
 		getUsername(game.player1),
 		getAvatar(game.player1),
@@ -77,12 +91,6 @@ async function getGameData(game,) {
 		getAvatar(game.player2),
 		game.score_player2
 	]);
-
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    let userid = id;
-    if (id === null)
-        userid = getCurrentUserId();    
 
 	return {
 		player1: game.player1,
@@ -113,7 +121,7 @@ async function renderHistory(stats, userid) {
 			if (game.player2 === null) // Ignore AI games temporarily (to be fixed)
 				return;
 
-			const game_data = await getGameData(game);
+			const game_data = await getGameData(game, userid);
 
 			history_div.innerHTML += `
                 <div class="row align-items-center bg-dark justify-content-around border border-primary border-3 rounded p-2 m-2">
@@ -146,14 +154,20 @@ async function renderHistory(stats, userid) {
 	}
 }
 
-function renderProfile(username, avatar) {
+function renderProfile(userid, username, avatar) {
 	document.getElementById("profileDiv").innerHTML = `
         <div class="row justify-content-center align-items-center">
             <div class="col-md-4 text-center mb-4 mb-md-0">
                 <img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="max-width: 200px; max-height: 200px;">
             </div>
-            <div class="col-md-8 text-center text-md-start">
+            <div class="col-md-8 text-center text-md-start mx-auto">
                 <h1 class="bold py-3 fs-2 fw-bold" style="font-family: 'Press Start 2P', cursive; word-wrap: break-word;">${username}</h1>
+                <div class="d-flex justify-content-center align-items-center">
+                <span style="font-family: 'Press Start 2P'; margin-right: 10px;">User ID #</span>
+                <div class="col-sm-2">
+                    <input type="text" readonly class="form-control-plaintext text-center fs-4" value="${userid}" style="font-family: 'Press Start 2P';">
+                </div>
+            </div>
             </div>
         </div>
         <hr class="w-50 mx-auto my-4"/>
