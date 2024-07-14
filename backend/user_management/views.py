@@ -86,3 +86,27 @@ class ProfileViewSet(BaseViewSet):
             return Response({'detail': 'Friend request accepted successfully.'}, status=status.HTTP_200_OK)
         except FriendRequest.DoesNotExist:
             return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    def decline_friend_request(self, request, pk=None):
+        sender = self.get_object()
+        receiver = request.user.profile
+
+        try:
+            friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
+            friend_request.delete()
+            return Response({'detail': 'Friend request declined successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        except FriendRequest.DoesNotExist:
+            return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    def cancel_friend_request(self, request, pk=None):
+        receiver = self.get_object()
+        sender = request.user.profile
+
+        try:
+            friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
+            friend_request.delete()
+            return Response({'detail': 'Friend request cancelled successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        except FriendRequest.DoesNotExist:
+            return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
