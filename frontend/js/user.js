@@ -37,17 +37,14 @@ async function fetchData(url, key = 'undefined')
 		},
 	});
 	const data = await response.json();
-	if (key === 'undefined')
-		return data;
-	console.log(`data.${key} = ${data[key]}`);
-	const responseData = response.ok ? data[key] : "error";
-	if (responseData === "error")
-	{
+	if (!response.ok){
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('refresh_token');
 		reloadPage();
 	}
-	return responseData;
+	if (key === 'undefined')
+		return data;
+	return data[key];
 }
 
 export async function getUsername(userid = getCurrentUserId()) {
@@ -65,6 +62,15 @@ export async function getAvatar(userid) {
 export async function getFriendList(userid = getCurrentUserId()) {
 	return fetchData(`/api/profiles/${userid}`, 'friends');
 }
+
+export async function getReceivedFriendRequestList(userid = getCurrentUserId()) {
+	return fetchData(`/api/profiles/${userid}`, 'friend_requests_received');
+}
+
+export async function getSentFriendRequestList(userid = getCurrentUserId()) {
+	return fetchData(`/api/profiles/${userid}`, 'friend_requests_sent');
+}
+
 
 export async function getIs2Fa(userid) {
 	return fetchData(`/api/users/${userid}`, 'is_2fa_enabled');

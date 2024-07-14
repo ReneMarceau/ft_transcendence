@@ -2,7 +2,7 @@ import { render_game, pongMenu, initLocalGame, initAIGame, initRemoteGame, initT
 import { initAuth } from "./auth/auth.js"
 import { initOAuth } from "./auth/oauth.js"
 import { initNavBar } from "./navbar.js";
-import { initSideBar } from "./sidebar.js";
+import { initSideBar } from "./friends/sidebar.js";
 import { initProfile } from "./profile/profile.js";
 
 

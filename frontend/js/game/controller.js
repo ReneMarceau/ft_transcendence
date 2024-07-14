@@ -7,15 +7,15 @@ export class LocalController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = ""
+		this.star_timer_ms = ""
 		this.reset()
 		this.running = true
 		this.stop = true
 		this.ball.in_play = false
 
-		this.restartTimestamp = 0
+		this.restart_time_ms = 0
 		this.message = "press space to start the game"
-		this.startTime = Date.now();
+
 	}
 
 	cleanup() {
@@ -53,15 +53,15 @@ export class LocalController {
 			console.log("space pressed")
 			this.stop = false;
 			this.message = ""
-			this.startTimer = 3
+			this.star_timer_ms = 3
 			this.countdown()
 		}
 	}
 
 	countdown() {
-		if (this.startTimer > 0) {
+		if (this.star_timer_ms > 0) {
 			setTimeout(() => {
-				this.startTimer--
+				this.star_timer_ms--
 				this.countdown()
 			}, 1000)
 		}
@@ -80,7 +80,7 @@ export class LocalController {
 		if (this.ball.in_play) {
 			this.paddle1.move()
 			this.paddle2.move()
-			if (Date.now() > this.restartTimestamp && this.running) {
+			if (Date.now() > this.restart_time_ms && this.running) {
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
 					if (retval === "right")
@@ -98,7 +98,7 @@ export class LocalController {
 						this.running = false
 					}
 					this.ball.in_play = false
-					this.restartTimestamp = Date.now() + 1000
+					this.restart_time_ms = Date.now() + 1000
 					this.ball.reset()
 				}
 			}
@@ -112,7 +112,7 @@ export class LocalController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			startTimer: this.startTimer,
+			star_timer_ms: this.star_timer_ms,
 		}
 	}
 }
@@ -126,15 +126,15 @@ export class AIController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = ""
+		this.star_timer_ms = ""
 		this.reset()
 		this.running = true
 		this.stop = true
 		this.ball.in_play = false
 
-		this.restartTimestamp = 0
+		this.restart_time_ms = 0
 		this.message = "press space to start the game"
-		this.startTime = Date.now();
+
 
 		this.lastAIUpdateTime = Date.now();
         this.aiUpdateInterval = 1000; // 1 second in milliseconds
@@ -152,7 +152,7 @@ export class AIController {
 				console.log("space pressed")
 				this.stop = false;
 				this.message = ""
-				this.startTimer = 3
+				this.star_timer_ms = 3
 				this.countdown()
 			}
 		});
@@ -169,9 +169,9 @@ export class AIController {
 	}
 
 	countdown() {
-		if (this.startTimer > 0) {
+		if (this.star_timer_ms > 0) {
 			setTimeout(() => {
-				this.startTimer--
+				this.star_timer_ms--
 				this.countdown()
 			}, 1000)
 		}
@@ -230,7 +230,7 @@ export class AIController {
 			this.AImove(this.paddle2);
 			this.paddle1.move()
 			this.paddle2.move()
-			if (Date.now() > this.restartTimestamp && this.running) {
+			if (Date.now() > this.restart_time_ms && this.running) {
 				retval = this.ball.move(this.paddle1, this.paddle2)
 				if (retval != "none") {
 					if (retval === "right")
@@ -248,7 +248,7 @@ export class AIController {
 						this.running = false
 					}
 					this.ball.in_play = false
-					this.restartTimestamp = Date.now() + 1000
+					this.restart_time_ms = Date.now() + 1000
 					this.ball.reset()
 				}
 			}
@@ -262,7 +262,7 @@ export class AIController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			startTimer: this.startTimer,
+			star_timer_ms: this.star_timer_ms,
 		}
 	}
 }
@@ -274,14 +274,12 @@ export class RemoteController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = 3
+		this.star_timer_ms = 3
 		this.reset()
 		this.running = true
 		this.ball.in_play = false
 
-		this.restartTimestamp = 0
-
-		this.startTime = Date.now();
+		this.restart_time_ms = 0
 
 		this.serverMsg = {}
 		this.localMsg = ""
@@ -316,7 +314,7 @@ export class RemoteController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.localMsg,
-			startTimer: this.startTimer
+			star_timer_ms: this.star_timer_ms
 		}
 	}
 
