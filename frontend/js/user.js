@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode"
+import { reloadPage } from "./utils.js";
 
 export function getCookie(name) {
 	let cookieValue = null;
@@ -18,8 +19,6 @@ export function getCookie(name) {
 export function getCurrentUserId() {
 	try {
 		const decoded = jwtDecode(localStorage.getItem('access_token'));
-		console.log(decoded);
-		//console.log(decoded.user_id);
 		return decoded.user_id;
 	} catch (error) {
 		console.error('Error decoding token:', error);
@@ -27,138 +26,54 @@ export function getCurrentUserId() {
 	}
 }
 
-export async function getUsername(userid = getCurrentUserId()) {
-	const response = await fetch(`/api/users/${userid}`, {
+async function fetchData(url, key = 'undefined')
+{
+	const response = await fetch(url, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
 			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-
+			'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
 		},
-	})
-	const data = await response.json()
-	console.log("data.username =" + data.username);
-	let username = ""
-	if (response.status >= 200 && response.status < 300)
-		username = data.username
-	else {
-		username = "error"
+	});
+	const data = await response.json();
+	if (key === 'undefined')
+		return data;
+	console.log(`data.${key} = ${data[key]}`);
+	const responseData = response.ok ? data[key] : "error";
+	if (responseData === "error")
+	{
+		localStorage.removeItem('access_token');
+		localStorage.removeItem('refresh_token');
+		reloadPage();
 	}
-	return username
+	return responseData;
+}
+
+export async function getUsername(userid = getCurrentUserId()) {
+	return fetchData(`/api/users/${userid}`, 'username');
 }
 
 export async function getEmail(userid) {
-	const response = await fetch(`/api/users/${userid}`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-
-		},
-	})
-	const data = await response.json()
-	console.log("data.email =" + data.email);
-	let email = ""
-	if (response.status >= 200 && response.status < 300)
-		email = data.email
-	else {
-		email = "error"
-	}
-	return email
+	return fetchData(`/api/users/${userid}`, 'email');
 }
 
 export async function getAvatar(userid) {
-	const response = await fetch(`/api/profiles/${userid}`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken')
-		},
-	})
-	const data = await response.json()
-	console.log("data.avatar =" + data.avatar);
-	let avatar = ""
-	if (response.ok)
-		avatar = data.avatar
-	else {
-		avatar = "error"
-	}
-	return avatar
+	return fetchData(`/api/profiles/${userid}`, 'avatar');
 }
 
 export async function getFriendList(userid = getCurrentUserId()) {
-	const response = await fetch(`/api/profiles/${userid}/`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken')
-		},
-	})
-	const data = await response.json()
-	console.log("data.friends =" + data.friends);
-	let friends = ""
-	if (response.ok)
-		friends = data.friends
-	else {
-		friends = "error"
-	}
-	return friends
+	return fetchData(`/api/profiles/${userid}`, 'friends');
 }
 
 export async function getIs2Fa(userid) {
-	const response = await fetch(`/api/users/${userid}/`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken'),
-			'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-		},
-	})
-	const data = await response.json()
-	console.log(data);
-	console.log("data.is2fa =" + data.is_2fa_enabled);
-	let is2fa = ""
-	if (response.ok)
-		is2fa = data.is_2fa_enabled
-	else {
-		is2fa = "error"
-	}
-	return is2fa
+	return fetchData(`/api/users/${userid}`, 'is_2fa_enabled');
 }
 
 export async function getStatus(userid = getCurrentUserId()) {
-	const response = await fetch(`/api/profiles/${userid}/`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken')
-		},
-	})
-	const data = await response.json()
-	console.log("data.status =" + data.status);
-	let status = ""
-	if (response.ok)
-		status = data.status
-	else {
-		status = "error"
-	}
-	return status
+	return fetchData(`/api/users/${userid}`, 'status');
 }
 
 export async function getStats(userid = getCurrentUserId()) {
-	const response = await fetch(`/api/metrics/statistics/${userid}/`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			'X-CSRFToken': getCookie('csrftoken')
-		},
-	})
-	const data = await response.json()
-	if (response.ok)
-		return data
-	else {
-		return "error"
-	}
+	return fetchData(`/api/metrics/statistics/${userid}/`);
 }
