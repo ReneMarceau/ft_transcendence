@@ -12,4 +12,5 @@ urlpatterns = [
     path('profiles/<int:pk>/accept_friend_request/', ProfileViewSet.as_view({'post': 'accept_friend_request'}), name='accept_friend_request'),
     path('profiles/<int:pk>/decline_friend_request/', ProfileViewSet.as_view({'delete': 'decline_friend_request'}), name='decline_friend_request'),
     path('profiles/<int:pk>/cancel_friend_request/', ProfileViewSet.as_view({'delete': 'cancel_friend_request'}), name='cancel_friend_request'),
+    path('profiles/<int:pk>/remove_friend/', ProfileViewSet.as_view({'delete': 'remove_friend'}), name='remove_friend'),
 ]

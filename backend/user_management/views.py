@@ -110,3 +110,16 @@ class ProfileViewSet(BaseViewSet):
             return Response({'detail': 'Friend request cancelled successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except FriendRequest.DoesNotExist:
             return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    def remove_friend(self, request, pk=None):
+        friend = self.get_object()
+        user = request.user.profile
+
+        if not user.friends.filter(pk=friend.pk).exists():
+            return Response({'detail': 'User is not your friend.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.friends.remove(friend)
+        friend.friends.remove(user)
+        return Response({'detail': 'Friend removed successfully.'}, status=status.HTTP_200_OK)
+    
