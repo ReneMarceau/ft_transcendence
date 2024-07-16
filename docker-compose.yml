@@ -94,14 +94,6 @@ services:
       timeout: 2s
       retries: 5
 
-  # vault:
-
-  # elk:
-
-  # prometheus:
-
-  # graphana:
-
 # Volumes
 volumes:
   postgres_data:

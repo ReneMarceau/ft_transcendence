@@ -48,7 +48,6 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('api/', include('user_management.urls')),
     path('api/', include('game.urls')),
-    path('api/', include('tournament.urls')),
     path('api/', include('metrics.urls')),
     path('', api_root),
 ]

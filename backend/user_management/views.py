@@ -22,9 +22,7 @@ class BaseViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({
-                'detail': f'{self.get_serializer().Meta.model.__name__} updated successfully.',
-            }, status=status.HTTP_200_OK)
+            return Response({'detail': f'{self.get_serializer().Meta.model.__name__} updated successfully.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
@@ -95,7 +93,7 @@ class ProfileViewSet(BaseViewSet):
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
             friend_request.delete()
-            return Response({'detail': 'Friend request declined successfully.'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'Friend request declined successfully.'}, status=status.HTTP_200_OK)
         except FriendRequest.DoesNotExist:
             return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -107,7 +105,7 @@ class ProfileViewSet(BaseViewSet):
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
             friend_request.delete()
-            return Response({'detail': 'Friend request cancelled successfully.'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'Friend request cancelled successfully.'}, status=status.HTTP_200_OK)
         except FriendRequest.DoesNotExist:
             return Response({'detail': 'Friend request not found.'}, status=status.HTTP_404_NOT_FOUND)
         

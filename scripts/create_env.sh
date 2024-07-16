@@ -68,6 +68,15 @@ POSTGRES_PORT="POSTGRES_PORT=5432"
 SECRET_KEY="SECRET_KEY=$(openssl rand -base64 48)"
 DJANGO_ALLOWED_HOSTS="DJANGO_ALLOWED_HOSTS=$(hostname) localhost backend 127.0.0.1 [::1]"
 
+while [ -z "$djangoSecretKey" ]; do
+    log "PROMPT" "Please enter the Django secret key (let the evaluatees to provide their own secret key): "
+    read djangoSecretKey
+    if [ -z "$djangoSecretKey" ]; then
+        log "ERROR" "Django secret key cannot be empty (ask the evaluatees to provide their own secret key)."
+    fi
+done
+SECRET_KEY="DJANGO_SECRET_KEY=${djangoSecretKey}"
+
 # Prompt for OAuth2 variables
 log "INFO" "To get OAuth2 application details, visit: https://profile.intra.42.fr/oauth/applications"
 
@@ -96,6 +105,6 @@ log "INFO" ".env file created at the root directory."
 echo -e "$databaseName\n$databaseUser\n$databasePassword" > .env
 # Write to backend/.env
 log "INFO" "backend/.env file created."
-echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$DJANGO_ALLOWED_HOSTS\n\n$AUTH42_CLIENT\n$AUTH42_SECRET\n" > backend/.env
+echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$djangoSecretKey\n$DJANGO_ALLOWED_HOSTS\n\n$AUTH42_CLIENT\n$AUTH42_SECRET\n" > backend/.env
 
 log "INFO" "Environment setup completed successfully."

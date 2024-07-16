@@ -29,7 +29,7 @@ AUTH42_REDIRECT_URI = 'https://localhost/auth/oauth2/callback/'
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-cjea*nhwb3o&4ve4sc#76yg-@7hf+hs3d1-$!vc=ed=ij^qxos')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'True'
@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'metrics.apps.MetricsConfig',
     'game.apps.GameConfig',
-    'tournament.apps.TournamentConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 
 DEFAULT_AVATAR = 'avatars/default.png'
@@ -35,18 +36,24 @@ class Profile(models.Model):
     blocked_users = models.ManyToManyField('self', symmetrical=False, related_name='blocked_by', blank=True)
     status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.OFFLINE)
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def send_friend_request(self, receiver):
-        from .FriendRequest.models import FriendRequest
+        from user_management.FriendRequest.models import FriendRequest
+        if self == receiver:
+            raise ValidationError("You cannot send a friend request to yourself.")
         if not FriendRequest.objects.filter(sender=self, receiver=receiver).exists():
             FriendRequest.objects.create(sender=self, receiver=receiver)
 
     def accept_friend_request(self, request):
-        from .FriendRequest.models import FriendRequest
+        from user_management.FriendRequest.models import FriendRequest
         try:
-            friend_request = FriendRequest.objects.get(receiver=self, sender=request)
+            friend_request = FriendRequest.objects.get(receiver=self, sender=request.sender)
             friend_request.accept()
         except FriendRequest.DoesNotExist:
-            pass
+            raise ValidationError("Friend request does not exist.")
 
     def __str__(self):
         return self.user.username
