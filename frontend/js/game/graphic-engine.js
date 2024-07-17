@@ -398,7 +398,7 @@ export class graphicEngine {
 
 		if (model != "none" && model != undefined) {
 			this.clearFrame()
-			this.displayStartTimer(model.start_timer_ms)
+			this.displayStartTimer(model.start_timer_s)
 			this.displayBall(model.ball.x, model.ball.y)
 			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)

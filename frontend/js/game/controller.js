@@ -7,7 +7,7 @@ export class LocalController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.star_timer_ms = ""
+		this.start_timer_s = ""
 		this.reset()
 		this.running = true
 		this.stop = true
@@ -53,15 +53,15 @@ export class LocalController {
 			console.log("space pressed")
 			this.stop = false;
 			this.message = ""
-			this.star_timer_ms = 3
+			this.start_timer_s = 3
 			this.countdown()
 		}
 	}
 
 	countdown() {
-		if (this.star_timer_ms > 0) {
+		if (this.start_timer_s > 0) {
 			setTimeout(() => {
-				this.star_timer_ms--
+				this.start_timer_s--
 				this.countdown()
 			}, 1000)
 		}
@@ -112,7 +112,7 @@ export class LocalController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			star_timer_ms: this.star_timer_ms,
+			start_timer_s: this.start_timer_s,
 		}
 	}
 }
@@ -126,7 +126,7 @@ export class AIController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.star_timer_ms = ""
+		this.start_timer_s = ""
 		this.reset()
 		this.running = true
 		this.stop = true
@@ -152,7 +152,7 @@ export class AIController {
 				console.log("space pressed")
 				this.stop = false;
 				this.message = ""
-				this.star_timer_ms = 3
+				this.start_timer_s = 3
 				this.countdown()
 			}
 		});
@@ -169,9 +169,9 @@ export class AIController {
 	}
 
 	countdown() {
-		if (this.star_timer_ms > 0) {
+		if (this.start_timer_s > 0) {
 			setTimeout(() => {
-				this.star_timer_ms--
+				this.start_timer_s--
 				this.countdown()
 			}, 1000)
 		}
@@ -262,7 +262,7 @@ export class AIController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			star_timer_ms: this.star_timer_ms,
+			start_timer_s: this.start_timer_s,
 		}
 	}
 }
@@ -274,8 +274,7 @@ export class RemoteController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.star_timer_ms = 3
-		this.reset()
+		this.start_timer_s = 3
 		this.running = true
 		this.ball.in_play = false
 
@@ -314,7 +313,7 @@ export class RemoteController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.localMsg,
-			star_timer_ms: this.star_timer_ms
+			start_timer_s: this.start_timer_s
 		}
 	}
 
