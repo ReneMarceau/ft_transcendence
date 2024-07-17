@@ -283,7 +283,6 @@ export class RemoteController {
 		this.serverMsg = {}
 		this.localMsg = ""
 		this.stop = false
-		this.address = window.location.hostname
 		this.eventRemover = new AbortController()
 		this.localMsg = ""
 	}
@@ -324,7 +323,7 @@ export class RemoteController {
 	}
 
 	async initSocket() {
-		this.websocket = new WebSocket(`ws://${this.address}/game/`)
+		this.websocket = new WebSocket(`wss://${window.location.host}/ws/game/`)
 	}
 
 	initEventListener() {
@@ -338,6 +337,7 @@ export class RemoteController {
 		}
 		this.websocket.error = (e) => {
 			console.log("Error: ", e)
+			this.websocket.send("disconnection")
 		}
 
 		this.websocket.onclose = (e) => {
@@ -505,7 +505,7 @@ class Paddle {
 		this.height = 0.1
 		this.paddle_margin_x = 1 / 32
 		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 1 / 96
+		this.paddle_speed = 1 / 100
 		this.name = playerName
 		this.paddleHeight = 1 / 8
 		this.y = (1 / 2) - (this.paddleHeight / 2)
