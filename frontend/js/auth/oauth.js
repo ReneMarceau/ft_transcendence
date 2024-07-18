@@ -11,7 +11,7 @@ export async function initOAuth() {
 	const refresh = params.get('refresh');
 	const access = params.get('access');
 	if (!refresh || !access) {
-		return
+		return false
 	}
 	const decoded = jwtDecode(access);
 	const response = await (fetch(`/api/users/${decoded.user_id}`, {
@@ -29,7 +29,7 @@ export async function initOAuth() {
 		console.log(responseData);
 		if (responseData.is_2fa_enabled == true) {
 			render_2fa();
-			handle2FA({ access: access, refresh: refresh });
+			await handle2FA({ access: access, refresh: refresh });
 		} else if (refresh && access) {
 			localStorage.setItem('access_token', access);
 			localStorage.setItem('refresh_token', refresh);
@@ -38,10 +38,13 @@ export async function initOAuth() {
 			history.replaceState({}, document.title, cleanUrl);
 		}
 		console.log(refresh, access);
+		return true;
 	}
 	else {
 		createAlert('danger', 'Failed to get user data');
 		reloadPage();
+		return false
 	}
+	return false
 
 }

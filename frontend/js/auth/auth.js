@@ -131,7 +131,7 @@ async function sendRequest(url, data, csrftoken) {
 		console.log(responseData);
 		if (responseData.is_2fa_enabled == true) {
 			render_2fa();
-			handle2FA(responseData);
+			await handle2FA(responseData);
 		}
 		else {
 			localStorage.setItem('access_token', responseData.access);
@@ -189,7 +189,7 @@ export function authLogout() {
 
 export async function initAuth() {
 	//localStorage.clear(); //uncomment to clear local storage
-	await initOAuth();
+	if (await initOAuth() == true) return;
 	if (isAuthenticated() === true) {
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;
