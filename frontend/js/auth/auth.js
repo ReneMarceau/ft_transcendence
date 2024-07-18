@@ -1,7 +1,7 @@
 import { getCookie, getCurrentUserId } from '../user.js';
 import { createAlert, reloadPage } from "../utils.js"
 import { initOAuth } from './oauth.js';
-import { verifyToken, render_2fa } from './2fa.js';
+import { handle2FA, render_2fa } from './2fa.js';
 import { jwtDecode } from "jwt-decode"
 
 function createModal(id, title, formAction, fields) {
@@ -58,7 +58,7 @@ export function render_auth() {
 	];
 
 
-	main_frame.innerHTML = `
+	main_frame.innerHTML += `
         <div class="d-flex justify-content-center align-items-center" style="height:80%">
             <div class="text-center">
                 <h1 class="" style="font-family: 'Press Start 2P', cursive">ft_traanscancdancee</h1>
@@ -151,15 +151,6 @@ async function sendRequest(url, data, csrftoken) {
 	}
 }
 
-function handle2FA(responseData) {
-	document.getElementById('twofa-form').addEventListener('submit', async function (event) {
-		event.preventDefault();
-		const token = document.getElementById("twofa-input").value;
-		const url = event.target.action;
-		await verifyToken(url, responseData, token);
-	});
-}
-
 export function isAuthenticated() {
 	const access_token = localStorage.getItem('access_token');
 	const refresh_token = localStorage.getItem('refresh_token');
@@ -196,9 +187,9 @@ export function authLogout() {
 	})
 }
 
-export function initAuth() {
+export async function initAuth() {
 	//localStorage.clear(); //uncomment to clear local storage
-	initOAuth();
+	await initOAuth();
 	if (isAuthenticated() === true) {
 		let main_frame = document.getElementById("authDiv");
 		main_frame.innerHTML = ``;

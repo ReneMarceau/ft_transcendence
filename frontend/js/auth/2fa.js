@@ -109,7 +109,7 @@ async function generateTwoFa() {
     }
 }
 
-export async function verifyToken(url, data, token) {
+async function verifyToken(url, data, token) {
     console.log('Verifying token:', token);
 
     const response = await fetch(url, {
@@ -137,3 +137,14 @@ export async function verifyToken(url, data, token) {
         createAlert('danger', errorData.detail);
     }
 }   
+
+export function handle2FA(responseData) {
+	console.log('handle2FA');
+	console.log(responseData)
+	document.getElementById('twofa-form').addEventListener('submit', async function (event) {
+		event.preventDefault();
+		const token = document.getElementById("twofa-input").value;
+		const url = event.target.action;
+		await verifyToken(url, responseData, token);
+	});
+}

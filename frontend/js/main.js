@@ -1,6 +1,5 @@
 import { render_game, pongMenu, initLocalGame, initAIGame, initRemoteGame, initTournament } from "./game/pong.js";
 import { initAuth } from "./auth/auth.js"
-import { initOAuth } from "./auth/oauth.js"
 import { initNavBar } from "./navbar.js";
 import { initSideBar } from "./friends/sidebar.js";
 import { initProfile } from "./profile/profile.js";
@@ -8,7 +7,7 @@ import { initProfile } from "./profile/profile.js";
 
 (async function () {
 	render_game()
-	initAuth()
+	await initAuth()
 	initRouter()
 	await initNavBar()
 	await initSideBar()
@@ -31,7 +30,6 @@ export function initRouter() {
 			{ path: "/aigame", view: () => initAIGame() },
 			{ path: "/remotegame", view: () => initRemoteGame() },
 			{ path: "/profile", view: (params) => initProfile(params.id) },
-			{ path: "/oauth", view: () => initOAuth() },
 			{ path: "/tournament", view: () => initTournament() },
 		];
 

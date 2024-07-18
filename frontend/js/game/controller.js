@@ -390,7 +390,6 @@ export class RemoteController {
 		document.addEventListener("keyup", (e) => {
 			if (!this.isSocketConnected())
 				return
-			console.log(this.state)
 			if (this.state === "running" && this.state === "running")
 				this.websocket.send("stop")
 			if (e.code === 'Space' && this.state === "getready") {
