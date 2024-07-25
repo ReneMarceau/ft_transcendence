@@ -9,7 +9,7 @@ async function getGameData(game, userid) {
 
 	let player2Data = await Promise.all([
 		game.player2,
-		`https://${document.location.host}/media/avatars/default-avatar.png`,
+		`https://${document.location.host}/media/avatars/default.png`,
 		game.score_player2
 	]);
 

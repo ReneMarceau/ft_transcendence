@@ -75,7 +75,7 @@ while [ -z "$djangoSecretKey" ]; do
         log "ERROR" "Django secret key cannot be empty (ask the evaluatees to provide their own secret key)."
     fi
 done
-SECRET_KEY="DJANGO_SECRET_KEY=${djangoSecretKey}"
+DJANGO_SECRET_KEY="DJANGO_SECRET_KEY=${djangoSecretKey}"
 
 # Prompt for OAuth2 variables
 log "INFO" "To get OAuth2 application details, visit: https://profile.intra.42.fr/oauth/applications"
@@ -98,6 +98,16 @@ while [ -z "$AUTH42_SECRET" ]; do
 done
 AUTH42_SECRET="AUTH42_SECRET=${AUTH42_SECRET}"
 
+# AUTH42_REDIRECT_URI
+while [ -z "$AUTH42_REDIRECT_URI" ]; do
+    log "PROMPT" "Please enter your AUTH42_REDIRECT_URI: "
+    read AUTH42_REDIRECT_URI
+    if [ -z "$AUTH42_REDIRECT_URI" ]; then
+        log "ERROR" "AUTH42_REDIRECT_URI cannot be empty."
+    fi
+done
+AUTH42_REDIRECT_URI="AUTH42_REDIRECT_URI=${AUTH42_REDIRECT_URI}"
+
 log "INFO" "OAuth2 details collected successfully."
 
 # Write to .env at the root of the directory
@@ -105,6 +115,6 @@ log "INFO" ".env file created at the root directory."
 echo -e "$databaseName\n$databaseUser\n$databasePassword" > .env
 # Write to backend/.env
 log "INFO" "backend/.env file created."
-echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$djangoSecretKey\n$DJANGO_ALLOWED_HOSTS\n\n$AUTH42_CLIENT\n$AUTH42_SECRET\n" > backend/.env
+echo -e "$POSTGRES_HOST\n$databaseUser\n$databasePassword\n$databaseName\n$POSTGRES_PORT\n\n$SECRET_KEY\n$DJANGO_SECRET_KEY\n$DJANGO_ALLOWED_HOSTS\n\n$AUTH42_CLIENT\n$AUTH42_SECRET\n$AUTH42_REDIRECT_URI" > backend/.env
 
 log "INFO" "Environment setup completed successfully."
