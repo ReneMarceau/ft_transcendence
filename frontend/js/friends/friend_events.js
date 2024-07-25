@@ -30,6 +30,10 @@ export function initEventListeners() {
 	addFriendBtn.addEventListener("click", async () => {
 		const addFriendInput = document.getElementById("addFriendInput");
 		const friendId = addFriendInput.value;
+		if (friendId === "") {
+			createAlert("danger", "Please provide a user id");
+			return;
+		}
 		await handleFriendEvents(`api/profiles/${friendId}/send_friend_request/`, "POST");
 	});
 

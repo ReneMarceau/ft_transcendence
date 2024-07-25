@@ -1,9 +1,10 @@
 export class LocalController {
-	constructor(player1 = "player1", player2 = "player2") {
+	constructor(player1 = "player1", player2 = "player2", is_user = true) {
 		this.paddle1 = new Paddle(player1, "right")
 		this.paddle2 = new Paddle(player2, "left")
 		this.player1 = player1
 		this.player2 = player2
+		this.is_user = is_user
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
@@ -15,7 +16,6 @@ export class LocalController {
 
 		this.restart_time_ms = 0
 		this.message = "press space to start the game"
-
 	}
 
 	cleanup() {
@@ -123,6 +123,7 @@ export class AIController {
 		this.paddle2 = new Paddle(player2, "left")
 		this.player1 = player1
 		this.player2 = "AI"
+		this.is_user = true
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0

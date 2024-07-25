@@ -1,7 +1,9 @@
-import { getUsername } from "../user.js"
+import { getAlias } from "../user.js" 
 import { isAuthenticated } from "../auth/auth.js"
 import { LocalController } from "./controller.js"
 import { Game } from "./Game.js"
+import { createAlert, sanitizeInput } from "../utils.js";
+import { setAlias } from "../user.js";
 
 const Status = {
     WAITING: 0,
@@ -22,22 +24,34 @@ export class Tournament {
         this.status = Status.WAITING
         this.displayForm()
         this.init()
+        this.is_empty = false
+        this.alias = ""
     }
 
     init() {
         const tournamentForm = document.getElementById("tournamentForm")
-        tournamentForm.addEventListener("submit", (e) => {
+        tournamentForm.addEventListener("submit", async (e) => {
             e.preventDefault()
-            this.players[1] = document.getElementById("player1Tournament").value
-            this.players[2] = document.getElementById("player2Tournament").value
-            this.players[3] = document.getElementById("player3Tournament").value
-            this.players[4] = document.getElementById("player4Tournament").value
+            this.players[1] = sanitizeInput(document.getElementById("player1Tournament"));
+            this.players[2] = sanitizeInput(document.getElementById("player2Tournament"));
+            this.players[3] = sanitizeInput(document.getElementById("player3Tournament"));
+            this.players[4] = sanitizeInput(document.getElementById("player4Tournament"));
+
+            this.is_empty = this.players.some((player) => player === "")
+            if (this.is_empty) {
+                createAlert("danger", "Please fill all the fields");
+                return;
+            }
+            
+            if (this.alias !== this.players[1]) {
+                await setAlias(this.players[1]);
+            }
             this.status = Status.SEMI
             this.hideForm()
         })
 
         document.addEventListener("keyup", (e) => {
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && !this.is_empty) {
                 console.log(this.status)
                 if ((this.status === Status.SEMI || this.status === Status.FINAL) && !this.is_running) {
                     this.playGame()
@@ -51,11 +65,11 @@ export class Tournament {
             this.is_running = false
             if (this.game_nb == 2)
                 this.winner_semi[1] = e.detail
-            else if (this.game_nb == 3)
+            else if (this.game_nb === 3)
                 this.winner_semi[2] = e.detail
-            else if (this.game_nb == 4 || this.status == Status.FINAL)
+            else if (this.game_nb === 4 || this.status === Status.FINAL)
                 this.winner = e.detail
-            console .log(this.winner)
+            console.log(this.winner)
             console.log(this.winner_semi[1])
             console.log(this.winner_semi[2])
         })
@@ -75,7 +89,7 @@ export class Tournament {
             return
         }
         else if (this.game_nb === 2) {
-            const controller = new LocalController(this.players[3], this.players[4])
+            const controller = new LocalController(this.players[3], this.players[4], false)
             controller.init()
             const game = new Game(controller, true)
             game.run()
@@ -85,7 +99,8 @@ export class Tournament {
         }
 
         if (this.game_nb === 3) {
-            const controller = new LocalController(this.winner_semi[1], winner_semi[2])
+            const is_user = this.winner_semi[1] === this.alias
+            const controller = new LocalController(this.winner_semi[1], this.winner_semi[2], is_user)
             controller.init()
             const game = new Game(controller, true)
             game.run()
@@ -102,8 +117,8 @@ export class Tournament {
         playerForm.innerHTML = tournamentForm()
         if (isAuthenticated()) {
             const player1Input = document.getElementById("player1Tournament");
-            const username = await getUsername()
-            player1Input.value = username
+            this.alias = await getAlias()
+            player1Input.value = this.alias
         }
     }
 
@@ -121,19 +136,19 @@ function tournamentForm() {
 			<h4 class="text-primary fs-3 fw-bold text-center">Enter aliases</h4>
 			<div class="mb-3">
 				<label for="player1Tournament" class="form-label text-secondary">Player1</label>
-				<input type="text" class="form-control" id="player1Tournament"/>
+				<input type="text" class="form-control" id="player1Tournament" required/>
 			</div>
 			<div class="mb-3">
 				<label for="player2Tournament" class="form-label text-secondary">Player2</label>
-				<input type="text" class="form-control" id="player2Tournament"/>
+				<input type="text" class="form-control" id="player2Tournament" required/>
 			</div>
 			<div class="mb-3">
 				<label for="player3Tournament" class="form-label text-secondary">Player3</label>
-				<input type="text" class="form-control" id="player3Tournament"/>
+				<input type="text" class="form-control" id="player3Tournament" required/>
 			</div>
 			<div class="mb-3">
 				<label for="player4Tournament" class="form-label text-secondary">Player4</label>
-				<input type="text" class="form-control" id="player4Tournament"/>
+				<input type="text" class="form-control" id="player4Tournament" required/>
 			</div>
 			<div id="tournamentError"></div>
 			<button type="submit" id="tournamentFormSubmit" class="btn btn-primary">Submit</button>

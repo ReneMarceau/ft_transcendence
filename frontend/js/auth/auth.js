@@ -1,5 +1,5 @@
 import { getCookie, getCurrentUserId } from '../user.js';
-import { createAlert, reloadPage } from "../utils.js"
+import { createAlert, reloadPage, sanitizeInput } from "../utils.js"
 import { initOAuth } from './oauth.js';
 import { handle2FA, render_2fa } from './2fa.js';
 import { jwtDecode } from "jwt-decode"
@@ -78,8 +78,8 @@ function authLogin() {
 
 	document.getElementById('login-form').addEventListener('submit', function (event) {
 		event.preventDefault();
-		const username = document.getElementById("login-username").value;
-		const password = document.getElementById("login-password").value;
+		const username = sanitizeInput(document.getElementById("login-username"));
+		const password = sanitizeInput(document.getElementById("login-password"));
 
 		const url = event.target.action
 		const data = {
@@ -97,9 +97,9 @@ function authSignup() {
 
 	document.getElementById('signup-form').addEventListener('submit', function (event) {
 		event.preventDefault();
-		const username = document.getElementById("signup-username").value;
-		const password = document.getElementById("signup-password").value;
-		const email = document.getElementById("signup-email").value;
+		const username = sanitizeInput(document.getElementById("signup-username"));
+		const password = sanitizeInput(document.getElementById("signup-password"));
+		const email = sanitizeInput(document.getElementById("signup-email"));
 
 		const url = event.target.action
 		const data = {

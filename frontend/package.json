@@ -4,7 +4,8 @@
 	"main": "js/main.js",
 	"scripts": {
 		"start": "browser-sync start --server --files 'css/*.css, js/*.js, *.html'",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"format": "prettier --write 'css/*.css' 'js/*.js' '*.html'",
+		"lint": "eslint 'js/*.js'"
 	},
 	"repository": {
 		"type": "git",
@@ -18,10 +19,18 @@
 	"homepage": "https://github.com/ReneMarceau/ft_transcendence#readme",
 	"description": "",
 	"devDependencies": {
-		"browser-sync": "^3.0.2"
+		"@eslint/js": "^9.7.0",
+		"browser-sync": "^3.0.2",
+		"eslint": "^8.57.0",
+		"eslint-config-standard": "^17.1.0",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-promise": "^6.6.0",
+		"globals": "^15.8.0",
+		"prettier": "3.3.3"
 	},
 	"dependencies": {
-		"three": "^0.161.0",
-		"jwt-decode": "^4.0.0"
+		"jwt-decode": "^4.0.0",
+		"three": "^0.161.0"
 	}
 }

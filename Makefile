@@ -31,6 +31,8 @@ help:
 	@echo "  ${GREEN}make deploy / re${RESET}       - Deploy the application"
 	@echo "  ${GREEN}make check${RESET}             - Check if all dependencies are installed"
 	@echo "  ${GREEN}make install${RESET}           - Install Python dependencies"
+	@echo "  ${GREEN}make format-front${RESET}      - Run formater for frontend"
+	@echo "  ${GREEN}make format-back${RESET}       - Run formater for backend"
 
 # Build the Docker containers
 .PHONY: build
@@ -127,3 +129,18 @@ install: venv
 	@pip install --upgrade pip
 	@pip install -r backend/requirements.txt
 	@echo "${GREEN}Dependencies installed.${RESET}"
+
+# Run formater for frontend
+.PHONY: format-front
+format-front:
+	@echo "${YELLOW}Running formater...${RESET}"
+	@cd frontend && npm run format
+	@cd frontend && npm run lint
+	@echo "${GREEN}Formating complete.${RESET}"
+
+# Run formater for backend
+.PHONY: format-back
+format-back: check install
+	@echo "${YELLOW}Running formater...${RESET}"
+	@cd backend && python -m black .
+	@echo "${GREEN}Formating complete.${RESET}"

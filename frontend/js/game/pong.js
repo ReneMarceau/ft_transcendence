@@ -5,6 +5,7 @@ import { RemoteController } from "./controller.js"
 import { Game } from "./Game.js"
 import { isAuthenticated } from "../auth/auth.js"
 import { Tournament } from "./tournament.js"
+import { getUsername } from "../user.js";
 
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
@@ -111,7 +112,8 @@ export async function initTournament() {
 export async function initLocalGame() {
 	console.log("local")
 	hideMenu()
-	let controller = new LocalController()
+	const username = await getUsername()
+	let controller = new LocalController(username)
 	controller.init()
 	let game = new Game(controller,)
 	game.run()
@@ -121,7 +123,8 @@ export async function initLocalGame() {
 export async function initAIGame() {
 	console.log("AI")
 	hideMenu()
-	let controller = new AIController()
+	const username = await getUsername()
+	let controller = new AIController(username)
 	controller.init()
 	let game = new Game(controller)
 	game.run()
