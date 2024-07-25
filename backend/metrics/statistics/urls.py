@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import StatisticViewSet
 
 router = DefaultRouter()
-router.register(r'statistics', StatisticViewSet)
+router.register(r"statistics", StatisticViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]

@@ -5,6 +5,7 @@ from channels.db import database_sync_to_async
 
 logger = logging.getLogger(__name__)
 
+
 class Paddle:
     def __init__(self, side):
         self.side = side
@@ -18,11 +19,11 @@ class Paddle:
             self.x = 0.95
         self.y = 0.5 - self.height / 2
         self.init()
-    
+
     def init(self):
         self.paddle_speed = 0
         self.y = 0.5 - self.height / 2
-  
+
     def update(self, direction):
         if direction == "up":
             self.paddle_speed = -0.01
@@ -32,17 +33,16 @@ class Paddle:
             self.paddle_speed = 0
 
     def move(self):
-        if (self.y + self.paddle_speed - self.paddle_margin_y <= 0) or (self.y + self.paddle_margin_y + self.height + self.paddle_speed >= 1):
+        if (self.y + self.paddle_speed - self.paddle_margin_y <= 0) or (
+            self.y + self.paddle_margin_y + self.height + self.paddle_speed >= 1
+        ):
             return self.y
         self.y += self.paddle_speed
-  
+
     def get_position(self):
-        return {
-            "x": self.x,
-            "y": self.y,
-            "height": self.height
-        }
-  
+        return {"x": self.x, "y": self.y, "height": self.height}
+
+
 class Game:
     def __init__(self, type, player1, game_id):
         self.id = game_id
@@ -70,14 +70,14 @@ class Game:
         self.winner = None
         self.message = ""
 
+
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
             await self.accept()
             await self.channel_layer.group_add(
-                f"user_{self.user.username}",
-                self.channel_name
+                f"user_{self.user.username}", self.channel_name
             )
             logger.info(f"User {self.user.username} connected.")
         else:
@@ -86,8 +86,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if self.user.is_authenticated:
             await self.channel_layer.group_discard(
-                f"user_{self.user.username}",
-                self.channel_name
+                f"user_{self.user.username}", self.channel_name
             )
             logger.info(f"User {self.user.username} disconnected.")
 
@@ -98,13 +97,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         try:
             text_data_json = json.loads(text_data)
-            message = text_data_json.get('message', '')
-            await self.send(text_data=json.dumps({
-                'response': 'Message received: ' + message
-            }))
+            message = text_data_json.get("message", "")
+            await self.send(
+                text_data=json.dumps({"response": "Message received: " + message})
+            )
             logger.info(f"Message from {self.user.username}: {message}")
         except json.JSONDecodeError:
             logger.error("Failed to decode JSON from message.")
-            await self.send(text_data=json.dumps({
-                'error': 'Invalid JSON format'
-            }))
+            await self.send(text_data=json.dumps({"error": "Invalid JSON format"}))

@@ -1,5 +1,5 @@
 from django.urls import path, include
 
 urlpatterns = [
-    path('metrics/', include('metrics.statistics.urls')),
+    path("metrics/", include("metrics.statistics.urls")),
 ]

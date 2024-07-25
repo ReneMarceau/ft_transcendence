@@ -16,14 +16,18 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 import game.routing
 import user_management.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter([
-            *user_management.routing.websocket_urlpatterns,
-            *game.routing.websocket_urlpatterns,
-        ])
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(
+                [
+                    *user_management.routing.websocket_urlpatterns,
+                    *game.routing.websocket_urlpatterns,
+                ]
+            )
+        ),
+    }
+)

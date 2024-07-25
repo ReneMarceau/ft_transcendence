@@ -1,6 +1,7 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+
 
 class StatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -8,16 +9,14 @@ class StatusConsumer(AsyncWebsocketConsumer):
         if self.user.is_authenticated:
             await self.accept()
             await self.channel_layer.group_add(
-                f"user_{self.user.username}",
-                self.channel_name
+                f"user_{self.user.username}", self.channel_name
             )
             await self.update_status("online")
 
     async def disconnect(self, close_code):
         if self.user.is_authenticated:
             await self.channel_layer.group_discard(
-                f"user_{self.user.username}",
-                self.channel_name
+                f"user_{self.user.username}", self.channel_name
             )
             await self.update_status("offline")
 
@@ -37,15 +36,16 @@ class StatusConsumer(AsyncWebsocketConsumer):
                 {
                     "type": "status_update",
                     "username": self.user.username,
-                    "status": status
-                }
+                    "status": status,
+                },
             )
 
     @database_sync_to_async
     def get_profile(self):
         from user_management.models import Profile
+
         return Profile.objects.get(user=self.user)
-    
+
     @database_sync_to_async
     def set_profile_status(self, profile, status):
         profile.status = status
@@ -56,7 +56,11 @@ class StatusConsumer(AsyncWebsocketConsumer):
         return list(profile.friends.all())
 
     async def status_update(self, event):
-        await self.send(text_data=json.dumps({
-            "username": event["username"],
-            "status": event["status"],
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "username": event["username"],
+                    "status": event["status"],
+                }
+            )
+        )
