@@ -81,6 +81,7 @@ export class Game {
 			menuButton.classList.remove("d-none");
 			menuButton.addEventListener("click", this.handleMenuButtonClick.bind(this));
 		}
+		window.addEventListener("popstate", this.handlePopState.bind(this));
 	}
 
 	handleMenuButtonClick() {
@@ -89,8 +90,16 @@ export class Game {
 		this.controller.stop = true;
 	}
 
-	stop()
-	{
+	handlePopState() {
+		console.log("popstate event");
+		this.running = false;
+		this.controller.cleanup();
+		this.controller.stop = true;
+		renderer.hideBoard();
+	}
+
+
+	stop(){
 		this.controller.cleanup();
 		const gameEnd = new CustomEvent("gameEnd", { detail: this.controller.getWinner() });
 		document.dispatchEvent(gameEnd);

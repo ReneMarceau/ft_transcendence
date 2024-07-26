@@ -15,15 +15,6 @@ export function render_game() {
 	<canvas id="board" class="d-none"></canvas>
 	<canvas id="background"></canvas>
 	`
-	// <div class="text-center">
-	// 	<h1 id="ft_title" class="d-none" style="font-family: 'Press Start 2P', cursive">ft_trnascnacdance</h1>
-	// </div>
-
-	let tournamentBtn = document.querySelector("#tournamentbtn")
-	tournamentBtn.innerHTML = `
-		Tournament
-	`
-
 	renderer.init()
 }
 
@@ -73,15 +64,15 @@ export async function pongMenu() {
 	if (isAuthenticated() === true) {
 		initWebsocket()
 		let localGameBtn = document.querySelector("#localgamebtn")
-		let remoteGameBtn = document.querySelector("#remotegamebtn")
+		//let remoteGameBtn = document.querySelector("#remotegamebtn")
 		let aiGameBtn = document.querySelector("#aigamebtn")
 		let tournamentBtn = document.querySelector("#tournamentbtn")
 		// let ftTitle = document.querySelector("#ft_title")
 		// ftTitle.classList.remove('d-none')
 		tournamentBtn.classList.remove('d-none')
 		localGameBtn.classList.remove('d-none')
-		remoteGameBtn.classList.remove('d-none')
 		aiGameBtn.classList.remove('d-none')
+		//remoteGameBtn.classList.remove('d-none')
 	}
 }
 
@@ -125,12 +116,12 @@ export async function initRemoteGame() {
 function hideMenu() {
 	let localGameBtn = document.querySelector("#localgamebtn")
 	let aiGameBtn = document.querySelector("#aigamebtn")
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
+	//let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let tournamentBtn = document.querySelector("#tournamentbtn")
 
 	tournamentBtn.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
-	remoteGameBtn.classList.add('d-none')
+	//remoteGameBtn.classList.add('d-none')
 	aiGameBtn.classList.add('d-none')
 
 }
