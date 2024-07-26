@@ -13,6 +13,8 @@ function hidePong() {
 
 export async function initProfile(userid = getCurrentUserId()) {
 	console.log("user id :" + userid)
+    const playerForm = document.getElementById("playerForm")
+    playerForm.innerHTML = ``
 	hidePong()
 	if (isAuthenticated() === false)
 		return;
