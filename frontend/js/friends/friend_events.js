@@ -26,6 +26,7 @@ async function handleFriendEvents(url, method) {
 }
 
 export function initEventListeners() {
+	console.log("event friends")
 	const addFriendBtn = document.getElementById("addFriendBtn");
 	addFriendBtn.addEventListener("click", async () => {
 		const addFriendInput = document.getElementById("addFriendInput");
@@ -38,7 +39,7 @@ export function initEventListeners() {
 	});
 
 	const removeFriendBtns = document.getElementById("friendListContainer");
-	const removeFriendBtn = removeFriendBtns.querySelectorAll(".btn-danger");
+	const removeFriendBtn = removeFriendBtns.querySelectorAll(".btn-outline-danger");
 	removeFriendBtn.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const friendId = btn.getAttribute("data-friend-id");
@@ -47,7 +48,7 @@ export function initEventListeners() {
 	});
 
 	const receivedFrienRequestBtns = document.getElementById("receivedFriendRequestListContainer");
-	const acceptFriendRequest = receivedFrienRequestBtns.querySelectorAll(".btn-success");
+	const acceptFriendRequest = receivedFrienRequestBtns.querySelectorAll(".btn-outline-success");
 	acceptFriendRequest.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const senderId = btn.getAttribute("data-sender-id");
@@ -55,7 +56,7 @@ export function initEventListeners() {
 		});
 	});
 
-	const declineFriendRequest = receivedFrienRequestBtns.querySelectorAll(".btn-danger");
+	const declineFriendRequest = receivedFrienRequestBtns.querySelectorAll(".btn-outline-danger");
 	declineFriendRequest.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const senderId = btn.getAttribute("data-sender-id");
@@ -63,7 +64,7 @@ export function initEventListeners() {
 		});
 	});
 	const cancelFriendRequest = document.getElementById("sentFriendRequestListContainer");
-	const cancelFriendRequestBtn = cancelFriendRequest.querySelectorAll(".btn-danger");
+	const cancelFriendRequestBtn = cancelFriendRequest.querySelectorAll(".btn-outline-danger");
 	cancelFriendRequestBtn.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const receiverId = btn.getAttribute("data-receiver-id");
