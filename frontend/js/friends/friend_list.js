@@ -27,13 +27,13 @@ export async function createFriendList(friendList) {
 		const status = await getStatus(friendList[i])
 		friendListElement += `
 
-		<li class="nav-item border border-primary rounded mb-2 w-50">
+		<li class="nav-item border border-primary rounded mb-2 w-75">
 			<div class="row align-items-center p-2">
 				<div class="col-auto">
 					<img src="${avatar}" alt="${username}'s avatar" class="rounded-circle" width="40" height="40">
 				</div>
 				<div class="col">
-					<a href="/profile?id=${friendList[i]}" class="nav-link" data-link>${username}${getStatusClass(status)}</a>
+					<a href="/profile?id=${friendList[i]}" class="fw-bold text-center text-white fs-6" data-link>${username}${getStatusClass(status)}</a>
 				</div>
 				<div class="col-auto">
 					<a id="removeFriendBtn-${friendList[i]}" data-friend-id="${friendList[i]}" class="btn btn-sm btn-outline-danger">

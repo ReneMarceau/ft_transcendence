@@ -8,13 +8,13 @@ export async function createReceivedFriendRequestList(friendRequestList) {
 		const username = await getUsername(friendRequestList[i].sender)
 		const avatar = await getAvatar(friendRequestList[i].sender)
 		friendRequestListElement += `
-		<li class="nav-item border border-primary rounded mb-2 w-50">
+		<li class="nav-item border border-primary rounded mb-2 w-75">
 			<div class="row align-items-center p-2">
 				<div class="col-auto">
 					<img src="${avatar}" alt="${username}'s avatar" class="rounded-circle" width="40" height="40">
 				</div>
 				<div class="col">
-					<a href="/profile?id=${friendRequestList[i].sender}" class="nav-link" data-link>${username}</a>
+					<a href="/profile?id=${friendRequestList[i].sender}" class="fw-bold text-center text-white fs-6" data-link>${username}</a>
 				</div>
 				<div class="col-auto">
 					<a id="acceptFriendRequest-${friendRequestList[i].id}" data-sender-id="${friendRequestList[i].sender}" class="btn btn-sm btn-outline-success">
@@ -42,17 +42,17 @@ export async function createSentFriendRequestList(friendRequestList) {
 		const username = await getUsername(friendRequestList[i].receiver)
 		const avatar = await getAvatar(friendRequestList[i].receiver)
 		friendRequestListElement += `
-		<li class="nav-item border border-primary rounded mb-2 w-50">
+		<li class="nav-item border border-primary rounded mb-2 w-75">
 			<div class="row align-items-center p-2">
 				<div class="col-auto">
 					<img src="${avatar}" alt="${username}'s avatar" class="rounded-circle" width="40" height="40">
 				</div>
 				<div class="col">
-					<a href="/profile?id=${friendRequestList[i].receiver}" class="nav-link" data-link>${username}</a>
+					<a href="/profile?id=${friendRequestList[i].receiver}" class="fw-bold text-center text-white fs-6" data-link>${username}</a>
 				</div>
 				<div class="col-auto">
 					<a id="cancelFriendRequest-${friendRequestList[i].id}" data-receiver-id="${friendRequestList[i].receiver}" class="btn btn-sm btn-outline-danger">
-						<i class="bi bi-x-lg"></i>
+					<i class="bi bi-x-lg"></i>
 					</a>
 				</div>
 			</div>
