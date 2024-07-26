@@ -23,7 +23,7 @@ FRONTEND_URL = "https://localhost"
 
 AUTH42_CLIENT_ID = os.environ.get("AUTH42_CLIENT")
 AUTH42_SECRET = os.environ.get("AUTH42_SECRET")
-AUTH42_REDIRECT_URI = "https://localhost/auth/oauth2/callback/"
+AUTH42_REDIRECT_URI = os.environ.get("AUTH42_REDIRECT_URI")
 
 
 # Quick-start development settings - unsuitable for production
@@ -124,8 +124,8 @@ DATABASES = {
         "NAME": os.environ.get("POSTGRES_DB"),
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": "postgres_db",
-        "PORT": "5432",
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": os.environ.get("POSTGRES_PORT"),
     }
 }
 

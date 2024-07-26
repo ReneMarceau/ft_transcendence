@@ -133,7 +133,7 @@ function tournamentForm() {
     return `
 	<div class="d-flex justify-content-center">
 		<form id="tournamentForm" class="bg-dark m-2 p-4 border border-3 border-rounded border-primary" style="width: 400px;" novalidate>
-			<h4 class="text-primary fs-3 fw-bold text-center">Enter aliases</h4>
+			<h4 class="text-secondary fs-3 fw-bold text-center">Enter aliases</h4>
 			<div class="mb-3">
 				<label for="player1Tournament" class="form-label text-secondary">Player1</label>
 				<input type="text" class="form-control" id="player1Tournament" required/>
