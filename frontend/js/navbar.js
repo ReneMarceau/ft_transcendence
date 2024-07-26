@@ -3,6 +3,8 @@ import { authLogout } from './auth/auth.js';
 import { createSettings } from './settings.js';
 
 export async function initNavBar() {
+  if (isAuthenticated() === false)
+    return;
   document.querySelector('body').insertAdjacentHTML(
     'afterbegin',
     `
@@ -21,7 +23,6 @@ export async function initNavBar() {
 }
 
 async function createButtons() {
-  if (isAuthenticated() === true) {
     let nav = document.querySelector('#navBarButtons');
     nav.innerHTML = `
             <div class="d-flex navbar-nav ms-auto">
@@ -41,7 +42,4 @@ async function createButtons() {
         `;
     authLogout();
     await createSettings();
-  } else {
-    //todo- if not auth
-  }
 }
