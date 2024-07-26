@@ -14,43 +14,50 @@ export function reloadPage() {
 
 // type needs to be 'success', 'danger', 'warning', or anything else
 export function createAlert(type, message) {
-  const header = (type) => {
-    if (type === 'success') {
-      return 'Success!';
-    } else if (type === 'danger') {
-      return 'Error!';
-    } else if (type === 'warning') {
-      return 'Warning!';
-    } else {
-      return 'Info!';
-    }
-  };
+	const header = (type) => {
+		switch (type) {
+			case 'success':
+				return 'Success!';
+			case 'danger':
+				return 'Error!';
+			case 'warning':
+				return 'Warning!';
+			default:
+				return 'Info!';
+		}
+	};
 
-  const existingAlert = document.querySelector('.alert');
-  if (existingAlert) return;
+	// Ensure there's a container for the alerts
+	let alertContainer = document.querySelector('#alert-container');
+	if (!alertContainer) {
+		alertContainer = document.createElement('div');
+		alertContainer.id = 'alert-container';
+		alertContainer.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 10000; width: 300px;';
+		document.querySelector('body').appendChild(alertContainer);
+	}
 
-  console.log(`Creating alert with type: ${type} and message: ${message}`);
-  const alert = document.createElement('div');
-  alert.style.cssText =
-    'position: fixed; top: 70px; right: 20px; z-index: 10000;';
-  alert.classList.add('alert', 'alert-dismissible', `alert-${type}`);
-  alert.innerHTML = `
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading">${header(type)}</h4>
-        <p class="mb-0">${message}</p>
-    `;
-  document.querySelector('body').appendChild(alert);
+	console.log(`Creating alert with type: ${type} and message: ${message}`);
+	const alert = document.createElement('div');
+	alert.classList.add('alert', 'alert-dismissible', `alert-${type}`);
+	alert.innerHTML = `
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="alert-heading">${header(type)}</h4>
+    <p class="mb-0">${message}</p>
+  `;
+	alertContainer.appendChild(alert);
 
-  setTimeout(() => {
-    //thank you chatgpt
-    alert.style.transition = 'opacity 1s ease';
-    alert.style.opacity = '0';
-    setTimeout(() => {
-      alert.remove();
-    }, 1000);
-  }, 3000);
+	setTimeout(() => {
+		alert.style.transition = 'opacity 1s ease';
+		alert.style.opacity = '0';
+		setTimeout(() => {
+			alert.remove();
+			// Remove the container if no alerts are left
+			if (alertContainer.children.length === 0) {
+				alertContainer.remove();
+			}
+		}, 1000);
+	}, 3000);
 }
-
 export function sanitizeInput(element) {
   const text = element.value;
 

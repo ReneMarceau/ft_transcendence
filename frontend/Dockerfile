@@ -10,11 +10,6 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# docker exec -it <mycontainer> bash
-RUN npm install -g three
-RUN npm install -g browser-sync
-RUN npm install -g jwt-decode
-
 # Copy the rest of the application code into the container
 COPY . .
 
@@ -22,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Default command to run the application
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:prod"]

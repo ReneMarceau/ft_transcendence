@@ -81,6 +81,7 @@ clean: down
 	@$(DOCKER_COMPOSE) down --rmi all -v --remove-orphans
 	@find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 	@find . -path "*/migrations/*.pyc"  -delete
+	@rm -rf frontend/dist
 	@echo "${GREEN}Clean complete.${RESET}"
 
 # Deploy the application
