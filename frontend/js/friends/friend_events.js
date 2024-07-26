@@ -3,6 +3,8 @@ import { getCookie } from "../user.js";
 import { createAlert } from "../utils.js";
 import { initSideBar } from "./sidebar.js";
 
+
+
 async function handleFriendEvents(url, method) {
 	const response = await fetch(url, {
 		method: method,
@@ -23,6 +25,18 @@ async function handleFriendEvents(url, method) {
 		console.log("Failed", result.detail);
 		createAlert("danger", result.detail);
 	}
+}
+
+export async function updateFriendStatus(username, status) {
+	const friendElements = document.querySelectorAll('.nav-item');
+	friendElements.forEach(friendElement => {
+		const friendLink = friendElement.querySelector('a.nav-link');
+		if (friendLink && friendLink.textContent.trim() === username) {
+			const statusBadge = friendElement.querySelector('span.badge');
+			statusBadge.textContent = status;
+		}
+	});
+	initSideBar();
 }
 
 export function initEventListeners() {

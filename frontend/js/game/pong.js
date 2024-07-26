@@ -6,6 +6,7 @@ import { Game } from "./Game.js"
 import { isAuthenticated } from "../auth/auth.js"
 import { Tournament } from "./tournament.js"
 import { getUsername } from "../user.js";
+import { updateFriendStatus } from "../friends/friend_events.js";
 
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
@@ -20,16 +21,8 @@ export function render_game() {
 
 	let tournamentBtn = document.querySelector("#tournamentbtn")
 	tournamentBtn.innerHTML = `
-	Tournament
-	<div class="dropdown-menu" id="dropdownMenu">
-		<a class="dropdown-item" href="#">New tournament</a>
-		<a class="dropdown-item" href="#">Join tournament</a>
-	</div>
+		Tournament
 	`
-	tournamentBtn.addEventListener("click", function () {
-		var dropdownMenu = document.getElementById('dropdownMenu');
-		dropdownMenu.classList.toggle('show');
-	});
 
 	renderer.init()
 }
@@ -48,17 +41,6 @@ window.addEventListener("beforeunload", function (event) {
 		ws.close()
 	}
 })
-
-async function updateFriendStatus(username, status) {
-	const friendElements = document.querySelectorAll('.nav-item');
-	friendElements.forEach(friendElement => {
-		const friendLink = friendElement.querySelector('a.nav-link');
-		if (friendLink && friendLink.textContent.trim() === username) {
-			const statusBadge = friendElement.querySelector('span.badge');
-			statusBadge.textContent = status;
-		}
-	});
-}
 
 function initWebsocket() {
 	ws = new WebSocket(`wss://${window.location.host}/ws/status/`)
