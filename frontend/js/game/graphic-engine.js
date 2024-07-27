@@ -412,6 +412,7 @@ export class graphicEngine {
 
 	clearFrame() {
 		this.ctx.clearRect(0, 0, this.board.width, this.board.height)
+		this.board.setAttribute('gameon', 'false')
 	}
 
 	displayBall(ball_x, ball_y) {

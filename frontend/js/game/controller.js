@@ -143,7 +143,11 @@ export class AIController {
 		this.predictedY = null;
 	}
 
-	cleanup() { }
+	cleanup() {		
+		console.log("cleanup controller")
+		document.removeEventListener("keydown", this.handleKeyDown);
+		document.removeEventListener("keyup", this.handleKeyUp);
+	}
 
 	init() {
 		document.addEventListener("keydown", this.handleKeyDown.bind(this));

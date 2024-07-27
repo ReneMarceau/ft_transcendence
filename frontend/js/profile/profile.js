@@ -16,7 +16,11 @@ export async function initProfile(userid = getCurrentUserId()) {
     const playerForm = document.getElementById("playerForm")
     playerForm.innerHTML = ``
 	hidePong()
-	if (isAuthenticated() === false)
+
+    const cancelGame = new CustomEvent("cancelGame");
+    document.dispatchEvent(cancelGame);
+
+	if (isAuthenticated() === false )
 		return;
 
 	let profile = document.getElementById("profileDiv")
@@ -37,7 +41,7 @@ function renderProfile(userid, username, avatar) {
 	document.getElementById("profileDiv").innerHTML = `
         <div class="row justify-content-center align-items-center">
             <div class="col-md-4 text-center mb-4 mb-md-0">
-                <img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="max-width: 200px; max-height: 200px;">
+                <img src="${avatar}" class="rounded-circle img-fluid shadow-lg" alt="Avatar" style="width: 200px; height: 200px;">
             </div>
             <div class="col-md-8 text-center text-md-start mx-auto">
                 <h1 class="bold py-3 fs-2 fw-bold" style="font-family: 'Press Start 2P', cursive; word-wrap: break-word;">${username}</h1>

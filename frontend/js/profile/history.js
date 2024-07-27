@@ -52,7 +52,7 @@ export async function renderHistory(stats, userid) {
 
 			history_div.innerHTML += `
                 <div class="row align-items-center bg-dark justify-content-around border border-primary border-3 rounded p-2 m-2">
-                    <div class="col-2"><img src="${game_data.player1_avatar}" class="img-fluid rounded float-left"></div>
+                    <div class="col-2"><img src="${game_data.player1_avatar}" class="img-fluid rounded float-left" style="width: 125px; height: 125px;"></div>
                     <div class="col-3">
                         <div class="d-flex flex-column">
                             <div class="p-1">
@@ -75,7 +75,7 @@ export async function renderHistory(stats, userid) {
                             <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game_data.score_player2}</h5></div>
                         </div>
                     </div>
-                    <div class="col-2"><img src="${game_data.player2_avatar}" class="img-fluid rounded float-left"></div>
+                    <div class="col-2"><img src="${game_data.player2_avatar}" class="img-fluid rounded float-left"  style="width: 125px; height: 125px;"></div>
 					<div class="col-12"><h6 class="text-secondary fs-6 fw-bold text-right mt-3">${formattedDate}</h6></div>
                 </div>`;
 		}));

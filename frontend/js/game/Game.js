@@ -82,12 +82,14 @@ export class Game {
 			menuButton.addEventListener("click", this.handleMenuButtonClick.bind(this));
 		}
 		window.addEventListener("popstate", this.handlePopState.bind(this));
+		document.addEventListener("cancelGame", this.handleCancelGame.bind(this));
 	}
 
 	handleMenuButtonClick() {
 		this.running = false;
 		this.controller.cleanup();
 		this.controller.stop = true;
+		renderer.hideBoard();
 	}
 
 	handlePopState() {
@@ -95,6 +97,16 @@ export class Game {
 		this.running = false;
 		this.controller.cleanup();
 		this.controller.stop = true;
+		this.controller.cancel = true;
+		renderer.hideBoard();
+	}
+
+	handleCancelGame(){
+		console.log("cancelGame event");
+		this.running = false;
+		this.controller.cleanup();
+		this.controller.stop = true;
+		this.controller.cancel = true;
 		renderer.hideBoard();
 	}
 
@@ -116,14 +128,17 @@ export class Game {
 		
 		const update = async () => {
 			if (this.controller.running === false) {
-				if (this.is_tournament === true)
-					{
-						this.stop()
-						this.graphicEngine.clearFrame()
-					}
-					//renderer.hideBoard();
-					await endGame(this.gameId, this.controller.player1Score, this.controller.player2Score);
-					console.log("game over");
+				if (this.is_tournament === true) {
+					this.stop()
+					this.graphicEngine.clearFrame()
+				}
+				//renderer.hideBoard();
+				if (this.controller.cancel === true) {
+					console.log("game cancelled");
+					return;
+				}
+				await endGame(this.gameId, this.controller.player1Score, this.controller.player2Score);
+				console.log("game over");
 				return;
 			}
 			const data = this.controller.update();
