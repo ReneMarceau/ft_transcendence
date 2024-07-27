@@ -24,9 +24,13 @@ class IsAdminUserOrReadOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Allow read-only access to everyone
-        if request.method in permissions.SAFE_METHODS:
+        # Allow full access to admin users
+        if request.user and request.user.is_staff:
             return True
 
-        # Allow full access to admin users
-        return request.user and request.user.is_staff
+        # Allow read-only access to authenticated users
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+
+        # Deny access otherwise
+        return False

@@ -72,7 +72,9 @@ class ProfileViewSet(BaseViewSet):
     serializer_class = ProfileSerializer
 
     def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy"]:
+        if self.action == "list":
+            permission_classes = [IsAdminUserOrReadOnly]
+        elif self.action in ["update", "partial_update", "destroy"]:
             permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
         else:
             permission_classes = [IsAuthenticatedOrReadOnly]
