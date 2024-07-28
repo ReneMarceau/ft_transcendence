@@ -26,7 +26,7 @@ async function createSidebar() {
 				<div id="friendSidebar" class="d-flex m-2 p-2 flex-column align-items-stretch flex-shrink-0 text-bg-white">
 					<h3 class="text-white fs-3 fw-bold">Friends</h3>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="friendListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
+						<div id="friendListContainer" class="bg-dark overflow-auto" style="max-height: 30vh;">
 							${friendListElement}
 						</div>
 					</ul>
@@ -34,13 +34,14 @@ async function createSidebar() {
 					<h3 class="text-white fs-3 fw-bold">Friend Request</h3>
 					<h5 class="text-white fs-4 fw-bold">Received</h5>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="receivedFriendRequestListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
+						<div id="receivedFriendRequestListContainer" class=" bg-dark overflow-auto" style="max-height: 30vh;">
 							${receivedFriendRequestListElement}
 						</div>
 					</ul>
+					<hr>
 					<h5 class="text-white fs-4 fw-bold">Sent</h5>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="sentFriendRequestListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
+						<div id="sentFriendRequestListContainer" class=" bg-dark overflow-auto" style="max-height: 30vh;">
 							${sentFriendRequestListElement}
 						</div>
 					</ul>

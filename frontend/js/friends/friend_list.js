@@ -20,32 +20,32 @@ function getStatusClass(status) {
 }
 
 export async function createFriendList(friendList) {
+	if (friendList.length === 0)
+		return `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No friends yet...</div>`
+
 	let friendListElement = ""
 	for (let i = 0; i < friendList.length; i++) {
 		const username = await getUsername(friendList[i])
 		const avatar = await getAvatar(friendList[i])
 		const status = await getStatus(friendList[i])
-		friendListElement += `
-
-		<li class="nav-item border border-primary rounded mb-2 w-75">
-			<div class="row align-items-center p-2">
-				<div class="col-auto">
-					<img src="${avatar}" alt="${username}'s avatar" class="rounded-circle" width="40" height="40">
+		friendListElement +=
+		`
+			<li class="nav-item border border-primary rounded mb-2 w-75" >
+				<div class="row align-items-center p-2 flex-md-row flex-row">
+					<div class="col-auto">
+						<img src="${avatar}" alt="${username}'s avatar" class="rounded-circle" width="40" height="40">
+					</div>
+					<div class="col">
+						<a href="/profile?id=${friendList[i]}" class="fw-bold text-center text-white fs-6" data-link>${username}${getStatusClass(status)}</a>
+					</div>
+					<div class="col-auto">
+						<a id="removeFriendBtn-${friendList[i]}" data-friend-id="${friendList[i]}" class="btn btn-sm btn-outline-danger">
+							<i class="bi bi-x-lg"></i>
+						</a>
+					</div>
 				</div>
-				<div class="col">
-					<a href="/profile?id=${friendList[i]}" class="fw-bold text-center text-white fs-6" data-link>${username}${getStatusClass(status)}</a>
-				</div>
-				<div class="col-auto">
-					<a id="removeFriendBtn-${friendList[i]}" data-friend-id="${friendList[i]}" class="btn btn-sm btn-outline-danger">
-						<i class="bi bi-x-lg"></i>
-					</a>
-				</div>
-			</div>
-		</li>
-        `
-	}
-	if (friendListElement === "") {
-		friendListElement = "you have no friends, yet..."
+			</li >
+			`
 	}
 	return friendListElement
 }
