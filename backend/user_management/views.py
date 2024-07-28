@@ -109,6 +109,12 @@ class ProfileViewSet(BaseViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if receiver in sender.friends.all():
+            return Response(
+                {"detail": "User is already your friend."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         sender.send_friend_request(receiver)
         return Response(
             {"detail": "Friend request sent successfully."},
