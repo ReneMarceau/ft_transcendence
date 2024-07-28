@@ -1,12 +1,10 @@
 
 import { getCookie } from "../user.js";
 import { createAlert } from "../utils.js";
-import { initSideBar } from "./sidebar.js";
+import { updateSideBar } from "./sidebar.js";
 
-
-
-async function handleFriendEvents(url, method) {
-	const response = await fetch(url, {
+async function handleFriendEvents(method, action, user_id) {
+	const response = await fetch(`api/profiles/${user_id}/${action}/`, {
 		method: method,
 		headers: {
 			"Content-Type": "application/json",
@@ -18,9 +16,9 @@ async function handleFriendEvents(url, method) {
 	const result = await response.json();
 	console.log(result);
 	if (response.ok) {
+		await updateSideBar()
 		console.log("Success", result.detail);
 		createAlert("success", result.detail);
-		initSideBar();
 	} else {
 		console.log("Failed", result.detail);
 		createAlert("danger", result.detail);
@@ -36,28 +34,32 @@ export async function updateFriendStatus(username, status) {
 			statusBadge.textContent = status;
 		}
 	});
-	initSideBar();
+	await updateSideBar()
 }
 
 export function initEventListeners() {
 	console.log("event friends")
+
 	const addFriendBtn = document.getElementById("addFriendBtn");
-	addFriendBtn.addEventListener("click", async () => {
-		const addFriendInput = document.getElementById("addFriendInput");
-		const friendId = addFriendInput.value;
-		if (friendId === "") {
-			createAlert("danger", "Please provide a user id");
-			return;
-		}
-		await handleFriendEvents(`api/profiles/${friendId}/send_friend_request/`, "POST");
-	});
+	if (addFriendBtn) {
+		addFriendBtn.addEventListener("click", async () => {
+			const addFriendInput = document.getElementById("addFriendInput");
+			const friendId = addFriendInput.value;
+			if (friendId === "") {
+				createAlert("danger", "Please provide a user id");
+				return;
+			}
+			await handleFriendEvents("POST", 'send_friend_request', friendId);
+		});
+	}
+
 
 	const removeFriendBtns = document.getElementById("friendListContainer");
 	const removeFriendBtn = removeFriendBtns.querySelectorAll(".btn-outline-danger");
 	removeFriendBtn.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const friendId = btn.getAttribute("data-friend-id");
-			await handleFriendEvents(`api/profiles/${friendId}/remove_friend/`, "DELETE");
+			await handleFriendEvents("DELETE", `remove_friend`, friendId);
 		});
 	});
 
@@ -66,7 +68,7 @@ export function initEventListeners() {
 	acceptFriendRequest.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const senderId = btn.getAttribute("data-sender-id");
-			await handleFriendEvents(`api/profiles/${senderId}/accept_friend_request/`, "POST");
+			await handleFriendEvents("POST", 'accept_friend_request', senderId);
 		});
 	});
 
@@ -74,7 +76,7 @@ export function initEventListeners() {
 	declineFriendRequest.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const senderId = btn.getAttribute("data-sender-id");
-			await handleFriendEvents(`api/profiles/${senderId}/decline_friend_request/`, "DELETE");
+			await handleFriendEvents("DELETE", `decline_friend_request`, senderId);
 		});
 	});
 	const cancelFriendRequest = document.getElementById("sentFriendRequestListContainer");
@@ -82,7 +84,7 @@ export function initEventListeners() {
 	cancelFriendRequestBtn.forEach(btn => {
 		btn.addEventListener("click", async () => {
 			const receiverId = btn.getAttribute("data-receiver-id");
-			await handleFriendEvents(`api/profiles/${receiverId}/cancel_friend_request/`, "DELETE");
+			await handleFriendEvents("DELETE", `cancel_friend_request`, receiverId);
 		});
 	});
 }

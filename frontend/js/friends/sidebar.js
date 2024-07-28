@@ -1,5 +1,5 @@
 import { isAuthenticated } from "../auth/auth.js"
-import { getCurrentUserId, getFriendList, getReceivedFriendRequestList, getSentFriendRequestList} from "../user.js"
+import { getCurrentUserId, getFriendList, getReceivedFriendRequestList, getSentFriendRequestList } from "../user.js"
 import { createFriendList } from "./friend_list.js"
 import { createReceivedFriendRequestList, createSentFriendRequestList } from "./friend_request.js"
 import { initEventListeners } from "./friend_events.js"
@@ -58,9 +58,44 @@ async function createSidebar() {
 			}
 		});
 	}
+
+	initEventListeners()
 }
 
 
+
+export async function updateSideBar() {
+	if (isAuthenticated() === false)
+		return
+
+	const friendListContainer = document.getElementById('friendListContainer')
+	const receivedFriendRequestListContainer = document.getElementById('receivedFriendRequestListContainer')
+	const sentFriendRequestListContainer = document.getElementById('sentFriendRequestListContainer')
+
+	const userid = getCurrentUserId()
+	if (friendListContainer) {
+		console.log('updating friendlist...')
+		const friendList = await getFriendList(userid)
+		const friendListElement = await createFriendList(friendList)
+		friendListContainer.innerHTML = friendListElement
+	}
+
+	if (receivedFriendRequestListContainer) {
+		console.log('updating received friendlist...')
+		const receivedFriendRequestList = await getReceivedFriendRequestList(userid)
+		const receivedFriendRequestListElement = await createReceivedFriendRequestList(receivedFriendRequestList)
+		receivedFriendRequestListContainer.innerText = receivedFriendRequestListElement
+	}
+
+	if (sentFriendRequestListContainer) {
+		console.log('updating sent friendlist...')
+		const sentFriendRequestList = await getSentFriendRequestList(userid)
+		const sentFriendRequestListElement = await createSentFriendRequestList(sentFriendRequestList)
+		sentFriendRequestListContainer.innerHTML = sentFriendRequestListElement
+	}
+
+	initEventListeners()
+}
 
 export async function initSideBar() {
 	const friendBtn = document.getElementById("friendBtn")
@@ -69,7 +104,6 @@ export async function initSideBar() {
 			friendBtn.innerHTML = ""
 		return
 	}
-	await createSidebar()
-	initEventListeners()
 
+	await createSidebar()
 }

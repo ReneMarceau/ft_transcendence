@@ -1,5 +1,5 @@
 import { pongMenu } from "./game/pong.js"
-import { initSideBar } from "./friends/sidebar.js";
+import { updateSideBar } from "./friends/sidebar.js";
 import { createButtons } from "./navbar.js"
 import { initProfile } from "./profile/profile.js";
 
@@ -22,7 +22,7 @@ export async function reloadPage(is_login_or_out = false) {
 		console.log(true);
 		await initProfile()
 	}
-	await initSideBar()
+	await updateSideBar()
 	await createButtons()
 	overlay.remove()
 }
