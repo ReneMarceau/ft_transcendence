@@ -59,8 +59,8 @@ function renderProfile(userid, username, avatar) {
             </div>
             </div>
         </div>
-        <hr class="w-50 mx-auto my-4"/>
-        <section class="p-3">
+        <hr class="w-50 mx-auto my-2"/>
+        <section class="p-2">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     User Stats
@@ -69,7 +69,7 @@ function renderProfile(userid, username, avatar) {
                 </div>
             </div>
         </section>
-        <section class="p-3">
+        <section class="p-2">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     Game History

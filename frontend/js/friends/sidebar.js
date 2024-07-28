@@ -26,21 +26,21 @@ async function createSidebar() {
 				<div id="friendSidebar" class="d-flex m-2 p-2 flex-column align-items-stretch flex-shrink-0 text-bg-white">
 					<h3 class="text-white fs-3 fw-bold">Friends</h3>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="friendListContainer">
+						<div id="friendListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
 							${friendListElement}
 						</div>
 					</ul>
 					<hr>
 					<h3 class="text-white fs-3 fw-bold">Friend Request</h3>
-					<h4 class="text-white fs-4 fw-bold">Received</h4>
+					<h5 class="text-white fs-4 fw-bold">Received</h5>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="receivedFriendRequestListContainer">
+						<div id="receivedFriendRequestListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
 							${receivedFriendRequestListElement}
 						</div>
 					</ul>
-					<h4 class="text-white fs-4 fw-bold">Sent</h4>
+					<h5 class="text-white fs-4 fw-bold">Sent</h5>
 					<ul class="nav nav-pills flex-column mb-auto">
-						<div id="sentFriendRequestListContainer">
+						<div id="sentFriendRequestListContainer" class="card-body bg-dark overflow-auto" style="max-height: 30vh;"">
 							${sentFriendRequestListElement}
 						</div>
 					</ul>
@@ -84,7 +84,7 @@ export async function updateSideBar() {
 		console.log('updating received friendlist...')
 		const receivedFriendRequestList = await getReceivedFriendRequestList(userid)
 		const receivedFriendRequestListElement = await createReceivedFriendRequestList(receivedFriendRequestList)
-		receivedFriendRequestListContainer.innerText = receivedFriendRequestListElement
+		receivedFriendRequestListContainer.innerHTML = receivedFriendRequestListElement
 	}
 
 	if (sentFriendRequestListContainer) {

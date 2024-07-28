@@ -3,6 +3,10 @@ import { getAvatar, getUsername } from "../user.js"
 export async function createReceivedFriendRequestList(friendRequestList) {
 	console.log(friendRequestList)
 	console.log(friendRequestList.length)
+
+	if (friendRequestList.length === 0)
+		return `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No friend request received yet...</div>`
+	
 	let friendRequestListElement = ""
 	for (let i = 0; i < friendRequestList.length; i++) {
 		const username = await getUsername(friendRequestList[i].sender)
@@ -28,15 +32,15 @@ export async function createReceivedFriendRequestList(friendRequestList) {
 		</li>
 		`
 	}
-	if (friendRequestListElement === "") {
-		friendRequestListElement = "you have no friend requests, yet..."
-	}
 	return friendRequestListElement
 }
 
 export async function createSentFriendRequestList(friendRequestList) {
 	console.log(friendRequestList)
 	console.log(friendRequestList.length)
+
+	if (friendRequestList.length === 0)
+		return `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No friend request sent yet...</div>`
 	let friendRequestListElement = ""
 	for (let i = 0; i < friendRequestList.length; i++) {
 		const username = await getUsername(friendRequestList[i].receiver)
@@ -58,9 +62,6 @@ export async function createSentFriendRequestList(friendRequestList) {
 			</div>
 		</li>
 		`
-	}
-	if (friendRequestListElement === "") {
-		friendRequestListElement = "you have no friend requests, yet..."
 	}
 	return friendRequestListElement
 }
