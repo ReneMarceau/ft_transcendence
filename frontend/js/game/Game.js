@@ -3,6 +3,8 @@ import { renderer } from "./graphic-engine.js"
 
 import { getCookie } from "../user.js";
 
+import { gameOver, gameStart } from "../utils.js";
+
 // eNUM FOR all GAME TYPES
 export const GAME_TYPES = {
 	VS_AI: "vs_ai",
@@ -30,6 +32,7 @@ async function startGame(gameType = GAME_TYPES.ONE_VS_ONE, player1, player2) {
 	if (!response.ok) {
 		throw new Error("Failed to start game");
 	}
+	document.dispatchEvent(gameStart);
 	const data = await response.json();
 	return data;
 }
@@ -55,6 +58,7 @@ export async function endGame(gameId, score_player1, score_player2) {
 	if (!response.ok) {
 		throw new Error("Failed to end game");
 	}
+	document.dispatchEvent(gameOver);
 }
 
 export class Game {
@@ -82,7 +86,7 @@ export class Game {
 			menuButton.addEventListener("click", this.handleMenuButtonClick.bind(this));
 		}
 		window.addEventListener("popstate", this.handlePopState.bind(this));
-		document.addEventListener("cancelGame", this.handleCancelGame.bind(this));
+		document.addEventListener("gameCancel", this.handlegameCancel.bind(this));
 	}
 
 	handleMenuButtonClick() {
@@ -101,8 +105,8 @@ export class Game {
 		renderer.hideBoard();
 	}
 
-	handleCancelGame(){
-		console.log("cancelGame event");
+	handlegameCancel() {
+		console.log("gameCancel event");
 		this.running = false;
 		this.controller.cleanup();
 		this.controller.stop = true;
@@ -111,12 +115,12 @@ export class Game {
 	}
 
 
-	stop(){
+	stop() {
 		this.controller.cleanup();
 		const gameEnd = new CustomEvent("gameEnd", { detail: this.controller.getWinner() });
 		document.dispatchEvent(gameEnd);
 	}
-	
+
 	async run() {
 		console.log("Game started");
 		if (this.controller.is_user) {
@@ -125,7 +129,7 @@ export class Game {
 			this.gameId = gameData.id;
 			console.log("Game started with id: " + gameData.id);
 		}
-		
+
 		const update = async () => {
 			if (this.controller.running === false) {
 				if (this.is_tournament === true) {

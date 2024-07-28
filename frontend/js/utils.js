@@ -3,7 +3,9 @@ import { updateSideBar } from "./friends/sidebar.js";
 import { createButtons } from "./navbar.js"
 import { initProfile } from "./profile/profile.js";
 
-export const cancelGame = new CustomEvent("cancelGame");
+export const gameCancel = new CustomEvent("gameCancel");
+export const gameStart = new CustomEvent("gameStart");
+export const gameOver = new CustomEvent("gameOver");
 
 export async function reloadPage(is_login_or_out = false) {
 	const overlay = document.createElement('div');

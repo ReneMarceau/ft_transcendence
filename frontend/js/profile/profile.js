@@ -3,7 +3,7 @@ import { renderer } from "../game/graphic-engine.js"
 import { getCurrentUserId, getUsername, getAvatar, getStats } from "../user.js"
 import { renderStats } from "./stats.js"
 import { renderHistory } from "./history.js"
-import { cancelGame } from "../utils.js"
+import { gameCancel } from "../utils.js"
 
 function hidePong() {
 	renderer.hideBoard()
@@ -21,23 +21,23 @@ function hidePong() {
 
 export async function initProfile(userid = getCurrentUserId()) {
 	console.log("user id :" + userid)
-    const playerForm = document.getElementById("playerForm")
-    playerForm.innerHTML = ``
+	const playerForm = document.getElementById("playerForm")
+	playerForm.innerHTML = ``
 	hidePong()
-	if (isAuthenticated() === false )
+	if (isAuthenticated() === false)
 		return;
-	
-	document.dispatchEvent(cancelGame);
-	
+
+	document.dispatchEvent(gameCancel);
+
 	let profile = document.getElementById("profileDiv")
 	profile.classList.remove("d-none")
 
-    // Promise.all is used so that the profile information is fetched in parallel (fastest)
-    let listProfileInfo = await Promise.all([
-        getUsername(userid),
-        getAvatar(userid),
-        getStats(userid)
-    ])
+	// Promise.all is used so that the profile information is fetched in parallel (fastest)
+	let listProfileInfo = await Promise.all([
+		getUsername(userid),
+		getAvatar(userid),
+		getStats(userid)
+	])
 	renderProfile(userid, listProfileInfo[0], listProfileInfo[1]);
 	renderStats(listProfileInfo[2], userid);
 	await renderHistory(listProfileInfo[2], userid);

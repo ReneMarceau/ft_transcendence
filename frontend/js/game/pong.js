@@ -7,7 +7,7 @@ import { isAuthenticated } from "../auth/auth.js"
 import { Tournament } from "./tournament.js"
 import { getUsername } from "../user.js";
 import { updateFriendStatus } from "../friends/friend_events.js";
-import { cancelGame } from "../utils.js";
+import { gameCancel } from "../utils.js";
 
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
@@ -55,6 +55,18 @@ function initWebsocket() {
 	ws.onerror = function (error) {
 		console.log(`[error] ${error.message}`);
 	}
+	document.addEventListener('gameStart', () => {
+		ws.send("in_game")
+	});
+
+	document.addEventListener("gameCancel", () => {
+		ws.send("online")
+	});
+
+	document.addEventListener("gameOver", () => {
+		ws.send("online")
+	});
+
 }
 
 export async function pongMenu() {
@@ -64,7 +76,7 @@ export async function pongMenu() {
 	const pongTournament = document.getElementById("playerForm")
 	pongTournament.innerHTML = ""
 
-	document.dispatchEvent(cancelGame);
+	document.dispatchEvent(gameCancel);
 
 	if (isAuthenticated() === true) {
 		initWebsocket()

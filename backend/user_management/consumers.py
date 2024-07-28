@@ -21,6 +21,8 @@ class StatusConsumer(AsyncWebsocketConsumer):
             await self.update_status("offline")
 
     async def receive(self, text_data):
+        if self.user.is_authenticated:
+            await self.update_status(text_data)
         pass
 
     async def update_status(self, status):
