@@ -137,7 +137,7 @@ async function sendRequest(url, data, csrftoken) {
 			localStorage.setItem('access_token', responseData.access);
 			localStorage.setItem('refresh_token', responseData.refresh);
 			createAlert('success', responseData.detail);
-			reloadPage();
+			reloadPage(true);
 		}
 	} else {
 		const errorData = await response.json();
@@ -183,7 +183,7 @@ export function authLogout() {
 		localStorage.removeItem('access_token');
 		localStorage.removeItem('refresh_token');
 		createAlert('success', 'Logged out successfully!');
-		reloadPage();
+		reloadPage(true);
 	})
 }
 

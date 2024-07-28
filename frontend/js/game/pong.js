@@ -7,6 +7,7 @@ import { isAuthenticated } from "../auth/auth.js"
 import { Tournament } from "./tournament.js"
 import { getUsername } from "../user.js";
 import { updateFriendStatus } from "../friends/friend_events.js";
+import { cancelGame } from "../utils.js";
 
 export function render_game() {
 	let main_frame = document.querySelector("#pongDiv")
@@ -58,8 +59,12 @@ function initWebsocket() {
 
 export async function pongMenu() {
 	hideProfile()
+	renderer.hideBoard()
+	renderer.hideBracket()
 	const pongTournament = document.getElementById("playerForm")
 	pongTournament.innerHTML = ""
+
+	document.dispatchEvent(cancelGame);
 
 	if (isAuthenticated() === true) {
 		initWebsocket()
@@ -79,7 +84,9 @@ export async function pongMenu() {
 export async function initTournament() {
 	console.log("tournament")
 	hideMenu()
-		const tournament = new Tournament()
+	renderer.hideBoard()
+	renderer.hideBracket()
+	const tournament = new Tournament()
 }
 
 export async function initLocalGame() {

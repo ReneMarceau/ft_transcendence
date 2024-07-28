@@ -4,6 +4,7 @@ import { LocalController } from "./controller.js"
 import { Game } from "./Game.js"
 import { createAlert, sanitizeInput } from "../utils.js";
 import { setAlias } from "../user.js";
+import { renderer } from "./graphic-engine.js";
 
 const Status = {
     WAITING: 0,
@@ -47,7 +48,8 @@ export class Tournament {
                 await setAlias(this.players[1]);
             }
             this.status = Status.SEMI
-            this.hideForm()
+			console.log('before display bracket!')
+			this.displayBracket()
         })
 
         document.addEventListener("keyup", (e) => {
@@ -72,10 +74,12 @@ export class Tournament {
             console.log(this.winner)
             console.log(this.winner_semi[1])
             console.log(this.winner_semi[2])
+			this.displayBracket()
         })
     }
 
     playGame() {
+		renderer.hideBracket()
         if (this.status === Status.END)
             return
         if (this.game_nb === 1) {
@@ -111,6 +115,28 @@ export class Tournament {
 
     }
 
+	displayBracket() {
+		const playerForm = document.getElementById("playerForm")
+		playerForm.innerHTML = ""
+
+		renderer.hideBoard()
+		if (this.status === Status.END) {
+			renderer.showBracket(this.game_nb, this.players[1], this.players[2], this.players[3], this.players[4],
+			this.winner_semi[1], this.winner_semi[2], `The winner is ${this.winner}`)
+			return
+		}
+		if (this.game_nb === 1) {
+			renderer.showBracket(this.game_nb, this.players[1], this.players[2], this.players[3], this.players[4])
+		}
+		if (this.game_nb === 2) {
+			renderer.showBracket(this.game_nb, this.players[1], this.players[2], this.players[3], this.players[4],
+			this.winner_semi[1])
+		}
+		if (this.game_nb === 3) {
+			renderer.showBracket(this.game_nb, this.players[1], this.players[2], this.players[3], this.players[4],
+			this.winner_semi[1], this.winner_semi[2])
+		}
+	}
 
     async displayForm() {
         const playerForm = document.getElementById("playerForm")
@@ -121,12 +147,6 @@ export class Tournament {
             player1Input.value = this.alias
         }
     }
-
-    hideForm() {
-        const playerForm = document.getElementById("playerForm")
-        playerForm.innerHTML = ""
-    }
-
 }
 
 function tournamentForm() {

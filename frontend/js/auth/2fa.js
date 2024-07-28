@@ -129,7 +129,7 @@ async function verifyToken(url, data, token) {
 		localStorage.setItem('access_token', data.access);
 		localStorage.setItem('refresh_token', data.refresh);
 		createAlert('success', responseData.detail);
-		reloadPage();
+		reloadPage(true);
 
 	} else {
 		const errorData = await response.json();

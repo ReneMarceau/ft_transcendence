@@ -132,6 +132,8 @@ export class Game {
 					this.stop()
 					this.graphicEngine.clearFrame()
 				}
+				else
+					renderer.hideBracket()
 				//renderer.hideBoard();
 				if (this.controller.cancel === true) {
 					console.log("game cancelled");

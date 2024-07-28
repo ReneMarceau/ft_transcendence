@@ -1,15 +1,30 @@
-export function reloadPage() {
-  const overlay = document.createElement('div');
-  overlay.id = 'overlay';
-  overlay.style.cssText =
-    'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;';
+import { pongMenu } from "./game/pong.js"
+import { initSideBar } from "./friends/sidebar.js";
+import { createButtons } from "./navbar.js"
+import { initProfile } from "./profile/profile.js";
 
-  document.body.appendChild(overlay);
+export const cancelGame = new CustomEvent("cancelGame");
 
-  setTimeout(() => {
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.location.replace(cleanUrl);
-  }, 500);
+export async function reloadPage(is_login_or_out = false) {
+	const overlay = document.createElement('div');
+	overlay.id = 'overlay';
+	overlay.style.cssText =
+		'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;';
+
+	document.body.appendChild(overlay);
+
+	if (is_login_or_out) {
+		const cleanUrl = window.location.origin + window.location.pathname;
+		window.location.replace(cleanUrl);
+	}
+	//affreux mais ca marche
+	if (!document.getElementById("profileDiv").classList.contains('d-none')) {
+		console.log(true);
+		await initProfile()
+	}
+	await initSideBar()
+	await createButtons()
+	overlay.remove()
 }
 
 // type needs to be 'success', 'danger', 'warning', or anything else
@@ -59,38 +74,38 @@ export function createAlert(type, message) {
 	}, 3000);
 }
 export function sanitizeInput(element) {
-  const text = element.value;
+	const text = element.value;
 
-  // Check for common XSS patterns
-  const patterns = [
-    /<script.*?>.*?<\/script>/gi, // Script tags
-    /<iframe.*?>.*?<\/iframe>/gi, // iFrame tags
-    /<object.*?>.*?<\/object>/gi, // Object tags
-    /<embed.*?>.*?<\/embed>/gi, // Embed tags
-    /<link.*?>.*?<\/link>/gi, // Link tags
-    /<style.*?>.*?<\/style>/gi, // Style tags
-    /on\w+=".*?"/gi, // Inline event handlers like onclick
-    /javascript:/gi, // JavaScript URI scheme
-    /vbscript:/gi, // VBScript URI scheme
-    /data:text\/html/gi // Data URIs
-  ];
+	// Check for common XSS patterns
+	const patterns = [
+		/<script.*?>.*?<\/script>/gi, // Script tags
+		/<iframe.*?>.*?<\/iframe>/gi, // iFrame tags
+		/<object.*?>.*?<\/object>/gi, // Object tags
+		/<embed.*?>.*?<\/embed>/gi, // Embed tags
+		/<link.*?>.*?<\/link>/gi, // Link tags
+		/<style.*?>.*?<\/style>/gi, // Style tags
+		/on\w+=".*?"/gi, // Inline event handlers like onclick
+		/javascript:/gi, // JavaScript URI scheme
+		/vbscript:/gi, // VBScript URI scheme
+		/data:text\/html/gi // Data URIs
+	];
 
-  for (const pattern of patterns) {
-    if (pattern.test(text)) {
-      createAlert('danger', 'Potential XSS attempt detected!');
-      element.value = ''; // Clear the input field
-      return ''; // Return an empty string to prevent further processing
-    }
-  }
+	for (const pattern of patterns) {
+		if (pattern.test(text)) {
+			createAlert('danger', 'Potential XSS attempt detected!');
+			element.value = ''; // Clear the input field
+			return ''; // Return an empty string to prevent further processing
+		}
+	}
 
-  // Escape HTML characters
-  const escapedText = text
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
-    .replace(/`/g, '&#96;');
+	// Escape HTML characters
+	const escapedText = text
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#x27;')
+		.replace(/\//g, '&#x2F;')
+		.replace(/`/g, '&#96;');
 
-  return escapedText;
+	return escapedText;
 }

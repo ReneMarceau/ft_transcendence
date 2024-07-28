@@ -39,7 +39,7 @@ async function fetchData(url, key = 'undefined') {
   if (!response.ok) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    reloadPage();
+    reloadPage(true);
   }
   if (key === 'undefined') return data;
   return data[key];

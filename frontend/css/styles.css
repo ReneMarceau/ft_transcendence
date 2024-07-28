@@ -19,6 +19,17 @@
   transform: translate(-50%, -50%);
   z-index: -1;
   width: 30em;
+  pointer-events: none;
+}
+
+#bracket{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
 }
 
 /* For WebKit browsers (Chrome, Safari) */

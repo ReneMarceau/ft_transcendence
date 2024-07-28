@@ -10,7 +10,7 @@ export async function initNavBar() {
     `
         <nav class="navbar navbar-expand-sm sticky-top navbar-dark bg-dark">
             <div class="container-fluid">
-            <a class="btn btn-primary navbar-brand" href="/">
+            <a class="btn btn-primary navbar-brand" href="/" data-link>
                 <i class="bi bi-house-fill"></i> Home
             </a>
                 <div id="navBarButtons">
@@ -22,7 +22,8 @@ export async function initNavBar() {
   await createButtons();
 }
 
-async function createButtons() {
+export async function createButtons() {
+	$('#settingsModal').modal('hide')
     let nav = document.querySelector('#navBarButtons');
     nav.innerHTML = `
             <div class="d-flex navbar-nav ms-auto">

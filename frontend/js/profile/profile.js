@@ -3,12 +3,20 @@ import { renderer } from "../game/graphic-engine.js"
 import { getCurrentUserId, getUsername, getAvatar, getStats } from "../user.js"
 import { renderStats } from "./stats.js"
 import { renderHistory } from "./history.js"
-
+import { cancelGame } from "../utils.js"
 
 function hidePong() {
 	renderer.hideBoard()
-	const gameBtnDiv = document.getElementById("gameBtnDiv")
-	gameBtnDiv.innerHTML = ""
+	renderer.hideBracket()
+	let localGameBtn = document.querySelector("#localgamebtn")
+	let aiGameBtn = document.querySelector("#aigamebtn")
+	//let remoteGameBtn = document.querySelector("#remotegamebtn")
+	let tournamentBtn = document.querySelector("#tournamentbtn")
+
+	tournamentBtn.classList.add('d-none')
+	localGameBtn.classList.add('d-none')
+	//remoteGameBtn.classList.add('d-none')
+	aiGameBtn.classList.add('d-none')
 }
 
 export async function initProfile(userid = getCurrentUserId()) {
@@ -16,13 +24,11 @@ export async function initProfile(userid = getCurrentUserId()) {
     const playerForm = document.getElementById("playerForm")
     playerForm.innerHTML = ``
 	hidePong()
-
-    const cancelGame = new CustomEvent("cancelGame");
-    document.dispatchEvent(cancelGame);
-
 	if (isAuthenticated() === false )
 		return;
-
+	
+	document.dispatchEvent(cancelGame);
+	
 	let profile = document.getElementById("profileDiv")
 	profile.classList.remove("d-none")
 

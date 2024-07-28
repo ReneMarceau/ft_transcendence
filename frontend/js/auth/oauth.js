@@ -42,7 +42,7 @@ export async function initOAuth() {
 	const responseData = await response.json();
 	if (!response.ok) {
 		createAlert('danger', 'Failed to get user data');
-		reloadPage();
+		reloadPage(true);
 		return false;
 	}
 
