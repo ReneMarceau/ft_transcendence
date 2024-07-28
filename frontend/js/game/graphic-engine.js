@@ -257,6 +257,7 @@ export class Renderer {
 	}
 
 	initBracket() {
+		this.bracketGroup = new THREE.Group();
 		const MiddleGeometry = new THREE.BoxGeometry(this.boardWidth / 2, 0.027, 0.04);
 		const EntryGeometry = new THREE.BoxGeometry(this.boardWidth / 4, 0.027, 0.04);
 		const verticalGeometry = new THREE.BoxGeometry(0.027, this.boardHeight, 0.04);
@@ -276,12 +277,14 @@ export class Renderer {
 		this.entryBR.position.set((this.boardWidth / 2) - this.boardWidth / 8, this.boardHeight / 2, 0)
 		this.verticalBracketLeft.position.set((this.boardWidth / -2) + this.boardWidth / 4, 0, 0)
 		this.verticalBracketRight.position.set((this.boardWidth / 2) - this.boardWidth / 4, 0, 0)
+
+		this.bracketGroup.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight);
 	}
 
 	showBoard() {
 		console.log("showing board")
 		document.getElementById("board").classList.remove("d-none")
-		this.camera.position.set(0, 0, 5);
+		this.camera.position.set(0, 0, 3);
 		this.camera.lookAt(0, 0, 0)
 		this.scene.remove(this.earthGroup)
 		this.scene.add(this.ambientLight, this.spotLight);
@@ -326,7 +329,8 @@ export class Renderer {
 			{ text: nextGame, x: this.bracket.width / 2, y: this.bracket.height / 2 - this.bracket.height / 8 }
 		];
 
-		this.scene.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight);
+		this.bracketGroup.translateY(-0.05)
+		this.scene.add(this.bracketGroup);
 
 		this.ctx.font = '90px "VT323", monospace';
 		this.ctx.fillStyle = "#888888";
@@ -372,7 +376,7 @@ export class Renderer {
 	}
 
 	hideBracket() {
-		this.scene.remove(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight)
+		this.scene.remove(this.bracketGroup)
 		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
 		this.controls.enabled = true
 	}
@@ -380,6 +384,7 @@ export class Renderer {
 	hideBoard() {
 		console.log("hide board")
 		document.getElementById("board").classList.add("d-none")
+		this.camera.position.set(0, 0, 5);
 		this.scene.add(this.earthGroup)
 		this.scene.remove(this.ambientLight, this.spotLight);
 		this.scene.remove(this.topHori, this.bottomHori, this.gameboard, this.leftVert, this.rightVert, this.paddle1, this.paddle2, this.ball)
