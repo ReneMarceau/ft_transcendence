@@ -35,13 +35,13 @@ export async function createSettings() {
 							</div>
 							<div class="container">
 								<div class="row mb-3">
-									<label for="profile-main-username" class="col-sm-2 col-form-label">Username:</label>
+									<label for="newchangeUsernameForm" class="col-sm-2 col-form-label">Username:</label>
 									<div class="col-sm-10">
 										<h3 id="profile-main-username" class="form-control-plaintext"></h3>
 									</div>
 								</div>
 								<div class="row">
-									<label for="profile-main-email" class="col-sm-2 col-form-label">Email:</label>
+									<label for="newchangeEmailForm" class="col-sm-2 col-form-label">Email:</label>
 									<div class="col-sm-10">
 										<h3 id="profile-main-email" class="form-control-plaintext"></h3>
 									</div>
