@@ -98,6 +98,30 @@ export async function updateSideBar() {
 	initEventListeners()
 }
 
+function handleNotifications() {
+	let ws = new WebSocket(`wss://${window.location.host}/ws/notifications/`)
+	ws.onopen = function (event) {
+		console.log("[NOTIFICATIONS] Connection established");
+	}
+
+	ws.onmessage = function (event) {
+		const data = JSON.parse(event.data)
+		console.log("[NOTIFICATIONS] Received: ")
+		console.log(data)
+		console.log("[NOTIFICATIONS] Updating sidebar...")
+		updateSideBar()
+	}
+
+	ws.onclose = function (event) {
+		if (event.wasClean) {
+			console.log(`[NOTIFICATIONS] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+		} else {
+			console.log('[NOTIFICATIONS] Connection died');
+		}
+	}
+
+}
+
 export async function initSideBar() {
 	const friendBtn = document.getElementById("friendBtn")
 	if (isAuthenticated() === false) {
@@ -107,4 +131,5 @@ export async function initSideBar() {
 	}
 
 	await createSidebar()
+	handleNotifications()
 }
