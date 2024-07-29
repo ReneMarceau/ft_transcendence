@@ -116,6 +116,10 @@ class ProfileViewSet(BaseViewSet):
             )
 
         sender.send_friend_request(receiver)
+        friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
+        friend_request.notify_friend_request(
+            f"You have received a friend request from {request.user.username}."
+        )
         return Response(
             {"detail": "Friend request sent successfully."},
             status=status.HTTP_201_CREATED,
@@ -129,6 +133,9 @@ class ProfileViewSet(BaseViewSet):
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
             friend_request.accept()
+            friend_request.notify_friend_request(
+                f"{request.user.username} has accepted your friend request."
+            )
             return Response(
                 {"detail": "Friend request accepted successfully."},
                 status=status.HTTP_200_OK,
@@ -147,6 +154,9 @@ class ProfileViewSet(BaseViewSet):
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
             friend_request.delete()
+            friend_request.notify_friend_request(
+                f"{request.user.username} has declined your friend request."
+            )
             return Response(
                 {"detail": "Friend request declined successfully."},
                 status=status.HTTP_200_OK,
@@ -165,6 +175,9 @@ class ProfileViewSet(BaseViewSet):
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=receiver)
             friend_request.delete()
+            friend_request.notify_friend_request(
+                f"{request.user.username} has cancelled the friend request."
+            )
             return Response(
                 {"detail": "Friend request cancelled successfully."},
                 status=status.HTTP_200_OK,

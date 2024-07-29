@@ -26,29 +26,17 @@ class FriendRequest(models.Model):
         self.receiver.friends.add(self.sender)
         self.delete()
 
-    def notify_receiver(self):
+    def notify_friend_request(self, message):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"user_{self.receiver.id}",
             {
                 "type": "friend_request",
-                "message": f"You have received a friend request from {self.sender.username}",
-                "sender": self.sender.username,
+                "message": message,
+                "sender": self.sender.alias,
                 "sender_id": self.sender.id,
             },
         )
 
-    def notify_friendship_accepted(self):
-        channel_layer = get_channel_layer()
-        # Notify both sender and receiver
-        for user in [self.sender, self.receiver]:
-            async_to_sync(channel_layer.group_send)(
-                f"user_{user.id}",
-                {
-                    "type": "friendship_accepted",
-                    "message": f"You and {user.username} are now friends!",
-                },
-            )
-    
     def __str__(self):
         return f"Friend request from {self.sender} to {self.receiver}"

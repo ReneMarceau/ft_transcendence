@@ -3,6 +3,7 @@ import { getCurrentUserId, getFriendList, getReceivedFriendRequestList, getSentF
 import { createFriendList } from "./friend_list.js"
 import { createReceivedFriendRequestList, createSentFriendRequestList } from "./friend_request.js"
 import { initEventListeners } from "./friend_events.js"
+import { createAlert } from "../utils.js"
 
 async function createSidebar() {
 	const userid = getCurrentUserId()
@@ -106,6 +107,7 @@ function handleNotifications() {
 
 	ws.onmessage = function (event) {
 		const data = JSON.parse(event.data)
+		createAlert("success", data.message)
 		console.log("[NOTIFICATIONS] Received: ")
 		console.log(data)
 		console.log("[NOTIFICATIONS] Updating sidebar...")
