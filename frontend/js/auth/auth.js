@@ -65,7 +65,8 @@ export function render_auth() {
                 ${login_btn}
                 ${signup_btn}
 				<a class="btn btn-secondary" id="oauth-form" href="/auth/oauth2/redirect/">
-					<img src="42.svg" alt="42 logo" style="width: 25px; height: 25px; padding: 0px"/>
+					<img src="https://icons.iconarchive.com/icons/simpleicons-team/simple/64/42-icon.png"
+					alt="42 logo" style="width: 25px; height: 25px; padding: 0px"/>
 				</a>
             </div>
         </div>`;

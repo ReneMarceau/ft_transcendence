@@ -38,6 +38,20 @@ export class Tournament {
             this.players[3] = sanitizeInput(document.getElementById("player3Tournament"));
             this.players[4] = sanitizeInput(document.getElementById("player4Tournament"));
 
+            for (let i = 1; i <= 4; i++) {
+                for (let j = i + 1; j <= 4; j++) {
+                    if (this.players[i] === this.players[j]) {
+                        createAlert("danger", "Please enter different aliases");
+                        return;
+                    }
+                }
+            }
+                
+            if (this.players[1] === this.players[2] || this.players[3] === this.players[4] || this.players[1] === this.players[3] || this.players[1] === this.players[4] || this.players[2] === this.players[3] || this.players[2] === this.players[4]) {
+                createAlert("danger", "Please enter different aliases");
+                return;
+            }
+
             this.is_empty = this.players.some((player) => player === "")
             if (this.is_empty) {
                 createAlert("danger", "Please fill all the fields");

@@ -418,7 +418,7 @@ class Ball {
 		this.radius = 1 / 50
 		this.x = 0
 		this.y = 0
-		this.speed = 1 / 120
+		this.speed = 1 / 60
 		this.in_play = false
 		this.reset()
 	}

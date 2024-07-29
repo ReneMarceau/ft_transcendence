@@ -93,7 +93,7 @@ deploy re: clean check build
 
 # Check if all required dependencies are functional
 .PHONY: check
-check: venv
+check:
 	@if ! $(DOCKER) info > /dev/null 2>&1; then \
 		echo "${RED}Docker is not running.${RESET}"; \
 		exit 1; \
@@ -111,21 +111,10 @@ check: venv
 	@echo "Before starting backend development, run ${CYAN}make install${RESET} to install Python dependencies."
 
 # Check if venv is present then create it
-.PHONY: venv
-venv:
-	@if [ ! -d "backend/venv/" ]; then \
-		echo "${YELLOW}Virtual environment not found. Creating...${RESET}"; \
-		python3 -m venv backend/venv; \
-		echo "${GREEN}Virtual environment created.${RESET}"; \
-	fi
-	@if [ -z "${VIRTUAL_ENV}" ]; then \
-		echo "${YELLOW}You need to activate the virtual environment. Run: ${CYAN}source backend/venv/bin/activate${RESET}"; \
-		exit 1; \
-	fi
 
 # Install Python dependencies
 .PHONY: install
-install: venv
+install:
 	@echo "${YELLOW}Installing Python dependencies...${RESET}"
 	@pip install --upgrade pip
 	@pip install -r backend/requirements.txt
