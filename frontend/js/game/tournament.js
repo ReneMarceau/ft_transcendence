@@ -11,7 +11,8 @@ const Status = {
     PLAYING: 1,
     SEMI: 2,
     FINAL: 3,
-    END: 4
+    END: 4,
+    CANCELED: 5
 }
 
 
@@ -78,6 +79,8 @@ export class Tournament {
 
         document.addEventListener("gameEnd", (e) => {
             console.log("gameEnd")
+            if (this.Status === Status.CANCELED)
+                return  
             this.is_running = false
             if (this.game_nb == 2)
                 this.winner_semi[1] = e.detail
@@ -90,11 +93,16 @@ export class Tournament {
             console.log(this.winner_semi[2])
 			this.displayBracket()
         })
+
+        document.addEventListener("tournamentCancel", (e) => {
+            console.log("tournamentCancel")
+            this.Status = Status.CANCELED
+        })
     }
 
     playGame() {
 		renderer.hideBracket()
-        if (this.status === Status.END)
+        if (this.status === Status.END || this.status === Status.CANCELED)
             return
         if (this.game_nb === 1) {
             const controller = new LocalController(this.players[1], this.players[2])

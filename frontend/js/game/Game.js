@@ -103,6 +103,9 @@ export class Game {
 		this.controller.stop = true;
 		this.controller.cancel = true;
 		renderer.hideBoard();
+		if (this.is_tournament === true) {
+			document.dispatchEvent(new CustomEvent("tournamentCancel"));
+		}
 	}
 
 	handlegameCancel() {
@@ -112,6 +115,9 @@ export class Game {
 		this.controller.stop = true;
 		this.controller.cancel = true;
 		renderer.hideBoard();
+		if (this.is_tournament === true) {
+			document.dispatchEvent(new CustomEvent("tournamentCancel"));
+		}
 	}
 
 
