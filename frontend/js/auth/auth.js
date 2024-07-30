@@ -61,7 +61,7 @@ export function render_auth() {
 	main_frame.innerHTML += `
         <div class="d-flex justify-content-center align-items-center" style="height:80%">
             <div class="text-center">
-                <h1 class="mt-5" style="font-family: 'Press Start 2P', cursive">ft_traanscancdancee</h1>
+                <h1 class="mt-5" style="font-family: 'Press Start 2P', cursive">ft_transcendence</h1>
                 ${login_btn}
                 ${signup_btn}
 				<a class="btn btn-secondary" id="oauth-form" href="/auth/oauth2/redirect/">
