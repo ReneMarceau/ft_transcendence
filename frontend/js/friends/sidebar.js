@@ -107,7 +107,6 @@ function handleNotifications() {
 
 	ws.onmessage = function (event) {
 		const data = JSON.parse(event.data)
-		createAlert("success", data.message)
 		console.log("[NOTIFICATIONS] Received: ")
 		console.log(data)
 		console.log("[NOTIFICATIONS] Updating sidebar...")

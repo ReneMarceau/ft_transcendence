@@ -15,17 +15,17 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         pass  # Handle any incoming WebSocket messages if necessary
 
     async def friend_request(self, event):
-        message = event['message']
-        await self.send(text_data=json.dumps({
-            'type': 'friend_request',
-            'message': message,
-            'sender': event['sender'],
-            'sender_id': event['sender_id'],
-        }))
+        message = event["message"]
+        sender = event.get("sender", None)
+        receiver = event.get("receiver", None)
+        sender_id = event.get("sender_id", None)
+        receiver_id = event.get("receiver_id", None)
 
-    async def friendship_accepted(self, event):
-        message = event['message']
         await self.send(text_data=json.dumps({
-            'type': 'friendship_accepted',
-            'message': message,
+            "message": message,
+            "sender": sender,
+            "receiver": receiver,
+            "sender_id": sender_id,
+            "receiver_id": receiver_id,
         }))
+    

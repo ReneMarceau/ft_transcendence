@@ -20,10 +20,17 @@ class FriendRequest(models.Model):
         verbose_name_plural = "Friend Requests"
 
     def accept(self):
-        if self.sender.friends.filter(id=self.receiver.id).exists():
-            raise ValueError("Users are already friends.")
         self.sender.friends.add(self.receiver)
         self.receiver.friends.add(self.sender)
+        self.notify_friend_request("Friend request accepted.")
+        self.delete()
+
+    def decline(self):
+        self.notify_friend_request("Friend request declined.")
+        self.delete()
+
+    def cancel(self):
+        self.notify_friend_request("Friend request canceled.")
         self.delete()
 
     def notify_friend_request(self, message):
@@ -35,6 +42,15 @@ class FriendRequest(models.Model):
                 "message": message,
                 "sender": self.sender.alias,
                 "sender_id": self.sender.id,
+            },
+        )
+        async_to_sync(channel_layer.group_send)(
+            f"user_{self.sender.id}",
+            {
+                "type": "friend_request",
+                "message": message,
+                "receiver": self.receiver.alias,
+                "receiver_id": self.receiver.id,
             },
         )
 
